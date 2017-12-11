@@ -29,12 +29,18 @@ class OAuth:
         self.token_type = None
         self.valid_until = None
         self.session = session
+        self.revalidating = False
         self._authenticate()
 
     def validate_auth(self):
         """Check valid_until and fetch new token if needed"""
+        # Prevent loop
+        if self.revalidating:
+            return
         if self.valid_until is None or time.time() > self.valid_until:
+            self.revalidating = True
             self._authenticate()
+            self.revalidating = False
 
     def _authenticate(self):
         # Wipe out any old values before (re-)login

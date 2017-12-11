@@ -177,6 +177,8 @@ class Session(object):
             headers.update(self.auth.get_headers(data))
         if data is not None:
             headers['content_type'] = 'application/json'
+            if isinstance(data, str):
+                data = data.encode()
         req = requests.Request(method=req_type, url=url, data=data, headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
         return self._session.send(prepared)
