@@ -103,7 +103,8 @@ class Instance(TS):
     '''A class to hold an instance, which is a superset of a time series'''
     def __init__(self, input):
         super(Instance, self).__init__(input)
-        self.tag = input['tag']
+        if 'tag' in input:
+            self.tag = input['tag']
         self.issue_date = parsetime(input['issue_date'], self.tz)
 
     def to_pandas(self):

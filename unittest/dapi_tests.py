@@ -105,10 +105,10 @@ def test_search(sessions):
     s,m = sessions
     metadata = [{'id': 5, 'name': 'testcurve',
                 'frequency': 'H', 'time_zone': 'CET',
-                'scenarios': 0, 'curve_type': 'TIME_SERIES'},
+                'curve_type': 'TIME_SERIES'},
                 {'id': 6, 'name': 'testcurve2',
                 'frequency': 'D', 'time_zone': 'CET',
-                'scenarios': 2, 'curve_type': 'INSTANCES'}]
+                'curve_type': 'INSTANCES'}]
     m.register_uri('GET', prefix + '/curves?id=5&id=6', text=json.dumps(metadata))
     c = s.search(id=[5,6])
     assert len(c) == 2
@@ -120,7 +120,7 @@ def ts_curve(sessions):
     s,m = sessions
     metadata = {'id': 5, 'name': 'testcurve',
                 'frequency': 'H', 'time_zone': 'CET',
-                'scenarios': 0, 'curve_type': 'TIME_SERIES'}
+                'curve_type': 'TIME_SERIES'}
     m.register_uri('GET', prefix + '/curves/get?id=5', text=json.dumps(metadata))
     c = s.get_curve(id=5)
     return c,s,m
@@ -132,7 +132,6 @@ def test_time_series(ts_curve):
     assert c.name == 'testcurve'
     assert c.frequency == 'H'
     assert c.time_zone == 'CET'
-    assert c.scenarios == 0
 
 def test_ts_data(ts_curve):
     c,s,m = ts_curve
@@ -142,74 +141,13 @@ def test_ts_data(ts_curve):
     assert isinstance(d, dapi.util.TS)
     assert d.frequency == 'H'
 
-@pytest.fixture()
-def inst_curve(sessions):
-    s,m = sessions
-    metadata = {'id': 7, 'name': 'testcurve',
-                'frequency': 'D', 'time_zone': 'CET',
-                'scenarios': 2, 'curve_type': 'INSTANCES'}
-    m.register_uri('GET', prefix + '/curves/get?id=7', text=json.dumps(metadata))
-    c = s.get_curve(id=7)
-    return c,s,m
-
-def test_inst_curve(inst_curve):
-    c,s,m = inst_curve
-    assert isinstance(c, dapi.curves.InstanceCurve)
-    assert c.id == 7
-    assert c.name == 'testcurve'
-    assert c.frequency == 'D'
-    assert c.time_zone == 'CET'
-    assert c.scenarios == 2
-
-def test_inst_tags(inst_curve):
-    c,s,m = inst_curve
-    tags = {'test': 'ok'}
-    m.register_uri('GET', prefix + '/instances/7/tags', text=json.dumps(tags))
-    res = c.get_tags()
-    assert res['test'] == 'ok'
-
-def test_inst_search(inst_curve):
-    c,s,m = inst_curve
-    search_data = [{'inst': 1}, {'inst': 2}]
-    m.register_uri('GET', prefix + '/instances/7?tag=tag1&issue_date=46&issue_date=50',
-                   text=json.dumps(search_data))
-    res = c.search_instances(tags='tag1', issue_dates=['46', '50'])
-    assert len(res) == 2
-
-def test_inst_get_instance(inst_curve):
-    c,s,m = inst_curve
-    inst = {'frequency': 'H', 'points': [[140000000000, 10.0, 20.0]],
-            'name': 'inst_name', 'id': 10, 'tag': 'tag1',
-            'issue_date': '2016-01-01T00:00Z'}
-    m.register_uri('GET',
-                   prefix + '/instances/7/get?tag=tag1&issue_date=2016-01-01T00:00Z&with_data=true',
-                   text=json.dumps(inst))
-    res = c.get_instance(tag='tag1', issue_date='2016-01-01T00:00Z')
-    assert isinstance(res, dapi.util.Instance)
-    assert res.frequency == 'H'
-    assert res.name == 'inst_name'
-    assert res.tag == 'tag1'
-
-def test_inst_get_latest(inst_curve):
-    c,s,m = inst_curve
-    inst = {'frequency': 'H', 'points': [[140000000000, 10.0, 20.0]],
-            'name': 'inst_name', 'id': 10, 'tag': 'tag1',
-            'issue_date': '2016-01-01T00:00Z'}
-    m.register_uri('GET', prefix + '/instances/7/latest?with_data=false&issue_date=56',
-                   text=json.dumps(inst))
-    res = c.get_latest(issue_dates=56, with_data=False)
-    assert isinstance(res, dapi.util.Instance)
-    assert res.frequency == 'H'
-    assert res.name == 'inst_name'
-    assert res.tag == 'tag1'
-
 
 @pytest.fixture()
 def tagged_curve(sessions):
     s,m = sessions
     metadata = {'id': 9, 'name': 'testcurve',
                 'frequency': 'H', 'time_zone': 'CET',
-                'scenarios': 0, 'curve_type': 'TAGGED'}
+                'curve_type': 'TAGGED'}
     m.register_uri('GET', prefix + '/curves/get?id=9', text=json.dumps(metadata))
     c = s.get_curve(id=9)
     return c,s,m
@@ -221,23 +159,135 @@ def test_tagged(tagged_curve):
     assert c.name == 'testcurve'
     assert c.frequency == 'H'
     assert c.time_zone == 'CET'
-    assert c.scenarios == 0
 
 def test_tagged_tags(tagged_curve):
     c,s,m = tagged_curve
     tags = {'test': 'ok'}
-    m.register_uri('GET', prefix + '/tagged/9/tags', text=json.dumps(tags))
+    m.register_uri('GET', prefix + '/series/tagged/9/tags', text=json.dumps(tags))
     res = c.get_tags()
     assert res['test'] == 'ok'
 
 def test_tagged_data(tagged_curve):
     c,s,m = tagged_curve
     datapoints = {'frequency': 'H', 'points': [[140000000000, 10.0]]}
-    m.register_uri('GET', prefix + '/tagged/9?tag=tag1', text=json.dumps(datapoints))
+    m.register_uri('GET', prefix + '/series/tagged/9?tag=tag1', text=json.dumps(datapoints))
     d = c.get_data(tag='tag1')
     assert isinstance(d, dapi.util.TS)
     assert d.frequency == 'H'
     assert d.tag == 'tag1'
+
+
+@pytest.fixture()
+def inst_curve(sessions):
+    s,m = sessions
+    metadata = {'id': 7, 'name': 'testcurve',
+                'frequency': 'D', 'time_zone': 'CET',
+                'curve_type': 'INSTANCES'}
+    m.register_uri('GET', prefix + '/curves/get?id=7', text=json.dumps(metadata))
+    c = s.get_curve(id=7)
+    return c,s,m
+
+def test_inst_curve(inst_curve):
+    c,s,m = inst_curve
+    assert isinstance(c, dapi.curves.InstanceCurve)
+    assert c.id == 7
+    assert c.name == 'testcurve'
+    assert c.frequency == 'D'
+    assert c.time_zone == 'CET'
+
+def test_inst_search(inst_curve):
+    c,s,m = inst_curve
+    search_data = [{'inst': 1}, {'inst': 2}]
+    m.register_uri('GET', prefix + '/instances/7?issue_date=46&issue_date=50',
+                   text=json.dumps(search_data))
+    res = c.search_instances(issue_dates=['46', '50'])
+    assert len(res) == 2
+
+def test_inst_get_instance(inst_curve):
+    c,s,m = inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 10,
+            'issue_date': '2016-01-01T00:00Z'}
+    m.register_uri('GET',
+                   prefix + '/instances/7/get?issue_date=2016-01-01T00:00Z&with_data=true',
+                   text=json.dumps(inst))
+    res = c.get_instance(issue_date='2016-01-01T00:00Z')
+    assert isinstance(res, dapi.util.Instance)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+
+def test_inst_get_latest(inst_curve):
+    c,s,m = inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 10,
+            'issue_date': '2016-01-01T00:00Z'}
+    m.register_uri('GET', prefix + '/instances/7/latest?with_data=false&issue_date=56',
+                   text=json.dumps(inst))
+    res = c.get_latest(issue_dates=56, with_data=False)
+    assert isinstance(res, dapi.util.Instance)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+
+
+@pytest.fixture()
+def tagged_inst_curve(sessions):
+    s,m = sessions
+    metadata = {'id': 10, 'name': 'testcurve',
+                'frequency': 'D', 'time_zone': 'CET',
+                'curve_type': 'TAGGED_INSTANCES'}
+    m.register_uri('GET', prefix + '/curves/get?id=10', text=json.dumps(metadata))
+    c = s.get_curve(id=10)
+    return c,s,m
+
+def test_tagged_inst_curve(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    assert isinstance(c, dapi.curves.TaggedInstanceCurve)
+    assert c.id == 10
+    assert c.name == 'testcurve'
+    assert c.frequency == 'D'
+    assert c.time_zone == 'CET'
+
+def test_tagged_inst_tags(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    tags = {'test': 'ok'}
+    m.register_uri('GET', prefix + '/instances/tagged/10/tags', text=json.dumps(tags))
+    res = c.get_tags()
+    assert res['test'] == 'ok'
+
+def test_tagged_inst_search(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    search_data = [{'inst': 1}, {'inst': 2}]
+    m.register_uri('GET', prefix + '/instances/tagged/10?tag=tag1&issue_date=46&issue_date=50',
+                   text=json.dumps(search_data))
+    res = c.search_instances(tags='tag1', issue_dates=['46', '50'])
+    assert len(res) == 2
+
+def test_tagged_inst_get_instance(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 10, 'tag': 'tag1',
+            'issue_date': '2016-01-01T00:00Z'}
+    m.register_uri('GET',
+                   prefix + '/instances/tagged/10/get?tag=tag1&issue_date=2016-01-01T00:00Z&with_data=true',
+                   text=json.dumps(inst))
+    res = c.get_instance(tag='tag1', issue_date='2016-01-01T00:00Z')
+    assert isinstance(res, dapi.util.Instance)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+    assert res.tag == 'tag1'
+
+def test_tagged_inst_get_latest(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 10, 'tag': 'tag1',
+            'issue_date': '2016-01-01T00:00Z'}
+    m.register_uri('GET', prefix + '/instances/tagged/10/latest?with_data=false&issue_date=56',
+                   text=json.dumps(inst))
+    res = c.get_latest(issue_dates=56, with_data=False)
+    assert isinstance(res, dapi.util.Instance)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+    assert res.tag == 'tag1'
 
 
 #
