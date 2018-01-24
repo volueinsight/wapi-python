@@ -92,7 +92,7 @@ class Session(object):
         return self._build_curve(metadata)
 
     _search_terms = ['query', 'id', 'area', 'category', 'commodity', 'data_type', 'frequency',
-                     'source', 'station', 'time_zone', 'storage', 'unit', 'name']
+                     'source', 'station', 'time_zone', 'curve_state', 'unit', 'name']
 
     def search(self, **kwargs):
         """Search for a curve."""
@@ -120,11 +120,11 @@ class Session(object):
             result.append(self._build_curve(metadata))
         return result
 
-    def make_curve(self, id, curve_type, scenarios=0):
+    def make_curve(self, id, curve_type):
         """Return a mostly uninitialized curve object of the correct type.
         This is generally a bad idea, use get_curve or search when possible."""
         if curve_type in self._curve_types:
-            return self._curve_types[curve_type](id, None, self, scenarios)
+            return self._curve_types[curve_type](id, None, self)
         raise CurveException('Bad curve type requested')
 
     def events(self, curve_list, start_time=None, timeout=None):
@@ -132,8 +132,8 @@ class Session(object):
         return events.EventListener(self, curve_list, start_time=start_time, timeout=timeout)
 
     _attributes = {'areas', 'categories', 'commodities', 'curve_types', 'data_types',
-                   'frequencies', 'functions', 'sources', 'stations',
-                   'storage_types', 'time_zones', 'units'}
+                   'frequencies', 'sources', 'stations',
+                   'curve_states', 'time_zones', 'units'}
 
     def get_attribute(self, attribute):
         """Get valid values for an attribute."""
@@ -155,7 +155,7 @@ class Session(object):
         TAGGED_INSTANCES: curves.TaggedInstanceCurve,
     }
 
-    _meta_keys = ('id', 'name', 'frequency', 'time_zone', 'scenarios', 'curve_type')
+    _meta_keys = ('id', 'name', 'frequency', 'time_zone', 'curve_type')
 
     def _build_curve(self, metadata):
         for key in self._meta_keys:

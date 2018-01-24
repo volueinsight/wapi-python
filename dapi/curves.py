@@ -18,10 +18,9 @@ class CurveException(Exception):
 
 
 class BaseCurve:
-    def __init__(self, id, metadata, session, scenarios=0):
+    def __init__(self, id, metadata, session):
         self._metadata = metadata
         self._session = session
-        self.scenarios = scenarios
         if metadata is None:
             self.hasMetadata = False
         else:
@@ -55,6 +54,7 @@ class BaseCurve:
 
     def _load_data(self, url, failmsg):
         response = self._session.data_request('GET', url)
+        self._last_response = response
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 204 or response.status_code == 404:
@@ -88,7 +88,7 @@ class TimeSeriesCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load curve data')
         if result is None:
             return result
-        return util.TS(result, scenarios=self.scenarios)
+        return util.TS(result)
 
 
 class TaggedCurve(BaseCurve):
@@ -106,7 +106,7 @@ class TaggedCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load curve data')
         if result is None:
             return result
-        return util.TS(result, scenarios=self.scenarios, tag=tag)
+        return util.TS(result, tag=tag)
 
 
 class InstanceCurve(BaseCurve):
@@ -136,7 +136,7 @@ class InstanceCurve(BaseCurve):
         res = []
         for r in result:
             if 'points' in r:
-                res.append(util.Instance(r, scenarios=self.scenarios))
+                res.append(util.Instance(r))
             else:
                 res.append(r)
         return res
@@ -156,7 +156,7 @@ class InstanceCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load instance')
         if result is None or 'points' not in result:
             return result
-        return util.Instance(result, scenarios=self.scenarios)
+        return util.Instance(result)
 
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
@@ -176,7 +176,7 @@ class InstanceCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load instance')
         if result is None or 'points' not in result:
             return result
-        return util.Instance(result, scenarios=self.scenarios)
+        return util.Instance(result)
 
     @staticmethod
     def _flatten(key, data):
@@ -212,7 +212,7 @@ class TaggedInstanceCurve(BaseCurve):
         res = []
         for r in result:
             if 'points' in r:
-                res.append(util.Instance(r, scenarios=self.scenarios))
+                res.append(util.Instance(r))
             else:
                 res.append(r)
         return res
@@ -232,7 +232,7 @@ class TaggedInstanceCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load instance')
         if result is None or 'points' not in result:
             return result
-        return util.Instance(result, scenarios=self.scenarios)
+        return util.Instance(result)
 
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
@@ -252,7 +252,7 @@ class TaggedInstanceCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load instance')
         if result is None or 'points' not in result:
             return result
-        return util.Instance(result, scenarios=self.scenarios)
+        return util.Instance(result)
 
     @staticmethod
     def _flatten(key, data):

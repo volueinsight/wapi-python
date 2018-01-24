@@ -47,14 +47,13 @@ def parserange(rangeobj, tz=None):
 
 class TS(object):
     '''A class to hold a basic time series.'''
-    def __init__(self, input, scenarios, tag=None):
+    def __init__(self, input, tag=None):
         # input is the json dict from the data API
         if 'id' in input:
             self.id = input['id']
         if 'name' in input:
             self.name = input['name']
         self.frequency = input['frequency']
-        self.scenarios = scenarios
         if tag is not None:
             self.tag = tag
         try:
@@ -62,24 +61,12 @@ class TS(object):
         except:
             self.tz = pytz.utc
         self.index = []
-        if scenarios > 0:
-            self.values = []
-            for n in range(scenarios):
-                self.values.append([])
-        else:
-            self.values = []
+        self.values = []
         for row in input['points']:
+            if len(row) != 2:
+                raise ValueError('Points have unexpected contents')
             self.index.append(datetime.datetime.fromtimestamp(row[0]/1000.0, self.tz))
-            if scenarios > 0:
-                if len(row) != (scenarios + 1):
-                    raise ValueError('Points have {} scenarios, curve expects {}'
-                                     .format(len(row)-1, scenarios))
-                for n in range(scenarios):
-                    self.values[n].append(row[n+1])
-            else:
-                if len(row) != 2:
-                    raise ValueError('Points have unexpected data for scenarios')
-                self.values.append(row[1])
+            self.values.append(row[1])
 
     def to_pandas(self, name=None):
         if name is None and hasattr(self, 'tag'):
@@ -88,16 +75,7 @@ class TS(object):
             namestr = ''
         else:
             namestr = name + "-"
-        if self.scenarios == 0:
-            res = pd.Series(name=name, index=self.index, data=self.values)
-        else:
-            columns = []
-            data = {}
-            for n in range(self.scenarios):
-                cname = '{}{}'.format(namestr, n+1)
-                columns.append(cname)
-                data[cname] = self.values[n]
-            res = pd.DataFrame(index=self.index, columns=columns, data=data)
+        res = pd.Series(name=name, index=self.index, data=self.values)
         return res.asfreq(self._map_freq(self.frequency))
 
     @staticmethod
@@ -123,8 +101,8 @@ class TS(object):
 
 class Instance(TS):
     '''A class to hold an instance, which is a superset of a time series'''
-    def __init__(self, input, scenarios):
-        super(Instance, self).__init__(input, scenarios)
+    def __init__(self, input):
+        super(Instance, self).__init__(input)
         self.tag = input['tag']
         self.issue_date = parsetime(input['issue_date'], self.tz)
 
