@@ -1,5 +1,5 @@
-# python-dapi
-Wattsight data API python library
+# python-wapi
+Wattsight API python library
 
 This library is meant as a simple toolkit for working with data from
 https://data.mkonline.com/ (or equivalent services).  Note that access

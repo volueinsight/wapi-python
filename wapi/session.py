@@ -91,8 +91,8 @@ class Session(object):
         metadata = response.json()
         return self._build_curve(metadata)
 
-    _search_terms = ['query', 'id', 'area', 'category', 'commodity', 'data_type', 'frequency',
-                     'source', 'station', 'time_zone', 'curve_state', 'unit', 'name']
+    _search_terms = ['query', 'id', 'name', 'commodity', 'category', 'area', 'station', 'source', 'scenario',
+                     'unit', 'time_zone', 'version', 'frequency', 'data_type', 'curve_state']
 
     def search(self, **kwargs):
         """Search for a curve."""
@@ -170,7 +170,7 @@ class Session(object):
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
     def data_request(self, req_type, url, data=None, authval=None):
-        """Run a call to the backend, dealing with signatures etc."""
+        """Run a call to the backend, dealing with authentication etc."""
         headers = {}
         if self.auth is not None:
             self.auth.validate_auth()

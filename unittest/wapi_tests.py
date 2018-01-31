@@ -5,7 +5,7 @@ import pytest
 import requests_mock
 import time
 
-import dapi
+import wapi
 
 prefix = 'rtsp://test.host/api'
 authprefix = 'rtsp://auth.host/oauth2'
@@ -14,15 +14,15 @@ authprefix = 'rtsp://auth.host/oauth2'
 # Test session and authentication setup
 #
 def test_build_sessions():
-    s = dapi.Session()
+    s = wapi.Session()
     assert s.host == 'https://data.wattsight.com'
     assert s.auth is None
-    s = dapi.Session(host = 'test_data')
+    s = wapi.Session(host ='test_data')
     assert s.host == 'test_data'
 
 def test_configure_oauth():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
-    s = dapi.Session(host='rtsp://test.host')
+    s = wapi.Session(host='rtsp://test.host')
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -34,7 +34,7 @@ def test_configure_oauth():
     #
     s.configure(config_file)
     assert s.host == 'rtsp://test.host'
-    assert isinstance(s.auth, dapi.auth.OAuth)
+    assert isinstance(s.auth, wapi.auth.OAuth)
     assert s.auth.client_id == 'clientid'
     assert s.auth.client_secret == 'verysecret'
     assert s.auth.auth_host == 'rtsp://auth.host'
@@ -46,7 +46,7 @@ def test_configure_oauth():
 
 def test_reconfigure_session():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
-    s = dapi.Session(host='test_data')
+    s = wapi.Session(host='test_data')
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -58,7 +58,7 @@ def test_reconfigure_session():
     #
     s.configure(config_file)
     assert s.host == 'rtsp://test.host'
-    with pytest.raises(dapi.session.ConfigException) as exinfo:
+    with pytest.raises(wapi.session.ConfigException) as exinfo:
         s.configure(config_file)
     assert 'already done' in str(exinfo.value)
 
@@ -70,7 +70,7 @@ def test_reconfigure_session():
 @pytest.fixture()
 def oauth_session():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
-    s = dapi.Session()
+    s = wapi.Session()
     mock = requests_mock.Adapter()
     s._session.mount('rtsp', mock)
     client_token = json.dumps({'token_type': 'Bearer', 'access_token': 'secrettoken',
@@ -112,8 +112,8 @@ def test_search(sessions):
     m.register_uri('GET', prefix + '/curves?id=5&id=6', text=json.dumps(metadata))
     c = s.search(id=[5,6])
     assert len(c) == 2
-    assert isinstance(c[0], dapi.curves.TimeSeriesCurve)
-    assert isinstance(c[1], dapi.curves.InstanceCurve)
+    assert isinstance(c[0], wapi.curves.TimeSeriesCurve)
+    assert isinstance(c[1], wapi.curves.InstanceCurve)
 
 @pytest.fixture()
 def ts_curve(sessions):
@@ -127,7 +127,7 @@ def ts_curve(sessions):
 
 def test_time_series(ts_curve):
     c,s,m = ts_curve
-    assert isinstance(c, dapi.curves.TimeSeriesCurve)
+    assert isinstance(c, wapi.curves.TimeSeriesCurve)
     assert c.id == 5
     assert c.name == 'testcurve'
     assert c.frequency == 'H'
@@ -138,7 +138,7 @@ def test_ts_data(ts_curve):
     datapoints = {'frequency': 'H', 'points': [[140000000000, 10.0]]}
     m.register_uri('GET', prefix + '/series/5?from=1&to=2', text=json.dumps(datapoints))
     d = c.get_data(data_from=1, data_to=2)
-    assert isinstance(d, dapi.util.TS)
+    assert isinstance(d, wapi.util.TS)
     assert d.frequency == 'H'
 
 
@@ -154,7 +154,7 @@ def tagged_curve(sessions):
 
 def test_tagged(tagged_curve):
     c,s,m = tagged_curve
-    assert isinstance(c, dapi.curves.TaggedCurve)
+    assert isinstance(c, wapi.curves.TaggedCurve)
     assert c.id == 9
     assert c.name == 'testcurve'
     assert c.frequency == 'H'
@@ -172,7 +172,7 @@ def test_tagged_data(tagged_curve):
     datapoints = {'frequency': 'H', 'points': [[140000000000, 10.0]]}
     m.register_uri('GET', prefix + '/series/tagged/9?tag=tag1', text=json.dumps(datapoints))
     d = c.get_data(tag='tag1')
-    assert isinstance(d, dapi.util.TS)
+    assert isinstance(d, wapi.util.TS)
     assert d.frequency == 'H'
     assert d.tag == 'tag1'
 
@@ -189,7 +189,7 @@ def inst_curve(sessions):
 
 def test_inst_curve(inst_curve):
     c,s,m = inst_curve
-    assert isinstance(c, dapi.curves.InstanceCurve)
+    assert isinstance(c, wapi.curves.InstanceCurve)
     assert c.id == 7
     assert c.name == 'testcurve'
     assert c.frequency == 'D'
@@ -212,7 +212,7 @@ def test_inst_get_instance(inst_curve):
                    prefix + '/instances/7/get?issue_date=2016-01-01T00:00Z&with_data=true',
                    text=json.dumps(inst))
     res = c.get_instance(issue_date='2016-01-01T00:00Z')
-    assert isinstance(res, dapi.util.Instance)
+    assert isinstance(res, wapi.util.Instance)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
 
@@ -224,7 +224,7 @@ def test_inst_get_latest(inst_curve):
     m.register_uri('GET', prefix + '/instances/7/latest?with_data=false&issue_date=56',
                    text=json.dumps(inst))
     res = c.get_latest(issue_dates=56, with_data=False)
-    assert isinstance(res, dapi.util.Instance)
+    assert isinstance(res, wapi.util.Instance)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
 
@@ -241,7 +241,7 @@ def tagged_inst_curve(sessions):
 
 def test_tagged_inst_curve(tagged_inst_curve):
     c,s,m = tagged_inst_curve
-    assert isinstance(c, dapi.curves.TaggedInstanceCurve)
+    assert isinstance(c, wapi.curves.TaggedInstanceCurve)
     assert c.id == 10
     assert c.name == 'testcurve'
     assert c.frequency == 'D'
@@ -271,7 +271,7 @@ def test_tagged_inst_get_instance(tagged_inst_curve):
                    prefix + '/instances/tagged/10/get?tag=tag1&issue_date=2016-01-01T00:00Z&with_data=true',
                    text=json.dumps(inst))
     res = c.get_instance(tag='tag1', issue_date='2016-01-01T00:00Z')
-    assert isinstance(res, dapi.util.Instance)
+    assert isinstance(res, wapi.util.Instance)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
     assert res.tag == 'tag1'
@@ -284,7 +284,7 @@ def test_tagged_inst_get_latest(tagged_inst_curve):
     m.register_uri('GET', prefix + '/instances/tagged/10/latest?with_data=false&issue_date=56',
                    text=json.dumps(inst))
     res = c.get_latest(issue_dates=56, with_data=False)
-    assert isinstance(res, dapi.util.Instance)
+    assert isinstance(res, wapi.util.Instance)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
     assert res.tag == 'tag1'
@@ -304,9 +304,9 @@ def test_events(sessions):
         d = {'id': id, 'created': '2016-10-01T00:01:02.345+01:00', 'operation': 'modify'}
         sse_data.append('id: {}\nevent: curve_event\ndata: {}\n\n'.format(n, json.dumps(d)))
     m.register_uri('GET', prefix + '/events?id=5&id=7', text=''.join(sse_data))
-    with dapi.events.EventListener(s, [c1, c2]) as e:
+    with wapi.events.EventListener(s, [c1, c2]) as e:
         for n,id in enumerate(ids):
             event = e.get()
-            assert isinstance(event, dapi.events.CurveEvent)
+            assert isinstance(event, wapi.events.CurveEvent)
             assert event.id == id
-            assert isinstance(event.curve, dapi.curves.BaseCurve)
+            assert isinstance(event.curve, wapi.curves.BaseCurve)
