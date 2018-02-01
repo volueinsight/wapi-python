@@ -1,10 +1,10 @@
-# python-wapi
+# wapi-python
 Wattsight API python library
 
 This library is meant as a simple toolkit for working with data from
-https://data.mkonline.com/ (or equivalent services).  Note that access
+https://api.wattsight.com/ (or equivalent services).  Note that access
 is based on some sort of login credentials, this library is not all
-that useful unless you have a valid MKonline account.
+that useful unless you have a valid Wattsight account.
 
 class:
 
