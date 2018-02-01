@@ -20,7 +20,7 @@ def test_build_sessions():
     s = wapi.Session(host ='test_data')
     assert s.host == 'test_data'
 
-def test_configure_oauth():
+def test_configure_by_file():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
     s = wapi.Session(host='rtsp://test.host')
     #
@@ -32,7 +32,30 @@ def test_configure_oauth():
                                'expires_in': 1000})
     mock.register_uri('POST', authprefix + '/token', text=client_token)
     #
-    s.configure(config_file)
+    s.read_config_file(config_file)
+    assert s.host == 'rtsp://test.host'
+    assert isinstance(s.auth, wapi.auth.OAuth)
+    assert s.auth.client_id == 'clientid'
+    assert s.auth.client_secret == 'verysecret'
+    assert s.auth.auth_host == 'rtsp://auth.host'
+    assert s.auth.token_type == 'Bearer'
+    assert s.auth.token == 'secrettoken'
+    lifetime = s.auth.valid_until - time.time()
+    assert lifetime > 990
+    assert lifetime < 1010
+
+def test_configure_by_param():
+    s = wapi.Session(host='rtsp://test.host')
+    #
+    mock = requests_mock.Adapter()
+    # urllib does things based on protocol, so (ab)use one which is reasonably
+    # http-like instead of inventing our own.
+    s._session.mount('rtsp', mock)
+    client_token = json.dumps({'token_type': 'Bearer', 'access_token': 'secrettoken',
+                               'expires_in': 1000})
+    mock.register_uri('POST', authprefix + '/token', text=client_token)
+    #
+    s.configure(client_id='clientid', client_secret='verysecret', auth_host='rtsp://auth.host')
     assert s.host == 'rtsp://test.host'
     assert isinstance(s.auth, wapi.auth.OAuth)
     assert s.auth.client_id == 'clientid'
@@ -56,10 +79,10 @@ def test_reconfigure_session():
                                'expires_in': 1000})
     mock.register_uri('POST', authprefix + '/token', text=client_token)
     #
-    s.configure(config_file)
+    s.read_config_file(config_file)
     assert s.host == 'rtsp://test.host'
     with pytest.raises(wapi.session.ConfigException) as exinfo:
-        s.configure(config_file)
+        s.configure('clientid', 'clientsecret')
     assert 'already done' in str(exinfo.value)
 
 #
@@ -76,7 +99,7 @@ def oauth_session():
     client_token = json.dumps({'token_type': 'Bearer', 'access_token': 'secrettoken',
                                'expires_in': 1000})
     mock.register_uri('POST', authprefix + '/token', text=client_token)
-    s.configure(config_file)
+    s.read_config_file(config_file)
     return s, mock
 
 @pytest.fixture(params=[oauth_session])

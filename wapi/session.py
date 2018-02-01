@@ -39,18 +39,20 @@ class Session(object):
     e.g. configuration, access keys, sockets for long-running requests etc.
     """
 
-    def __init__(self, host=None, config_file=None):
+    def __init__(self, host=None, config_file=None, client_id=None, client_secret=None, auth_host=None):
         self.host = 'https://data.wattsight.com'
         self.auth = None
         self._curve_cache = {}
         self._name_cache = {}
         self._session = requests.Session()
         if config_file is not None:
-            self.configure(config_file)
+            self.read_config_file(config_file)
+        elif client_id is not None and client_secret is not None:
+            self.configure(client_id, client_secret, auth_host)
         if host is not None:
             self.host = host
 
-    def configure(self, config_file):
+    def read_config_file(self, config_file):
         """Set up according to configuration file with hosts and access details"""
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
@@ -69,6 +71,14 @@ class Session(object):
             client_secret = config.get(auth_type, 'secret')
             auth_host = config.get(auth_type, 'auth_host')
             self.auth = auth.OAuth(self, client_id, client_secret, auth_host)
+
+    def configure(self, client_id, client_secret, auth_host=None):
+        """Programmatically set authentication parameters"""
+        if self.auth is not None:
+            raise ConfigException('Session configuration is already done')
+        if auth_host is None:
+            auth_host = 'https://auth.wattsight.com/'
+        self.auth = auth.OAuth(self, client_id, client_secret, auth_host)
 
     def get_curve(self, id=None, name=None):
         """Return a curve object of the correct type.  Either id or name must be specified."""
