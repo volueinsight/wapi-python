@@ -15,7 +15,7 @@ setup(
         'pytest-cov >= 2.5',
         'requests-mock >= 1.3',
     ],
-    version='0.2',
+    version='0.3',
     description="Wattsight API python library",
     author='Harald Nordgård-Hansen',
     author_email='hnh@wattsight.com',
