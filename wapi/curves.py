@@ -1,4 +1,3 @@
-import pytz
 from . import util
 import datetime
 try:
@@ -13,14 +12,11 @@ class MetadataException(Exception):
     pass
 
 
-class CurveException(Exception):
-    pass
-
-
 class BaseCurve:
     def __init__(self, id, metadata, session):
         self._metadata = metadata
         self._session = session
+        self.time_zone = 'CET'
         if metadata is None:
             self.hasMetadata = False
         else:
@@ -28,11 +24,7 @@ class BaseCurve:
             for key, val in metadata.items():
                 setattr(self, key, val)
         self.id = id
-        try:
-            self.tz = pytz.timezone(self.time_zone)
-        except:
-            # TODO: Add our own time zones.
-            self.tz = pytz.utc
+        self.tz = util.parse_tz(self.time_zone)
 
     def _add_from_to(self, args, first, last, prefix=''):
         if first is not None:
@@ -59,7 +51,7 @@ class BaseCurve:
             return response.json()
         elif response.status_code == 204 or response.status_code == 404:
             return None
-        raise CurveException('{}: {} ({})'.format(failmsg, response.content, response.status_code))
+        raise util.CurveException('{}: {} ({})'.format(failmsg, response.content, response.status_code))
 
     @staticmethod
     def _make_arg(key, value):
@@ -69,6 +61,12 @@ class BaseCurve:
             tmp = '{}'.format(value)
         v = quote_plus(tmp)
         return '{}={}'.format(key, v)
+
+    @staticmethod
+    def _flatten(key, data):
+        if hasattr(data, '__iter__') and not isinstance(data, str):
+            return [BaseCurve._make_arg(key, d) for d in data]
+        return [BaseCurve._make_arg(key, data)]
 
     def access(self):
         url = urljoin(self._session.host, '/api/curves/{}/access'.format(self.id))
@@ -88,7 +86,7 @@ class TimeSeriesCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load curve data')
         if result is None:
             return result
-        return util.TS(result)
+        return util.TS(input_dict=result, curve_type=util.TIME_SERIES)
 
 
 class TaggedCurve(BaseCurve):
@@ -103,10 +101,10 @@ class TaggedCurve(BaseCurve):
         self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         astr = '&'.join(args)
         url = urljoin(self._session.host, '/api/series/tagged/{}?{}'.format(self.id, astr))
-        result = self._load_data(url, 'Failed to load curve data')
+        result = self._load_data(url, 'Failed to load tagged curve data')
         if result is None:
             return result
-        return util.TS(result, tag=tag)
+        return util.TS(input_dict=result, tag=tag, curve_type=util.TAGGED)
 
 
 class InstanceCurve(BaseCurve):
@@ -127,13 +125,7 @@ class InstanceCurve(BaseCurve):
         result = self._load_data(url, 'Failed to find instances')
         if result is None:
             return result
-        res = []
-        for r in result:
-            if 'points' in r:
-                res.append(util.Instance(r))
-            else:
-                res.append(r)
-        return res
+        return [util.TS(input_dict=r, curve_type=util.INSTANCES) for r in result]
 
     def get_instance(self, issue_date, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
@@ -147,9 +139,9 @@ class InstanceCurve(BaseCurve):
         astr = '&'.join(args)
         url = urljoin(self._session.host, '/api/instances/{}/get?{}'.format(self.id, astr))
         result = self._load_data(url, 'Failed to load instance')
-        if result is None or 'points' not in result:
+        if result is None:
             return result
-        return util.Instance(result)
+        return util.TS(input_dict=result, issue_date=issue_date, curve_type=util.INSTANCES)
 
     def get_latest(self, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
@@ -165,15 +157,9 @@ class InstanceCurve(BaseCurve):
         astr = '&'.join(args)
         url = urljoin(self._session.host, '/api/instances/{}/latest?{}'.format(self.id, astr))
         result = self._load_data(url, 'Failed to load instance')
-        if result is None or 'points' not in result:
+        if result is None:
             return result
-        return util.Instance(result)
-
-    @staticmethod
-    def _flatten(key, data):
-        if hasattr(data, '__iter__') and not isinstance(data, str):
-            return [BaseCurve._make_arg(key, d) for d in data]
-        return [BaseCurve._make_arg(key, data)]
+        return util.TS(input_dict=result, curve_type=util.INSTANCES)
 
 
 class TaggedInstanceCurve(BaseCurve):
@@ -197,16 +183,10 @@ class TaggedInstanceCurve(BaseCurve):
             args.extend(self._flatten('issue_date', issue_dates))
         astr = '&'.join(args)
         url = urljoin(self._session.host, '/api/instances/tagged/{}?{}'.format(self.id, astr))
-        result = self._load_data(url, 'Failed to find instances')
+        result = self._load_data(url, 'Failed to find tagged instances')
         if result is None:
             return result
-        res = []
-        for r in result:
-            if 'points' in r:
-                res.append(util.Instance(r))
-            else:
-                res.append(r)
-        return res
+        return [util.TS(input_dict=r, curve_type=util.TAGGED_INSTANCES) for r in result]
 
     def get_instance(self, tag, issue_date, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
@@ -220,10 +200,10 @@ class TaggedInstanceCurve(BaseCurve):
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         astr = '&'.join(args)
         url = urljoin(self._session.host, '/api/instances/tagged/{}/get?{}'.format(self.id, astr))
-        result = self._load_data(url, 'Failed to load instance')
-        if result is None or 'points' not in result:
+        result = self._load_data(url, 'Failed to load tagged instance')
+        if result is None:
             return result
-        return util.Instance(result)
+        return util.TS(input_dict=result, tag=tag, issue_date=issue_date, curve_type=util.TAGGED_INSTANCES)
 
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
@@ -240,13 +220,7 @@ class TaggedInstanceCurve(BaseCurve):
             args.extend(self._flatten('issue_date', issue_dates))
         astr = '&'.join(args)
         url = urljoin(self._session.host, '/api/instances/tagged/{}/latest?{}'.format(self.id, astr))
-        result = self._load_data(url, 'Failed to load instance')
-        if result is None or 'points' not in result:
+        result = self._load_data(url, 'Failed to load tagged instance')
+        if result is None:
             return result
-        return util.Instance(result)
-
-    @staticmethod
-    def _flatten(key, data):
-        if hasattr(data, '__iter__') and not isinstance(data, str):
-            return [BaseCurve._make_arg(key, d) for d in data]
-        return [BaseCurve._make_arg(key, data)]
+        return util.TS(input_dict=result, curve_type=util.TAGGED_INSTANCES)

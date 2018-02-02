@@ -11,7 +11,7 @@ from builtins import str
 
 import requests
 
-from . import auth, curves, events
+from . import auth, curves, events, util
 
 
 class ConfigException(Exception):
@@ -24,13 +24,6 @@ class MetadataException(Exception):
 
 class CurveException(Exception):
     pass
-
-
-# Curve types
-TIME_SERIES = 'TIME_SERIES'
-TAGGED = 'TAGGED'
-INSTANCES = 'INSTANCES'
-TAGGED_INSTANCES = 'TAGGED_INSTANCES'
 
 
 class Session(object):
@@ -159,10 +152,10 @@ class Session(object):
                                                                response.content.decode()))
 
     _curve_types = {
-        TIME_SERIES:      curves.TimeSeriesCurve,
-        TAGGED:           curves.TaggedCurve,
-        INSTANCES:        curves.InstanceCurve,
-        TAGGED_INSTANCES: curves.TaggedInstanceCurve,
+        util.TIME_SERIES:      curves.TimeSeriesCurve,
+        util.TAGGED:           curves.TaggedCurve,
+        util.INSTANCES:        curves.InstanceCurve,
+        util.TAGGED_INSTANCES: curves.TaggedInstanceCurve,
     }
 
     _meta_keys = ('id', 'name', 'frequency', 'time_zone', 'curve_type')

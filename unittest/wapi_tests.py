@@ -158,7 +158,7 @@ def test_time_series(ts_curve):
 
 def test_ts_data(ts_curve):
     c,s,m = ts_curve
-    datapoints = {'frequency': 'H', 'points': [[140000000000, 10.0]]}
+    datapoints = {'id': 5, 'frequency': 'H', 'points': [[140000000000, 10.0]]}
     m.register_uri('GET', prefix + '/series/5?from=1&to=2', text=json.dumps(datapoints))
     d = c.get_data(data_from=1, data_to=2)
     assert isinstance(d, wapi.util.TS)
@@ -192,7 +192,7 @@ def test_tagged_tags(tagged_curve):
 
 def test_tagged_data(tagged_curve):
     c,s,m = tagged_curve
-    datapoints = {'frequency': 'H', 'points': [[140000000000, 10.0]]}
+    datapoints = {'id': 9, 'frequency': 'H', 'points': [[140000000000, 10.0]]}
     m.register_uri('GET', prefix + '/series/tagged/9?tag=tag1', text=json.dumps(datapoints))
     d = c.get_data(tag='tag1')
     assert isinstance(d, wapi.util.TS)
@@ -220,7 +220,13 @@ def test_inst_curve(inst_curve):
 
 def test_inst_search(inst_curve):
     c,s,m = inst_curve
-    search_data = [{'inst': 1}, {'inst': 2}]
+    search_data = [
+        {'frequency': 'H', 'points': [[140000000000, 10.0]],
+         'name': 'inst_name', 'id': 10,
+         'issue_date': '46'},
+        {'frequency': 'H', 'points': [[140000000000, 10.0]],
+         'name': 'inst_name', 'id': 10,
+         'issue_date': '50'}]
     m.register_uri('GET', prefix + '/instances/7?issue_date=46&issue_date=50',
                    text=json.dumps(search_data))
     res = c.search_instances(issue_dates=['46', '50'])
@@ -229,25 +235,25 @@ def test_inst_search(inst_curve):
 def test_inst_get_instance(inst_curve):
     c,s,m = inst_curve
     inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
-            'name': 'inst_name', 'id': 10,
+            'name': 'inst_name', 'id': 7,
             'issue_date': '2016-01-01T00:00Z'}
     m.register_uri('GET',
                    prefix + '/instances/7/get?issue_date=2016-01-01T00:00Z&with_data=true',
                    text=json.dumps(inst))
     res = c.get_instance(issue_date='2016-01-01T00:00Z')
-    assert isinstance(res, wapi.util.Instance)
+    assert isinstance(res, wapi.util.TS)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
 
 def test_inst_get_latest(inst_curve):
     c,s,m = inst_curve
     inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
-            'name': 'inst_name', 'id': 10,
+            'name': 'inst_name', 'id': 7,
             'issue_date': '2016-01-01T00:00Z'}
     m.register_uri('GET', prefix + '/instances/7/latest?with_data=false&issue_date=56',
                    text=json.dumps(inst))
     res = c.get_latest(issue_dates=56, with_data=False)
-    assert isinstance(res, wapi.util.Instance)
+    assert isinstance(res, wapi.util.TS)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
 
@@ -279,7 +285,13 @@ def test_tagged_inst_tags(tagged_inst_curve):
 
 def test_tagged_inst_search(tagged_inst_curve):
     c,s,m = tagged_inst_curve
-    search_data = [{'inst': 1}, {'inst': 2}]
+    search_data = [
+        {'frequency': 'H', 'points': [[140000000000, 10.0]],
+         'name': 'inst_name', 'id': 10, 'tag': 'tag1',
+         'issue_date': '46'},
+        {'frequency': 'H', 'points': [[140000000000, 10.0]],
+         'name': 'inst_name', 'id': 10, 'tag': 'tag1',
+         'issue_date': '50'}]
     m.register_uri('GET', prefix + '/instances/tagged/10?tag=tag1&issue_date=46&issue_date=50',
                    text=json.dumps(search_data))
     res = c.search_instances(tags='tag1', issue_dates=['46', '50'])
@@ -294,7 +306,7 @@ def test_tagged_inst_get_instance(tagged_inst_curve):
                    prefix + '/instances/tagged/10/get?tag=tag1&issue_date=2016-01-01T00:00Z&with_data=true',
                    text=json.dumps(inst))
     res = c.get_instance(tag='tag1', issue_date='2016-01-01T00:00Z')
-    assert isinstance(res, wapi.util.Instance)
+    assert isinstance(res, wapi.util.TS)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
     assert res.tag == 'tag1'
@@ -307,7 +319,7 @@ def test_tagged_inst_get_latest(tagged_inst_curve):
     m.register_uri('GET', prefix + '/instances/tagged/10/latest?with_data=false&issue_date=56',
                    text=json.dumps(inst))
     res = c.get_latest(issue_dates=56, with_data=False)
-    assert isinstance(res, wapi.util.Instance)
+    assert isinstance(res, wapi.util.TS)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
     assert res.tag == 'tag1'
@@ -324,7 +336,8 @@ def test_events(sessions):
     sse_data = []
     ids = [5, 7, 7, 7, 5, 5, 7]
     for n,id in enumerate(ids):
-        d = {'id': id, 'created': '2016-10-01T00:01:02.345+01:00', 'operation': 'modify'}
+        d = {'id': id, 'created': '2016-10-01T00:01:02.345+01:00', 'operation': 'modify',
+             'range': [None, None]}
         sse_data.append('id: {}\nevent: curve_event\ndata: {}\n\n'.format(n, json.dumps(d)))
     m.register_uri('GET', prefix + '/events?id=5&id=7', text=''.join(sse_data))
     with wapi.events.EventListener(s, [c1, c2]) as e:
