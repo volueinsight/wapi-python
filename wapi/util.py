@@ -153,6 +153,10 @@ def parse_tz(time_zone):
 
 def detect_data_type(issue_date, tag):
     if issue_date is None and tag is None:
-        return 'TIME_SERIES'
+        return TIME_SERIES
     elif issue_date is None:
-        return 'TAGGED'
+        return TAGGED
+    elif tag is None:
+        return INSTANCES
+    else:
+        return TAGGED_INSTANCES
