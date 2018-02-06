@@ -10,6 +10,7 @@ except ImportError:
 from builtins import str
 
 import requests
+import json
 
 from . import auth, curves, events, util
 
@@ -175,13 +176,15 @@ class Session(object):
     def data_request(self, req_type, url, data=None, authval=None):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
-        if self.auth is not None:
-            self.auth.validate_auth()
-            headers.update(self.auth.get_headers(data))
         if data is not None:
             headers['content_type'] = 'application/json'
             if isinstance(data, str):
                 data = data.encode()
+            else:
+                data = json.dumps(data).encode()
+        if self.auth is not None:
+            self.auth.validate_auth()
+            headers.update(self.auth.get_headers(data))
         req = requests.Request(method=req_type, url=url, data=data, headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
         return self._session.send(prepared)
