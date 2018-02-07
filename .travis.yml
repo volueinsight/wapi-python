@@ -3,7 +3,18 @@ python:
 - '3.6'
 - '2.7'
 install:
-  - pip install -r requirements.txt
-  - pip install -r test-requirements.txt
+- pip install -r requirements.txt
+- pip install -r test-requirements.txt
 script:
-  - python -m pytest
+- python -m pytest
+
+before_deploy:
+- ./scripts/tag_and_release.sh
+
+deploy:
+  provider: releases
+  api_key:
+    secure: bYK2BztE2/AzPp9tQNjnLg0I3NBZ/dpLDRqCm7VmW/4yV1psPqtY88aJcrDOEP60iMtmVdp4JvPPp+9sVrqE/xZAwVEqeJZCpNitGnzNU5h1gfc7dL4AOT0Hg5uNBIH0LrxYTT+45CDdEdYNq2uPGl9VdJAyZPAoZRH1pgzIzwKZ6BTs117Sr8FI4eyX9M+BsyVlTeCwJnFS9LHbE7foSFAh+EmztBUOlRBbCc3MIdLBqpL+jAudOCUIwzDnBJGi8j8ziSYESers3QHBSDuZnGbnxJ5qQjIVcXOVfNfILIAFf4l29Gj1cPEnz6G++1NWVbQC/ABMaKo0v9KHDp+4yGxkFb26qyQxLsKJsOZDCgYHUWYudUR1UPeQxE9II/B6IdHBWw8sne+Yoh7V3shXN2EzvRhWQJQ5p2EgCdcWZj+01UhchlJjaFwj9CcioqytE9yvSKJyV8Zdm034JRnADLO0nanRLNCwAWQbfCtYm6YaX3Ewz0DjJBzJwmLqdxhA3lZHSCIcKXNW9s091qqwOxmMyjgAQpODZpoe8gonQvyIwFfbEK1CtnbTld2w2BnNUTtcSY3nekeqgxR7UApNBt0ilMuOmA0wESik0RW+tNpyGsA7Uy67u/PrAADwpVqcOUKbWN5AeOJphb2PQ3O5joeZL6qrFtbsTJz5V71CCTs=
+  on:
+    repo: wattsight/wapi-python
+    branch: master
