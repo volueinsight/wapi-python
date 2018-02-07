@@ -23,7 +23,7 @@ setup(
     ],
     version=version,
     description="Wattsight API python library",
-    author='Harald Nordgård-Hansen',
+    author='Harald Nordgard-Hansen',
     author_email='hnh@wattsight.com',
     url='http://www.wattsight.com'
 )
