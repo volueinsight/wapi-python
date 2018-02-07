@@ -173,7 +173,7 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, url, data=None, authval=None):
+    def data_request(self, req_type, url, data=None, rawdata=None, authval=None):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
         if data is not None:
@@ -182,6 +182,8 @@ class Session(object):
                 data = data.encode()
             else:
                 data = json.dumps(data).encode()
+        if data is None and rawdata is not None:
+            data = rawdata
         if self.auth is not None:
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(data))
