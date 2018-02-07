@@ -1,4 +1,10 @@
+import os
 from setuptools import setup
+
+here = os.path.abspath(os.path.dirname(__file__))
+# Get current version from the VERSION file
+with open(os.path.join(here, 'VERSION')) as fv:
+    version = fv.read()
 
 setup(
     name='wapi',
@@ -15,7 +21,7 @@ setup(
         'pytest-cov >= 2.5',
         'requests-mock >= 1.3',
     ],
-    version='0.3',
+    version=version,
     description="Wattsight API python library",
     author='Harald Nordgård-Hansen',
     author_email='hnh@wattsight.com',
