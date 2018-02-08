@@ -135,9 +135,9 @@ class Session(object):
         """Get an even listener for a list of curves."""
         return events.EventListener(self, curve_list, start_time=start_time, timeout=timeout)
 
-    _attributes = {'areas', 'categories', 'commodities', 'curve_types', 'data_types',
-                   'frequencies', 'sources', 'stations',
-                   'curve_states', 'time_zones', 'units'}
+    _attributes = {'commodities', 'categories', 'areas', 'stations', 'sources', 'scenarios',
+                   'units', 'time_zones', 'versions', 'frequencies', 'data_types',
+                   'curve_states', 'curve_types'}
 
     def get_attribute(self, attribute):
         """Get valid values for an attribute."""
