@@ -18,3 +18,4 @@ deploy:
   on:
     repo: wattsight/wapi-python
     branch: master
+    python: 3.6
