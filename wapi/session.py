@@ -4,9 +4,9 @@ try:
 except ImportError:
     import ConfigParser as configparser
 try:
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin, urlparse
 except ImportError:
-    from urlparse import urljoin
+    from urlparse import urljoin, urlparse
 from builtins import str
 
 import requests
@@ -174,8 +174,7 @@ class Session(object):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
-        if not url.startswith('https://'):
-            url = urljoin(self.host, url)
+        url = urljoin(self.host, url)
 
         if data is not None:
             headers['content_type'] = 'application/json'
@@ -191,3 +190,4 @@ class Session(object):
         req = requests.Request(method=req_type, url=url, data=data, headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
         return self._session.send(prepared)
+
