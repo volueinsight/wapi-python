@@ -4,10 +4,9 @@ try:
 except ImportError:
     import ConfigParser as configparser
 try:
-    from urllib.parse import urljoin, urlparse
+    from urllib.parse import urljoin
 except ImportError:
-    from urlparse import urljoin, urlparse
-from builtins import str
+    from urlparse import urljoin
 
 import requests
 import json
@@ -190,4 +189,3 @@ class Session(object):
         req = requests.Request(method=req_type, url=url, data=data, headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
         return self._session.send(prepared)
-
