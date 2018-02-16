@@ -174,7 +174,9 @@ class Session(object):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
-        url = urljoin(self.host, url)
+        if not url.startswith('https://'):
+            url = urljoin(self.host, url)
+
         if data is not None:
             headers['content_type'] = 'application/json'
             if isinstance(data, str):
