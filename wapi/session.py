@@ -7,6 +7,7 @@ try:
     from urllib.parse import urljoin
 except ImportError:
     from urlparse import urljoin
+from builtins import str
 
 import requests
 import json
@@ -87,7 +88,7 @@ class Session(object):
             arg = 'id={}'.format(id)
         else:
             arg = 'name={}'.format(name)
-        response = self.data_request('GET', '/api/curves/get?{}'.format(arg))
+        response = self.data_request('GET', self.host, '/api/curves/get?{}'.format(arg))
         if not response.ok:
             raise MetadataException("Failed to load curve: {}".format(response.content.decode()))
         metadata = response.json()
@@ -111,7 +112,7 @@ class Session(object):
         if len(args):
             astr = "?{}".format("&".join(args))
         # Now run the search, and try to produce a list of curves
-        response = self.data_request('GET', '/api/curves{}'.format(astr))
+        response = self.data_request('GET', self.host, '/api/curves{}'.format(astr))
         if not response.ok:
             raise MetadataException("Curve search failed: {}".format(response.content.decode()))
         metadata_list = response.json()
@@ -140,7 +141,7 @@ class Session(object):
         """Get valid values for an attribute."""
         if attribute not in self._attributes:
             raise MetadataException('Attribute {} is not valid'.format(attribute))
-        response = self.data_request('GET', '/api/{}'.format(attribute))
+        response = self.data_request('GET', self.host, '/api/{}'.format(attribute))
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 204:
@@ -169,7 +170,7 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, url, host=None, data=None, rawdata=None, authval=None):
+    def data_request(self, req_type, host, url, data=None, rawdata=None, authval=None):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
