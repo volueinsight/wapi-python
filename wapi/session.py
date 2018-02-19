@@ -34,7 +34,7 @@ class Session(object):
     """
 
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
-        self.urlbase = 'https://data.wattsight.com'
+        self.urlbase = 'https://api.wattsight.com'
         self.auth = None
         self._curve_cache = {}
         self._name_cache = {}

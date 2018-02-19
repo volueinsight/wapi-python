@@ -58,7 +58,7 @@ def test_configure_by_param():
                                'expires_in': 1000})
     mock.register_uri('POST', authprefix + '/token', text=client_token)
     #
-    s.configure(client_id='clientid', client_secret='verysecret', auth_host='rtsp://auth.host')
+    s.configure(client_id='clientid', client_secret='verysecret', auth_urlbase='rtsp://auth.host')
     assert s.urlbase == 'rtsp://test.host'
     assert isinstance(s.auth, wapi.auth.OAuth)
     assert s.auth.client_id == 'clientid'
