@@ -169,11 +169,13 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, url, data=None, rawdata=None, authval=None):
+    def data_request(self, req_type, url, host=None, data=None, rawdata=None, authval=None):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
-        url = urljoin(self.host, url)
+        if host is None:
+            host = self.host
+        url = urljoin(host, url)
 
         if data is not None:
             headers['content_type'] = 'application/json'
