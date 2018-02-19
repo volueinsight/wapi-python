@@ -24,10 +24,10 @@ or
 
 ```commandline
 >>> import wapi
->>> session = wapi.Session(client_id='client id', client_secret='client secret') 
+>>> session = wapi.Session(client_id='client id', client_secret='client secret')
 ```
 
-For both methods, it is possible to override the base url for the API using the `host`
+For both methods, it is possible to override the base url for the API using the `urlbase`
 parameter.  When specifying the `client_id`/`client_secret` it is also possible to
 override the authentication server url using the `auth_host` parameter.
 (Both can also be specified in the configuration file, see `sampleconfig.ini` for details.)

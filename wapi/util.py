@@ -54,6 +54,19 @@ class TS(object):
         if self.frequency is None:
             raise CurveException('TS must have frequency')
 
+    def __str__(self):
+        msg = '{'
+        if self.id:
+            msg += '"id": {}, '.format(self.id)
+        if self.name:
+            msg += '"name": "{}", '.format(self.name)
+
+        msg += '"type": "{}", '.format(self.data_type)
+        msg += '"frequency": "{}", '.format(self.frequency)
+        if self.points:
+            msg += '"size": {}, '.format(len(self.points))
+        msg += '}'
+        return msg
 
     def to_pandas(self, name=None):
         if name is None:
@@ -150,6 +163,7 @@ def parse_tz(time_zone):
         return pytz.timezone(time_zone)
     except:
         return pytz.timezone('CET')
+
 
 def detect_data_type(issue_date, tag):
     if issue_date is None and tag is None:

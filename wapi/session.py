@@ -33,8 +33,8 @@ class Session(object):
     e.g. configuration, access keys, sockets for long-running requests etc.
     """
 
-    def __init__(self, host=None, config_file=None, client_id=None, client_secret=None, auth_host=None):
-        self.host = 'https://data.wattsight.com'
+    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_host=None):
+        self.urlbase = 'https://data.wattsight.com'
         self.auth = None
         self._curve_cache = {}
         self._name_cache = {}
@@ -43,22 +43,22 @@ class Session(object):
             self.read_config_file(config_file)
         elif client_id is not None and client_secret is not None:
             self.configure(client_id, client_secret, auth_host)
-        if host is not None:
-            self.host = host
+        if urlbase is not None:
+            self.urlbase = urlbase
 
     def read_config_file(self, config_file):
         """Set up according to configuration file with hosts and access details"""
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
-        config = configparser.RawConfigParser({"common": {"host": self.host}})
+        config = configparser.RawConfigParser({"common": {"urlbase": self.urlbase}})
         # Support being given a file-like object or a file path:
         if hasattr(config_file, 'read'):
             config.read_file(config_file)
         else:
             config.read(config_file)
-        host = config.get('common', 'host')
-        if host is not None:
-            self.host = host
+        urlbase = config.get('common', 'urlbase')
+        if urlbase is not None:
+            self.urlbase = urlbase
         auth_type = config.get('common', 'auth_type')
         if auth_type == 'OAuth':
             client_id = config.get(auth_type, 'id')
@@ -88,7 +88,7 @@ class Session(object):
             arg = 'id={}'.format(id)
         else:
             arg = 'name={}'.format(name)
-        response = self.data_request('GET', self.host, '/api/curves/get?{}'.format(arg))
+        response = self.data_request('GET', self.urlbase, '/api/curves/get?{}'.format(arg))
         if not response.ok:
             raise MetadataException("Failed to load curve: {}".format(response.content.decode()))
         metadata = response.json()
@@ -112,7 +112,7 @@ class Session(object):
         if len(args):
             astr = "?{}".format("&".join(args))
         # Now run the search, and try to produce a list of curves
-        response = self.data_request('GET', self.host, '/api/curves{}'.format(astr))
+        response = self.data_request('GET', self.urlbase, '/api/curves{}'.format(astr))
         if not response.ok:
             raise MetadataException("Curve search failed: {}".format(response.content.decode()))
         metadata_list = response.json()
@@ -141,7 +141,7 @@ class Session(object):
         """Get valid values for an attribute."""
         if attribute not in self._attributes:
             raise MetadataException('Attribute {} is not valid'.format(attribute))
-        response = self.data_request('GET', self.host, '/api/{}'.format(attribute))
+        response = self.data_request('GET', self.urlbase, '/api/{}'.format(attribute))
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 204:
@@ -170,13 +170,12 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, host, url, data=None, rawdata=None, authval=None):
+    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
-        if host is None:
-            host = self.host
-        url = urljoin(host, url)
+        urlbase = urlbase if urlbase else self.urlbase
+        url = urljoin(urlbase, url)
 
         if data is not None:
             headers['content_type'] = 'application/json'
@@ -189,6 +188,7 @@ class Session(object):
         if self.auth is not None:
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(data))
-        req = requests.Request(method=req_type, url=url, data=data, headers=headers, auth=authval)
+        req = requests.Request(method=req_type, url=url, data=data,
+                               headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
         return self._session.send(prepared)

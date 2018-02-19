@@ -27,7 +27,7 @@ class EventListener:
         args = ['id={}'.format(c) for c in map(str, ids)]
         if start_time is not None:
             args.append('start_time={}'.format(start_time))
-        url = urljoin(session.host, '/api/events?{}'.format('&'.join(args)))
+        url = urljoin(session.urlbase, '/api/events?{}'.format('&'.join(args)))
         self.client = SSEClientWithAuth(url, session=session._session, auth=session.auth)
         self.timeout = timeout
         self.queue = queue.Queue()
