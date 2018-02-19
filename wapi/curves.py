@@ -45,7 +45,8 @@ class BaseCurve:
             args.append(self._make_arg('output_time_zone', output_time_zone))
 
     def _load_data(self, url, failmsg, urlbase=None):
-        urlbase = urlbase if urlbase else self._session.urlbase
+        if urlbase is None:
+            urlbase = self._session.urlbase
         response = self._session.data_request('GET', urlbase, url)
         self._last_response = response
         if response.status_code == 200:
@@ -183,7 +184,7 @@ class TaggedInstanceCurve(BaseCurve):
         if issue_dates is not None:
             args.extend(self._flatten('issue_date', issue_dates))
         astr = '&'.join(args)
-        url = urljoin(, '/api/instances/tagged/{}?{}'.format(self.id, astr))
+        url = '/api/instances/tagged/{}?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to find tagged instances')
         if result is None:
             return result

@@ -33,7 +33,7 @@ class Session(object):
     e.g. configuration, access keys, sockets for long-running requests etc.
     """
 
-    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_host=None):
+    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
         self.urlbase = 'https://data.wattsight.com'
         self.auth = None
         self._curve_cache = {}
@@ -42,7 +42,7 @@ class Session(object):
         if config_file is not None:
             self.read_config_file(config_file)
         elif client_id is not None and client_secret is not None:
-            self.configure(client_id, client_secret, auth_host)
+            self.configure(client_id, client_secret, auth_urlbase)
         if urlbase is not None:
             self.urlbase = urlbase
 
@@ -63,16 +63,16 @@ class Session(object):
         if auth_type == 'OAuth':
             client_id = config.get(auth_type, 'id')
             client_secret = config.get(auth_type, 'secret')
-            auth_host = config.get(auth_type, 'auth_host')
-            self.auth = auth.OAuth(self, client_id, client_secret, auth_host)
+            auth_urlbase = config.get(auth_type, 'auth_urlbase')
+            self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
 
-    def configure(self, client_id, client_secret, auth_host=None):
+    def configure(self, client_id, client_secret, auth_urlbase=None):
         """Programmatically set authentication parameters"""
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
-        if auth_host is None:
-            auth_host = 'https://auth.wattsight.com/'
-        self.auth = auth.OAuth(self, client_id, client_secret, auth_host)
+        if auth_urlbase is None:
+            auth_urlbase = 'https://auth.wattsight.com/'
+        self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
 
     def get_curve(self, id=None, name=None):
         """Return a curve object of the correct type.  Either id or name must be specified."""
@@ -174,7 +174,8 @@ class Session(object):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
-        urlbase = urlbase if urlbase else self.urlbase
+        if not urlbase:
+            urlbase = self.urlbase
         url = urljoin(urlbase, url)
 
         if data is not None:

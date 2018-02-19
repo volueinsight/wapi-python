@@ -21,10 +21,10 @@ class OAuth:
     This is the main authentication mechanism for customer access to the data center.
     """
 
-    def __init__(self, session, client_id, client_secret, auth_host):
+    def __init__(self, session, client_id, client_secret, auth_urlbase):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.auth_host = auth_host
+        self.auth_urlbase = auth_urlbase
         self.token = None
         self.token_type = None
         self.valid_until = None
@@ -48,10 +48,10 @@ class OAuth:
         self.token_type = None
         self.valid_until = None
         now = time.time()
-        url = urljoin(self.auth_host, '/oauth2/token')
+        url = urljoin(self.auth_urlbase, '/oauth2/token')
         auth = (self.client_id, self.client_secret)
         data = {'grant_type': 'client_credentials'}
-        response = self.session.data_request('POST', self.auth_host, url, rawdata=data, authval=auth)
+        response = self.session.data_request('POST', self.auth_urlbase, url, rawdata=data, authval=auth)
         if response.status_code != 200:
             raise AuthFailedException('Authentication failed: {}'.format(response.content))
         # Parse token

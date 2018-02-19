@@ -10,19 +10,21 @@ import wapi
 prefix = 'rtsp://test.host/api'
 authprefix = 'rtsp://auth.host/oauth2'
 
+
 #
 # Test session and authentication setup
 #
 def test_build_sessions():
     s = wapi.Session()
-    assert s.host == 'https://data.wattsight.com'
+    assert s.urlbase == 'https://api.wattsight.com'
     assert s.auth is None
-    s = wapi.Session(host ='test_data')
-    assert s.host == 'test_data'
+    s = wapi.Session(urlbase ='test_data')
+    assert s.urlbase == 'test_data'
+
 
 def test_configure_by_file():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
-    s = wapi.Session(host='rtsp://test.host')
+    s = wapi.Session(urlbase='rtsp://test.host')
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -33,19 +35,20 @@ def test_configure_by_file():
     mock.register_uri('POST', authprefix + '/token', text=client_token)
     #
     s.read_config_file(config_file)
-    assert s.host == 'rtsp://test.host'
+    assert s.urlbase == 'rtsp://test.host'
     assert isinstance(s.auth, wapi.auth.OAuth)
     assert s.auth.client_id == 'clientid'
     assert s.auth.client_secret == 'verysecret'
-    assert s.auth.auth_host == 'rtsp://auth.host'
+    assert s.auth.auth_urlbase == 'rtsp://auth.host'
     assert s.auth.token_type == 'Bearer'
     assert s.auth.token == 'secrettoken'
     lifetime = s.auth.valid_until - time.time()
     assert lifetime > 990
     assert lifetime < 1010
 
+
 def test_configure_by_param():
-    s = wapi.Session(host='rtsp://test.host')
+    s = wapi.Session(urlbase='rtsp://test.host')
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -56,20 +59,21 @@ def test_configure_by_param():
     mock.register_uri('POST', authprefix + '/token', text=client_token)
     #
     s.configure(client_id='clientid', client_secret='verysecret', auth_host='rtsp://auth.host')
-    assert s.host == 'rtsp://test.host'
+    assert s.urlbase == 'rtsp://test.host'
     assert isinstance(s.auth, wapi.auth.OAuth)
     assert s.auth.client_id == 'clientid'
     assert s.auth.client_secret == 'verysecret'
-    assert s.auth.auth_host == 'rtsp://auth.host'
+    assert s.auth.auth_urlbase == 'rtsp://auth.host'
     assert s.auth.token_type == 'Bearer'
     assert s.auth.token == 'secrettoken'
     lifetime = s.auth.valid_until - time.time()
     assert lifetime > 990
     assert lifetime < 1010
 
+
 def test_reconfigure_session():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
-    s = wapi.Session(host='test_data')
+    s = wapi.Session(urlbase='test_data')
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -80,7 +84,7 @@ def test_reconfigure_session():
     mock.register_uri('POST', authprefix + '/token', text=client_token)
     #
     s.read_config_file(config_file)
-    assert s.host == 'rtsp://test.host'
+    assert s.urlbase == 'rtsp://test.host'
     with pytest.raises(wapi.session.ConfigException) as exinfo:
         s.configure('clientid', 'clientsecret')
     assert 'already done' in str(exinfo.value)
@@ -330,18 +334,18 @@ def test_tagged_inst_get_latest(tagged_inst_curve):
 #
 
 def test_events(sessions):
-    s,m = sessions
+    s, m = sessions
     c1 = ts_curve(sessions)[0]
     c2 = inst_curve(sessions)[0]
     sse_data = []
     ids = [5, 7, 7, 7, 5, 5, 7]
-    for n,id in enumerate(ids):
+    for n, id in enumerate(ids):
         d = {'id': id, 'created': '2016-10-01T00:01:02.345+01:00', 'operation': 'modify',
              'range': [None, None]}
         sse_data.append('id: {}\nevent: curve_event\ndata: {}\n\n'.format(n, json.dumps(d)))
     m.register_uri('GET', prefix + '/events?id=5&id=7', text=''.join(sse_data))
     with wapi.events.EventListener(s, [c1, c2]) as e:
-        for n,id in enumerate(ids):
+        for n, id in enumerate(ids):
             event = e.get()
             assert isinstance(event, wapi.events.CurveEvent)
             assert event.id == id

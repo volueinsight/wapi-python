@@ -55,18 +55,22 @@ class TS(object):
             raise CurveException('TS must have frequency')
 
     def __str__(self):
-        msg = '{'
+        attrs = ['TS:']
         if self.id:
-            msg += '"id": {}, '.format(self.id)
+            attrs.append(str(self.id))
         if self.name:
-            msg += '"name": "{}", '.format(self.name)
+            attrs.append(self.name)
 
-        msg += '"type": "{}", '.format(self.data_type)
-        msg += '"frequency": "{}", '.format(self.frequency)
+        attrs.extend([self.data_type, str(self.tz), self.frequency])
+
+        if self.tag:
+            attrs.append(self.tag)
+        if self.issue_date:
+            attrs.append(self.issue_date.strftime('%Y-%m-%d'))
         if self.points:
-            msg += '"size": {}, '.format(len(self.points))
-        msg += '}'
-        return msg
+            attrs.append('size: {}'.format(len(self.points)))
+
+        return ' '.join(attrs)
 
     def to_pandas(self, name=None):
         if name is None:

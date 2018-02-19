@@ -29,7 +29,7 @@ or
 
 For both methods, it is possible to override the base url for the API using the `urlbase`
 parameter.  When specifying the `client_id`/`client_secret` it is also possible to
-override the authentication server url using the `auth_host` parameter.
+override the authentication server url using the `auth_urlbase` parameter.
 (Both can also be specified in the configuration file, see `sampleconfig.ini` for details.)
 
 ## Curves
