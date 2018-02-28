@@ -16,7 +16,8 @@ import time
 from . import auth, curves, events, util
 
 
-RETRY_DELAY = 0.2  # Delay between retried calls, in seconds.
+RETRY_COUNT = 4    # Number of times to retry
+RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 
 
 class ConfigException(Exception):
@@ -174,7 +175,7 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None, retries=4):
+    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None, retries=RETRY_COUNT):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
