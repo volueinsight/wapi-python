@@ -180,21 +180,21 @@ class Session(object):
 
         if not urlbase:
             urlbase = self.urlbase
-        url = urljoin(urlbase, url)
+        longurl = urljoin(urlbase, url)
 
+        databytes = None
         if data is not None:
             headers['content_type'] = 'application/json'
             if isinstance(data, str):
-                data = data.encode()
+                databytes = data.encode()
             else:
-                data = json.dumps(data).encode()
+                databytes = json.dumps(data).encode()
         if data is None and rawdata is not None:
-            data = rawdata
+            databytes = rawdata
         if self.auth is not None:
             self.auth.validate_auth()
-            headers.update(self.auth.get_headers(data))
-        req = requests.Request(method=req_type, url=url, data=data,
-                               headers=headers, auth=authval)
+            headers.update(self.auth.get_headers(databytes))
+        req = requests.Request(method=req_type, url=longurl, data=databytes, headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
         res = self._session.send(prepared)
         if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
