@@ -11,6 +11,7 @@ from builtins import str
 
 import requests
 import json
+import time
 
 from . import auth, curves, events, util
 
@@ -170,7 +171,7 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None):
+    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None, retries=4):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
@@ -192,4 +193,8 @@ class Session(object):
         req = requests.Request(method=req_type, url=url, data=data,
                                headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
-        return self._session.send(prepared)
+        res = self._session.send(prepared)
+        if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
+                time.sleep(0.2)
+                return self.data_request(req_type, urlbase, url, data, rawdata, authval, retries-1)
+        return res
