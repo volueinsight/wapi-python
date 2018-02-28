@@ -16,6 +16,9 @@ import time
 from . import auth, curves, events, util
 
 
+RETRY_DELAY = 0.2  # Delay between retried calls, in seconds.
+
+
 class ConfigException(Exception):
     pass
 
@@ -195,6 +198,7 @@ class Session(object):
         prepared = self._session.prepare_request(req)
         res = self._session.send(prepared)
         if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
-                time.sleep(0.2)
-                return self.data_request(req_type, urlbase, url, data, rawdata, authval, retries-1)
+            if RETRY_DELAY > 0:
+                time.sleep(RETRY_DELAY)
+            return self.data_request(req_type, urlbase, url, data, rawdata, authval, retries-1)
         return res
