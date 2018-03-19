@@ -61,7 +61,7 @@ class TS(object):
         if self.name:
             attrs.append(self.name)
 
-        attrs.extend([self.data_type, str(self.tz), self.frequency])
+        attrs.extend([str(self.data_type), str(self.tz), self.frequency])
 
         if self.tag:
             attrs.append(self.tag)
@@ -89,6 +89,17 @@ class TS(object):
         return res.asfreq(self._map_freq(self.frequency))
 
     @staticmethod
+    def from_pandas(pd_series):
+        name = pd_series.name
+        frequency = TS._rev_map_freq(pd_series.index.freqstr)
+
+        points = []
+        for i in pd_series.index:
+            points.append((i.nanosecond, pd_series[i]))
+
+        return TS(name=name, frequency=frequency, points=points)
+
+    @staticmethod
     def _map_freq(frequency):
         freqTable = {
             'Y': 'AS',
@@ -107,6 +118,49 @@ class TS(object):
         if frequency.upper() in freqTable:
             frequency = freqTable[frequency.upper()]
         return frequency
+
+    @staticmethod
+    def _rev_map_freq(frequency):
+        freqTable = {
+            'AS': 'Y',
+            '2QS': 'S',
+            'QS': 'Q',
+            'MS': 'M',
+            'W-MON': 'W',
+            '12H': 'H12',
+            '6H': 'H6',
+            '3H': 'H3',
+            '30T': 'MIN30',
+            '15T': 'MIN15',
+            '5T': 'MIN5',
+        }
+
+        if frequency.upper() in freqTable:
+            frequency = freqTable[frequency.upper()]
+        return frequency
+
+    @staticmethod
+    def sum(ts_list, name=None):
+        pd_list = _ts_list_to_pd_list(ts_list)
+        # print(pd_list)
+        s = pd_list[0]
+        print(s)
+        print()
+        for ts in pd_list[1:]:
+            print(ts)
+            print()
+            s.add(ts, fill_value=0)
+
+        new = pd.Series(name=name, index=s.index, data=s.data)
+        return TS.from_pandas(new)
+
+
+def _ts_list_to_pd_list(ts_list):
+    pd_list = []
+    for ts in ts_list:
+        pd_list.append(ts.to_pandas())
+
+    return pd_list
 
 
 def tags_to_DF(tagged_list):
