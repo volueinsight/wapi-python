@@ -3,6 +3,7 @@
 # the data from the backend
 #
 
+import time
 import datetime
 import dateutil.parser
 import pytz
@@ -95,9 +96,13 @@ class TS(object):
 
         points = []
         for i in pd_series.index:
-            points.append((i.nanosecond, pd_series[i]))
+            timestamp = int(time.mktime(i.timetuple())) * 1000
+            points.append([timestamp, pd_series[i]])
 
-        return TS(name=name, frequency=frequency, points=points)
+        if name.isnumeric():
+            return TS(id=int(name), frequency=frequency, points=points)
+        else:
+            return TS(name=name, frequency=frequency, points=points)
 
     @staticmethod
     def _map_freq(frequency):
@@ -142,17 +147,26 @@ class TS(object):
     @staticmethod
     def sum(ts_list, name=None):
         pd_list = _ts_list_to_pd_list(ts_list)
-        # print(pd_list)
-        s = pd_list[0]
-        print(s)
-        print()
-        for ts in pd_list[1:]:
-            print(ts)
-            print()
-            s.add(ts, fill_value=0)
 
-        new = pd.Series(name=name, index=s.index, data=s.data)
-        return TS.from_pandas(new)
+        tmp = pd_list[0]
+        for pd_series in pd_list[1:]:
+            tmp = tmp.add(pd_series, fill_value=0)
+
+        result = pd.Series(name=name, index=tmp.index, data=tmp.data)
+        return TS.from_pandas(result)
+
+
+    @staticmethod
+    def avg(ts_list, name=None):
+        pd_list = _ts_list_to_pd_list(ts_list)
+
+        tmp = pd_list[0]
+        for pd_series in pd_list[1:]:
+            # tmp = tmp.add(pd_series, fill_value=0)
+            # Somehow average series?
+
+        result = pd.Series(name=name, index=tmp.index, data=tmp.data)
+        return TS.from_pandas(result)
 
 
 def _ts_list_to_pd_list(ts_list):
