@@ -147,24 +147,25 @@ class TS(object):
     @staticmethod
     def sum(ts_list, name=None):
         pd_list = _ts_list_to_pd_list(ts_list)
+        df = pd.concat(pd_list, axis=1)
+        tmp = df.sum(axis=1)
+        result = pd.Series(name=name, index=tmp.index, data=tmp.data)
+        return TS.from_pandas(result)
 
-        tmp = pd_list[0]
-        for pd_series in pd_list[1:]:
-            tmp = tmp.add(pd_series, fill_value=0)
-
+    @staticmethod
+    def mean(ts_list, name=None):
+        pd_list = _ts_list_to_pd_list(ts_list)
+        df = pd.concat(pd_list, axis=1)
+        tmp = df.mean(axis=1)
         result = pd.Series(name=name, index=tmp.index, data=tmp.data)
         return TS.from_pandas(result)
 
 
     @staticmethod
-    def avg(ts_list, name=None):
+    def median(ts_list, name=None):
         pd_list = _ts_list_to_pd_list(ts_list)
-
-        tmp = pd_list[0]
-        for pd_series in pd_list[1:]:
-            # tmp = tmp.add(pd_series, fill_value=0)
-            # Somehow average series?
-
+        df = pd.concat(pd_list, axis=1)
+        tmp = df.median(axis=1)
         result = pd.Series(name=name, index=tmp.index, data=tmp.data)
         return TS.from_pandas(result)
 
