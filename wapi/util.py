@@ -92,7 +92,7 @@ class TS(object):
     @staticmethod
     def from_pandas(pd_series):
         name = pd_series.name
-        frequency = TS._rev_map_freq(pd_series.index.freqstr)
+        frequency = TS._map_freq(pd_series.index.freqstr)
 
         points = []
         for i in pd_series.index:
@@ -121,25 +121,9 @@ class TS(object):
             'MIN5': '5T',
         }
 
-        if frequency.upper() in freqTable:
-            frequency = freqTable[frequency.upper()]
-        return frequency
-
-    @staticmethod
-    def _rev_map_freq(frequency):
-        freqTable = {
-            'AS': 'Y',
-            '2QS': 'S',
-            'QS': 'Q',
-            'MS': 'M',
-            'W-MON': 'W',
-            '12H': 'H12',
-            '6H': 'H6',
-            '3H': 'H3',
-            '30T': 'MIN30',
-            '15T': 'MIN15',
-            '5T': 'MIN5',
-        }
+        tmp = freqTable.copy()
+        for k, v in tmp.items():
+            freqTable[v] = k
 
         if frequency.upper() in freqTable:
             frequency = freqTable[frequency.upper()]
