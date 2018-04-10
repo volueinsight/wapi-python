@@ -78,7 +78,7 @@ class TS(object):
             name = self.name or self.id
         if self.points is None:
             return pd.Series(name=name)
-        #
+
         index = []
         values = []
         for row in self.points:
@@ -154,7 +154,6 @@ class TS(object):
     def mean(ts_list, name):
         df = _ts_list_to_dataframe(ts_list)
         return _generated_series_to_TS(df.mean(axis=1), name)
-
 
     @staticmethod
     def median(ts_list, name):
