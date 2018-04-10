@@ -100,7 +100,7 @@ class TS(object):
             timestamp = int(calendar.timegm(t.timetuple())) * 1000
             points.append([timestamp, pd_series[i]])
 
-        if name.isnumeric():
+        if is_integer(name):
             return TS(id=int(name), frequency=frequency, points=points)
         else:
             return TS(name=name, frequency=frequency, points=points)
@@ -248,3 +248,11 @@ def detect_data_type(issue_date, tag):
         return INSTANCES
     else:
         return TAGGED_INSTANCES
+
+
+def is_integer(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
