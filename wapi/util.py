@@ -18,6 +18,26 @@ INSTANCES = 'INSTANCES'
 TAGGED_INSTANCES = 'TAGGED_INSTANCES'
 
 
+# Frequency mapping from TS to Pandas
+_TS_FREQ_TABLE = {
+    'Y': 'AS',
+    'S': '2QS',
+    'Q': 'QS',
+    'M': 'MS',
+    'W': 'W-MON',
+    'H12': '12H',
+    'H6': '6H',
+    'H3': '3H',
+    'MIN30': '30T',
+    'MIN15': '15T',
+    'MIN5': '5T',
+}
+# Mapping from Pandas to TS is built from map above
+_PANDAS_FREQ_TABLE = {}
+for k, v in _TS_FREQ_TABLE.items():
+    _PANDAS_FREQ_TABLE[v] = k
+
+
 class CurveException(Exception):
     pass
 
@@ -92,7 +112,7 @@ class TS(object):
     @staticmethod
     def from_pandas(pd_series):
         name = pd_series.name
-        frequency = TS._map_freq(pd_series.index.freqstr)
+        frequency = TS._rev_map_freq(pd_series.index.freqstr)
 
         points = []
         for i in pd_series.index:
@@ -107,26 +127,14 @@ class TS(object):
 
     @staticmethod
     def _map_freq(frequency):
-        freqTable = {
-            'Y': 'AS',
-            'S': '2QS',
-            'Q': 'QS',
-            'M': 'MS',
-            'W': 'W-MON',
-            'H12': '12H',
-            'H6': '6H',
-            'H3': '3H',
-            'MIN30': '30T',
-            'MIN15': '15T',
-            'MIN5': '5T',
-        }
+        if frequency.upper() in _TS_FREQ_TABLE:
+            frequency = _TS_FREQ_TABLE[frequency.upper()]
+        return frequency
 
-        tmp = freqTable.copy()
-        for k, v in tmp.items():
-            freqTable[v] = k
-
-        if frequency.upper() in freqTable:
-            frequency = freqTable[frequency.upper()]
+    @staticmethod
+    def _rev_map_freq(frequency):
+        if frequency.upper() in _PANDAS_FREQ_TABLE:
+            frequency = _PANDAS_FREQ_TABLE[frequency.upper()]
         return frequency
 
     @staticmethod
