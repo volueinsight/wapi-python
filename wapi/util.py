@@ -3,7 +3,7 @@
 # the data from the backend
 #
 
-import time
+import calendar
 import datetime
 import dateutil.parser
 import pytz
@@ -96,7 +96,8 @@ class TS(object):
 
         points = []
         for i in pd_series.index:
-            timestamp = int(time.mktime(i.timetuple())) * 1000
+            t = i.astimezone(pytz.utc)
+            timestamp = int(calendar.timegm(t.timetuple())) * 1000
             points.append([timestamp, pd_series[i]])
 
         if name.isnumeric():
