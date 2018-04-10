@@ -146,29 +146,29 @@ class TS(object):
         return frequency
 
     @staticmethod
-    def sum(ts_list, name=None):
+    def sum(ts_list, name):
         pd_list = _ts_list_to_pd_list(ts_list)
         df = pd.concat(pd_list, axis=1)
-        tmp = df.sum(axis=1)
-        result = pd.Series(name=name, index=tmp.index, data=tmp.data)
-        return TS.from_pandas(result)
+        series = df.sum(axis=1)
+        series.name = name
+        return TS.from_pandas(series)
 
     @staticmethod
-    def mean(ts_list, name=None):
+    def mean(ts_list, name):
         pd_list = _ts_list_to_pd_list(ts_list)
         df = pd.concat(pd_list, axis=1)
-        tmp = df.mean(axis=1)
-        result = pd.Series(name=name, index=tmp.index, data=tmp.data)
-        return TS.from_pandas(result)
+        series = df.mean(axis=1)
+        series.name = name
+        return TS.from_pandas(series)
 
 
     @staticmethod
-    def median(ts_list, name=None):
+    def median(ts_list, name):
         pd_list = _ts_list_to_pd_list(ts_list)
         df = pd.concat(pd_list, axis=1)
-        tmp = df.median(axis=1)
-        result = pd.Series(name=name, index=tmp.index, data=tmp.data)
-        return TS.from_pandas(result)
+        series = df.median(axis=1)
+        series.name = name
+        return TS.from_pandas(series)
 
 
 def _ts_list_to_pd_list(ts_list):
