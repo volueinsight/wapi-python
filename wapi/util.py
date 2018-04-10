@@ -62,7 +62,7 @@ class TS(object):
         if self.name:
             attrs.append(self.name)
 
-        attrs.extend([str(self.data_type), str(self.tz), self.frequency])
+        attrs.extend([self.data_type, str(self.tz), self.frequency])
 
         if self.tag:
             attrs.append(self.tag)
@@ -97,7 +97,7 @@ class TS(object):
         points = []
         for i in pd_series.index:
             t = i.astimezone(pytz.utc)
-            timestamp = int(calendar.timegm(t.timetuple())) * 1000
+            timestamp = int(calendar.timegm(t.timetuple()) * 1000)
             points.append([timestamp, pd_series[i]])
 
         if is_integer(name):
