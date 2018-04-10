@@ -108,6 +108,13 @@ See the REST API documentation for details on what processing is available.
 All time series are returned in a `TS` object (`wapi.util.TS`), which is a simple holding
 class which will store associated data.  Its most useful function is the `to_pandas` function
 demonstrated above, which will return a standard Pandas `Series` object.
+The inverse method `TS.from_pandas(series)` will turn the Pandas `Series` object back into a `TS` object.
+
+The `TS` class also contains some simple aggregation functions
+* `TS.sum(ts_list, name)` returns a TS object that is the sum of a list of TS objects with the given name
+* `TS.mean(ts_list, name)` returns a TS object that is the mean of a list of TS objects with the given name
+* `TS.median(ts_list, name)` returns a TS object that is the median of a list of TS objects with the given name
+
 
 ### Tagged curves
 

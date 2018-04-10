@@ -3,6 +3,7 @@
 # the data from the backend
 #
 
+import calendar
 import datetime
 import dateutil.parser
 import pytz
@@ -15,6 +16,26 @@ TIME_SERIES = 'TIME_SERIES'
 TAGGED = 'TAGGED'
 INSTANCES = 'INSTANCES'
 TAGGED_INSTANCES = 'TAGGED_INSTANCES'
+
+
+# Frequency mapping from TS to Pandas
+_TS_FREQ_TABLE = {
+    'Y': 'AS',
+    'S': '2QS',
+    'Q': 'QS',
+    'M': 'MS',
+    'W': 'W-MON',
+    'H12': '12H',
+    'H6': '6H',
+    'H3': '3H',
+    'MIN30': '30T',
+    'MIN15': '15T',
+    'MIN5': '5T',
+}
+# Mapping from Pandas to TS is built from map above
+_PANDAS_FREQ_TABLE = {}
+for k, v in _TS_FREQ_TABLE.items():
+    _PANDAS_FREQ_TABLE[v] = k
 
 
 class CurveException(Exception):
@@ -77,7 +98,7 @@ class TS(object):
             name = self.name or self.id
         if self.points is None:
             return pd.Series(name=name)
-        #
+
         index = []
         values = []
         for row in self.points:
@@ -89,24 +110,60 @@ class TS(object):
         return res.asfreq(self._map_freq(self.frequency))
 
     @staticmethod
-    def _map_freq(frequency):
-        freqTable = {
-            'Y': 'AS',
-            'S': '2QS',
-            'Q': 'QS',
-            'M': 'MS',
-            'W': 'W-MON',
-            'H12': '12H',
-            'H6': '6H',
-            'H3': '3H',
-            'MIN30': '30T',
-            'MIN15': '15T',
-            'MIN5': '5T',
-        }
+    def from_pandas(pd_series):
+        name = pd_series.name
+        frequency = TS._rev_map_freq(pd_series.index.freqstr)
 
-        if frequency.upper() in freqTable:
-            frequency = freqTable[frequency.upper()]
+        points = []
+        for i in pd_series.index:
+            t = i.astimezone(pytz.utc)
+            timestamp = int(calendar.timegm(t.timetuple()) * 1000)
+            points.append([timestamp, pd_series[i]])
+
+        if is_integer(name):
+            return TS(id=int(name), frequency=frequency, points=points)
+        else:
+            return TS(name=name, frequency=frequency, points=points)
+
+    @staticmethod
+    def _map_freq(frequency):
+        if frequency.upper() in _TS_FREQ_TABLE:
+            frequency = _TS_FREQ_TABLE[frequency.upper()]
         return frequency
+
+    @staticmethod
+    def _rev_map_freq(frequency):
+        if frequency.upper() in _PANDAS_FREQ_TABLE:
+            frequency = _PANDAS_FREQ_TABLE[frequency.upper()]
+        return frequency
+
+    @staticmethod
+    def sum(ts_list, name):
+        df = _ts_list_to_dataframe(ts_list)
+        return _generated_series_to_TS(df.sum(axis=1), name)
+
+    @staticmethod
+    def mean(ts_list, name):
+        df = _ts_list_to_dataframe(ts_list)
+        return _generated_series_to_TS(df.mean(axis=1), name)
+
+    @staticmethod
+    def median(ts_list, name):
+        df = _ts_list_to_dataframe(ts_list)
+        return _generated_series_to_TS(df.median(axis=1), name)
+
+
+def _generated_series_to_TS(series, name):
+    series.name = name
+    return TS.from_pandas(series)
+
+
+def _ts_list_to_dataframe(ts_list):
+    pd_list = []
+    for ts in ts_list:
+        pd_list.append(ts.to_pandas())
+
+    return pd.concat(pd_list, axis=1)
 
 
 def tags_to_DF(tagged_list):
@@ -178,3 +235,11 @@ def detect_data_type(issue_date, tag):
         return INSTANCES
     else:
         return TAGGED_INSTANCES
+
+
+def is_integer(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
