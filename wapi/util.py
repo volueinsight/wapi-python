@@ -147,36 +147,32 @@ class TS(object):
 
     @staticmethod
     def sum(ts_list, name):
-        pd_list = _ts_list_to_pd_list(ts_list)
-        df = pd.concat(pd_list, axis=1)
-        series = df.sum(axis=1)
-        series.name = name
-        return TS.from_pandas(series)
+        df = _ts_list_to_dataframe(ts_list)
+        return _generated_series_to_TS(df.sum(axis=1), name)
 
     @staticmethod
     def mean(ts_list, name):
-        pd_list = _ts_list_to_pd_list(ts_list)
-        df = pd.concat(pd_list, axis=1)
-        series = df.mean(axis=1)
-        series.name = name
-        return TS.from_pandas(series)
+        df = _ts_list_to_dataframe(ts_list)
+        return _generated_series_to_TS(df.mean(axis=1), name)
 
 
     @staticmethod
     def median(ts_list, name):
-        pd_list = _ts_list_to_pd_list(ts_list)
-        df = pd.concat(pd_list, axis=1)
-        series = df.median(axis=1)
-        series.name = name
-        return TS.from_pandas(series)
+        df = _ts_list_to_dataframe(ts_list)
+        return _generated_series_to_TS(df.median(axis=1), name)
 
 
-def _ts_list_to_pd_list(ts_list):
+def _generated_series_to_TS(series, name):
+    series.name = name
+    return TS.from_pandas(series)
+
+
+def _ts_list_to_dataframe(ts_list):
     pd_list = []
     for ts in ts_list:
         pd_list.append(ts.to_pandas())
 
-    return pd_list
+    return pd.concat(pd_list, axis=1)
 
 
 def tags_to_DF(tagged_list):
