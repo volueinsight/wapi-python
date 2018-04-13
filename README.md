@@ -157,7 +157,7 @@ fetch a single instance (identified by issue_date), or to fetch the latest insta
 ...
 2018-01-02 22:00:00+01:00    167.469376
 2018-01-02 23:00:00+01:00    161.208839
-Freq: H, Name: pro ee wnd intraday ec00da 01 mwh/h cet h f, dtype: float64
+Freq: H, Name: pro ee wnd intraday ec00da mwh/h cet h f, dtype: float64
 ```
 
 Remember that the end dates are always excluded in the result:
@@ -189,7 +189,7 @@ of tags to limit the search to only those tags.
 Instead of having to poll the API for updated values, there is an event API available:
 
 ```commandline
->>> curve = session.get_curve(name='pro ee wnd intraday ec00da 01 mwh/h cet h f')
+>>> curve = session.get_curve(name='pro ee wnd intraday ec00da mwh/h cet h f')
 >>> event_listener = session.events(curve)
 ```
 
@@ -208,5 +208,5 @@ It is also possible to retrieve a single event using `get`:
 >>> event.issue_date
 datetime.datetime(2018, 1, 2, 22, 45, tzinfo=tzutc())
 >>> event.curve.name
-'pro ee wnd intraday ec00da 01 mwh/h cet h f'
+'pro ee wnd intraday ec00da mwh/h cet h f'
 ```
