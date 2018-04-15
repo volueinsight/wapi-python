@@ -50,10 +50,14 @@ A search call will return a list of 0 or more curve objects:
 ```commandline
 >>> curves = session.search(category='WND', area=['EE', 'LT'], frequency='H')
 >>> [c.name for c in curves]
-['PRO EE WND Intraday EC00DA MW CET 01 H F',
- 'PRO LT WND Intraday EC00DA MW CET 01 H F',
- 'PRO EE WND Intraday MW CET 01 H A',
- 'PRO LT WND Intraday MW CET 01 H A']
+['pro ee wnd intraday ec00da mwh/h cet h f',
+ 'pro ee wnd intraday lastec mwh/h cet h f',
+ 'pro ee wnd intraday tso mwh/h cet h f',
+ 'pro lt wnd intraday ec00da mwh/h cet h f',
+ 'pro lt wnd intraday lastec mwh/h cet h f',
+ 'pro lt wnd intraday tso mwh/h cet h f',
+ 'pro ee wnd intraday mwh/h cet h a',
+ 'pro lt wnd intraday mwh/h cet h a']
 ```
 
 When supplying a list of alternatives the search is for "any of" the values,
@@ -62,9 +66,9 @@ while the search is for the combination of attributes requested ("and").
 It is also possible to fetch a single curve by id or name using:
 
 ```commandline
->>> curve = session.get_curve(name='PRO EE WND Intraday MW CET 01 H A')
+>>> curve = session.get_curve(name='pro ee wnd intraday mwh/h cet h a')
 >>> curve.id
-2168
+2206
 ```
 
 Please note that we may occasionally have to change the IDs of curves, so please treat
@@ -91,14 +95,14 @@ This is the simplest curve type, it holds a single time series.  This is used fo
 actual values, backcasts, normals, etc.  To fetch the data, use the `get_data` call:
 
 ```commandline
->>> curve = session.get_curve(name='PRO EE WND Intraday MW CET 01 H A')
+>>> curve = session.get_curve(name='pro ee wnd intraday mwh/h cet h a')
 >>> ts = curve.get_data(data_from="2018-01-01", data_to="2018-01-05", frequency="D", function="SUM")
 >>> ts.to_pandas()
 2018-01-01 00:00:00+01:00    2169.0
 2018-01-02 00:00:00+01:00    3948.0
 2018-01-03 00:00:00+01:00    1489.0
 2018-01-04 00:00:00+01:00    1860.0
-Freq: D, Name: PRO EE WND Intraday MW CET 01 H A, dtype: float64
+Freq: D, Name: pro ee wnd intraday mwh/h cet h a, dtype: float64
 ```
 
 Observe that it is possible to process the curve directly in the API, this can be used with
@@ -153,7 +157,7 @@ fetch a single instance (identified by issue_date), or to fetch the latest insta
 ...
 2018-01-02 22:00:00+01:00    167.469376
 2018-01-02 23:00:00+01:00    161.208839
-Freq: H, Name: PRO EE WND Intraday EC00DA MW CET 01 H F, dtype: float64
+Freq: H, Name: pro ee wnd intraday ec00da mwh/h cet h f, dtype: float64
 ```
 
 Remember that the end dates are always excluded in the result:
@@ -185,7 +189,7 @@ of tags to limit the search to only those tags.
 Instead of having to poll the API for updated values, there is an event API available:
 
 ```commandline
->>> curve = session.get_curve(name='PRO EE WND Intraday EC00DA MW CET 01 H F')
+>>> curve = session.get_curve(name='pro ee wnd intraday ec00da mwh/h cet h f')
 >>> event_listener = session.events(curve)
 ```
 
@@ -204,5 +208,5 @@ It is also possible to retrieve a single event using `get`:
 >>> event.issue_date
 datetime.datetime(2018, 1, 2, 22, 45, tzinfo=tzutc())
 >>> event.curve.name
-'PRO EE WND Intraday EC00DA MW CET 01 H F'
+'pro ee wnd intraday ec00da mwh/h cet h f'
 ```
