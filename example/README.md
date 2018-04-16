@@ -1,5 +1,6 @@
 # Wattsight API python library usage example
-An introductory example of using Wattsight API python library for searching, fetching, and plotting Wattsight data series. A number of use cases is presented in order to introduce different data structures.
+An introductory example of using Wattsight API python library for searching, fetching, and plotting Wattsight data series.
+A number of use cases is presented in order to introduce different data structures.
 
 ## Dependencies
 
@@ -29,7 +30,7 @@ An introductory example of using Wattsight API python library for searching, fet
 ## Implementation
 Complete working code can be found in the attached Jupyter Notebook file.
 
-1. Established a session using client cridentials. 
+1. Established a session using client credentials.
 
 	This requires having an OAuth client, which can be created at https://auth.wattsight.com/account/oauth-clients.
 
@@ -42,12 +43,13 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	For this use case define meta criteria for DK1 area wind power production.
 
 	```python
-	>>> meta_criteria = {'commodity': 'POW',
-	                     'category': ['WND', 'Intraday'], 
-	                     'unit': 'MWH/H',
-	                     'area': 'DK1', 
-	                     'data_type': ['A', 'F']}
-	>>> curves = session.search(**meta_criteria)
+	>>> curves = session.search(commodity='POW',
+                                category=['WND', 'Intraday'],
+                                unit='MWH/H',
+                                area='DK1',
+                                data_type=['A', 'F']
+                               )
+	>>> [c.name for c in curves]
 	['pro dk1 wnd intraday ec00da mwh/h cet min15 f',
 	 'pro dk1 wnd intraday lastec mwh/h cet min15 f',
 	 'pro dk1 wnd intraday tso mwh/h cet min15 f',
@@ -69,8 +71,7 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	>>> intraday_curves = [c for c in curves if 'INTRADAY' in c.categories]
 	>>> data = {}
 	>>> label = {}
-	>>> issue_date = pytz.timezone('CET').localize(
-						datetime.strptime('2018-04-12 00:00', "%Y-%m-%d %H:%M"))
+	>>> issue_date = pytz.timezone('CET').localize(datetime(2018, 4, 12))
 	>>> date_from = issue_date + timedelta(minutes=15)
 	>>> date_to = date_from + timedelta(hours=24)
 	>>> for c in intraday_curves:
@@ -150,8 +151,7 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	```python
 	>>> data = {}
 	>>> label = {}
-	>>> issue_date = pytz.timezone('CET').localize(
-						datetime.strptime('2018-04-12 00:00', "%Y-%m-%d %H:%M"))
+	>>> issue_date = pytz.timezone('CET').localize(datetime(2018, 4, 12))
 	>>> date_to = date_from + timedelta(days=14)
 	>>> for c in curves_at00:
 	>>>     ts = None
