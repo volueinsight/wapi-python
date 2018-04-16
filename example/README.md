@@ -11,9 +11,20 @@ An introductory example of using Wattsight API python library for searching, fet
 
 ## Installation of Wattsight API python library
 
-```python
->>> pip install git+https://github.com/wattsight/wapi-python
-```
+1. Using curl
+
+	```command
+	curl -LOk https://github.com/wattsight/wapi-python/archive/wapi-python-0.0.7.zip
+	unzip wapi-python-0.0.7.zip
+	cd wapi-python-wapi-python-0.0.7
+	python setup.py install
+	```
+
+2. Using pip
+
+	```command
+	pip install git+https://github.com/wattsight/wapi-python@wapi-python-0.0.7
+	```
 
 ## Implementation
 Complete working code can be found in the attached Jupyter Notebook file.
