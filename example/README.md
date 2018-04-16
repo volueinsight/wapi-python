@@ -113,8 +113,8 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	>>> latest_instance = curve.get_latest(with_data=False)
 	>>> issue_date_str = latest_instance.issue_date
 	>>> issue_date = latest_instance.tz.localize(
-						datetime.strptime(latest_instance.issue_date, 
- 	                                      "%Y-%m-%dT%H:%M:%SZ"))
+	                     datetime.strptime(latest_instance.issue_date, 
+	                                      "%Y-%m-%dT%H:%M:%SZ"))
 	>>> value_date = issue_date + timedelta(minutes=15)
 	>>> index = []
 	>>> values = []
@@ -136,9 +136,9 @@ Complete working code can be found in the attached Jupyter Notebook file.
 
 	```python
 	>>> curves_at00 = [c for c in curves 
-					   if 'INTRADAY' not in c.categories 
-						and (c.data_type == 'A' or c.sources [0] in ["EC00", "EC00Ens", 'GFS00'] )
-					   ]
+                       if 'INTRADAY' not in c.categories 
+                       and (c.data_type == 'A' or c.sources [0] in ["EC00", "EC00Ens", 'GFS00'] )
+	                  ]
 	>>> [c.name for c in curves_at00]
     ['pro dk1 wnd ec00 mwh/h cet min15 f',
 	 'pro dk1 wnd gfs00 mwh/h cet min15 f',
