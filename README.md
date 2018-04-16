@@ -9,6 +9,8 @@ that useful unless you have a valid Wattsight account.
 The library is tested against both Python 2.7 and Python 3.6,
 we recommend using Python 3.
 
+A Jupyter Notebook example of using the lybrary is available in the example folder of this repository.
+
 
 ## Session
 
