@@ -111,10 +111,7 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	```python
 	>>> curve = intraday_curves[0]
 	>>> latest_instance = curve.get_latest(with_data=False)
-	>>> issue_date_str = latest_instance.issue_date
-	>>> issue_date = latest_instance.tz.localize(
-	                     datetime.strptime(latest_instance.issue_date, 
-	                                      "%Y-%m-%dT%H:%M:%SZ"))
+	>>> issue_date = parser.parse(latest_instance.issue_date).astimezone(tz=latest_instance.tz)
 	>>> value_date = issue_date + timedelta(minutes=15)
 	>>> index = []
 	>>> values = []
