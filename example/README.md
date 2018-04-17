@@ -30,7 +30,7 @@ A number of use cases is presented in order to introduce different data structur
 ## Implementation
 Complete working code can be found in the attached Jupyter Notebook file.
 
-1. Established a session using client credentials.
+1. Establish a session using client credentials.
 
 	This requires having an OAuth client, which can be created at https://auth.wattsight.com/account/oauth-clients.
 
