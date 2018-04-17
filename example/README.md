@@ -44,8 +44,8 @@ Complete working code can be found in the attached Jupyter Notebook file.
 
 	```python
 	>>> curves = session.search(commodity='POW',
-                                category=['WND', 'Intraday'],
-                                unit='MWH/H',
+                                category='WND',
+                                unit='MWh/h',
                                 area='DK1',
                                 data_type=['A', 'F']
                                )
