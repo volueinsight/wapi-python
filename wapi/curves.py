@@ -96,9 +96,15 @@ class TaggedCurve(BaseCurve):
         url = '/api/series/tagged/{}/tags'.format(self.id)
         return self._load_data(url, 'Failed to fetch tags')
 
-    def get_data(self, tag, data_from=None, data_to=None, time_zone=None, filter=None,
+    def get_data(self, tag=None, data_from=None, data_to=None, time_zone=None, filter=None,
                  function=None, frequency=None, output_time_zone=None):
-        args=[self._make_arg('tag', tag)]
+        unwrap = False
+        if tag is None:
+            args = []
+        else:
+            if isinstance(tag, str):
+                unwrap = True
+            args=self._flatten('tag', tag)
         self._add_from_to(args, data_from, data_to)
         self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         astr = '&'.join(args)
@@ -106,7 +112,10 @@ class TaggedCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load tagged curve data')
         if result is None:
             return result
-        return util.TS(input_dict=result, tag=tag, curve_type=util.TAGGED)
+        res = [util.TS(input_dict=r, curve_type=util.TAGGED) for r in result]
+        if unwrap and len(res) == 1:
+            res = res[0]
+        return res
 
 
 class InstanceCurve(BaseCurve):
