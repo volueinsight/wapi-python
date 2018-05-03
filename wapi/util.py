@@ -96,8 +96,13 @@ class TS(object):
     def to_pandas(self, name=None):
         if name is None:
             name = self.name or self.id
-        if self.points is None:
-            return pd.Series(name=name)
+        if self.points is None or len(self.points) == 0:
+            index = pd.DatetimeIndex(name=name,
+                                     data=None,
+                                     freq=self._map_freq(self.frequency),
+                                     start=datetime.datetime.now(),
+                                     periods=0)
+            return pd.Series(name=name, index=index)
 
         index = []
         values = []
@@ -112,9 +117,8 @@ class TS(object):
     @staticmethod
     def from_pandas(pd_series):
         name = pd_series.name
-        frequency = TS._rev_map_freq(pd_series.index.freqstr)
-
         points = []
+        frequency = TS._rev_map_freq(pd_series.index.freqstr)
         for i in pd_series.index:
             t = i.astimezone(pytz.utc)
             timestamp = int(calendar.timegm(t.timetuple()) * 1000)
@@ -138,29 +142,72 @@ class TS(object):
         return frequency
 
     @staticmethod
-    def sum(ts_list, name):
-        df = _ts_list_to_dataframe(ts_list)
-        return _generated_series_to_TS(df.sum(axis=1), name)
+    def sum(ts_list, name, data_type=TIME_SERIES):
+        df = _ts_list_to_dataframe(ts_list, data_type)
+        res = _generated_series_to_TS(df.sum(axis=1), name, data_type)
+        if data_type != TIME_SERIES:
+            res = _add_tag_and_issue_date(res, ts_list[0])
+        return res
 
     @staticmethod
-    def mean(ts_list, name):
-        df = _ts_list_to_dataframe(ts_list)
-        return _generated_series_to_TS(df.mean(axis=1), name)
+    def mean(ts_list, name, data_type=TIME_SERIES):
+        df = _ts_list_to_dataframe(ts_list, data_type)
+        res = _generated_series_to_TS(df.mean(axis=1), name, data_type)
+        if data_type != TIME_SERIES:
+            res = _add_tag_and_issue_date(res, ts_list[0])
+        return res
 
     @staticmethod
-    def median(ts_list, name):
-        df = _ts_list_to_dataframe(ts_list)
-        return _generated_series_to_TS(df.median(axis=1), name)
+    def median(ts_list, name, data_type=TIME_SERIES):
+        df = _ts_list_to_dataframe(ts_list, data_type)
+        res = _generated_series_to_TS(df.median(axis=1), name, data_type)
+        if data_type != TIME_SERIES:
+            res = _add_tag_and_issue_date(res, ts_list[0])
+        return res
 
 
-def _generated_series_to_TS(series, name):
-    series.name = name
-    return TS.from_pandas(series)
+def _add_tag_and_issue_date(new_ts, old_ts):
+    new_ts.issue_date = old_ts.issue_date
+    new_ts.tag = old_ts.tag
+    return new_ts
 
 
-def _ts_list_to_dataframe(ts_list):
+def _generated_series_to_TS(pdseries, name, data_type):
+    pdseries.name = name
+    ts = TS.from_pandas(pdseries)
+    ts.data_type = data_type
+    return ts
+
+
+def _ts_list_to_dataframe(ts_list, data_type):
+    validate_issue_dates = False
+    validate_tags = False
+
+    if data_type == TIME_SERIES or data_type is None:
+        pass
+    elif data_type == TAGGED:
+        validate_tags = True
+    elif data_type == INSTANCES:
+        validate_issue_dates = True
+    elif data_type == TAGGED_INSTANCES:
+        validate_tags = True
+        validate_issue_dates = True
+    else:
+        raise CurveException('Invalid data type: {}'.format(data_type))
+
     pd_list = []
+    expected_tag = ts_list[0].tag
+    expected_date = ts_list[0].issue_date
     for ts in ts_list:
+        if validate_tags and ts.tag != expected_tag:
+            msg = ('Aggregation of tagged curves requires '
+                   'identical tags (found {} and {})')
+            raise CurveException(msg.format(expected_tag, ts.tag))
+        if validate_issue_dates and ts.issue_date != expected_date:
+            msg = ('Aggregation of tagged curves requires '
+                   'identical issue dates (found {} and {})')
+            raise CurveException(msg.format(expected_date, ts.issue_date))
+
         pd_list.append(ts.to_pandas())
 
     return pd.concat(pd_list, axis=1)
