@@ -126,7 +126,7 @@ The `TS` class also contains some simple aggregation functions
 
 A tagged curve holds a set of closely related time series, each identified by a tag.  The most
 common use of tags is for ensemble weather data.  The existing set of tags can be found
-with `get_tags`, while the `get_data` call takes a `tag` parameter:
+with `get_tags`, while the `get_data` call can take a `tag` parameter:
 
 ```commandline
 >>> tags = curve.get_tags()
@@ -134,7 +134,7 @@ with `get_tags`, while the `get_data` call takes a `tag` parameter:
 ```
 
 Tag can be a single value or a list of values.  If omitted, it defaults to all available tags.
-When more than one tag is requested, a list of time series is returned.
+When a list of tags is requested, a list of time series is returned.
 
 
 ### Instance curves
@@ -185,8 +185,8 @@ change the returned values as needed.
 
 Tagged instances are exactly the same extension over instances as tagged curves are over
 time series curves.  There is a `get_tags` call to find available tags, `get_instance`
-must be given both `tag` and `issue_date`, and the search/latest functions can take a list
-of tags to limit the search to only those tags.
+must be given `issue_date` while `tag` works as for tagged curves, and the search/latest
+functions can take a list of tags to limit the search to only those tags.
 
 
 ## Events
