@@ -6,6 +6,7 @@ except ImportError:
     from urlparse import urljoin
     from urllib import quote_plus
 from builtins import str
+from past.builtins import basestring
 
 
 class MetadataException(Exception):
@@ -102,7 +103,7 @@ class TaggedCurve(BaseCurve):
         if tag is None:
             args = []
         else:
-            if isinstance(tag, str):
+            if isinstance(tag, basestring):
                 unwrap = True
             args=self._flatten('tag', tag)
         self._add_from_to(args, data_from, data_to)
@@ -207,7 +208,7 @@ class TaggedInstanceCurve(BaseCurve):
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         unwrap = False
         if tag is not None:
-            if isinstance(tag, str):
+            if isinstance(tag, basestring):
                 unwrap = True
             args.extend(self._flatten('tag', tag))
         if with_data:
