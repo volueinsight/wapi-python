@@ -14,6 +14,7 @@ import json
 import time
 
 from . import auth, curves, events, util
+from .util import CurveException, MetadataException
 
 
 RETRY_COUNT = 4    # Number of times to retry
@@ -21,14 +22,6 @@ RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 
 
 class ConfigException(Exception):
-    pass
-
-
-class MetadataException(Exception):
-    pass
-
-
-class CurveException(Exception):
     pass
 
 

@@ -8,10 +8,6 @@ except ImportError:
 from builtins import str
 
 
-class MetadataException(Exception):
-    pass
-
-
 class BaseCurve:
     def __init__(self, id, metadata, session):
         self._metadata = metadata
