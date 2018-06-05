@@ -38,10 +38,6 @@ for k, v in _TS_FREQ_TABLE.items():
     _PANDAS_FREQ_TABLE[v] = k
 
 
-class MetadataException(Exception):
-    pass
-
-
 class CurveException(Exception):
     pass
 
@@ -180,26 +176,6 @@ def tags_to_DF(tagged_list):
 #
 # Some parsing helpers
 #
-
-
-def handle_single_curve_response(self, response):
-    if not response.ok:
-        raise MetadataException('Failed to load curve: {}'
-                                .format(response.content.decode()))
-    metadata = response.json()
-    return self._build_curve(metadata)
-
-
-def handle_multi_curve_response(self, response):
-    if not response.ok:
-        raise MetadataException('Curve search failed: {}'
-                                .format(response.content.decode()))
-    metadata_list = response.json()
-
-    result = []
-    for metadata in metadata_list:
-        result.append(self._build_curve(metadata))
-    return result
 
 
 def parsetime(datestr, tz=None):

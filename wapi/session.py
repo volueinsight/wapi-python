@@ -14,11 +14,15 @@ import json
 import time
 
 from . import auth, curves, events, util
-from .util import CurveException, MetadataException
+from .util import CurveException
 
 
 RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
+
+
+class MetadataException(Exception):
+    pass
 
 
 class ConfigException(Exception):
@@ -87,10 +91,7 @@ class Session(object):
         else:
             arg = 'name={}'.format(name)
         response = self.data_request('GET', self.urlbase, '/api/curves/get?{}'.format(arg))
-        if not response.ok:
-            raise MetadataException("Failed to load curve: {}".format(response.content.decode()))
-        metadata = response.json()
-        return self._build_curve(metadata)
+        return self.handle_single_curve_response(response)
 
     _search_terms = ['query', 'id', 'name', 'commodity', 'category', 'area', 'station', 'source', 'scenario',
                      'unit', 'time_zone', 'version', 'frequency', 'data_type', 'curve_state']
@@ -111,14 +112,7 @@ class Session(object):
             astr = "?{}".format("&".join(args))
         # Now run the search, and try to produce a list of curves
         response = self.data_request('GET', self.urlbase, '/api/curves{}'.format(astr))
-        if not response.ok:
-            raise MetadataException("Curve search failed: {}".format(response.content.decode()))
-        metadata_list = response.json()
-
-        result = []
-        for metadata in metadata_list:
-            result.append(self._build_curve(metadata))
-        return result
+        return self.handle_multi_curve_response(response)
 
     def make_curve(self, id, curve_type):
         """Return a mostly uninitialized curve object of the correct type.
@@ -196,3 +190,21 @@ class Session(object):
                 time.sleep(RETRY_DELAY)
             return self.data_request(req_type, urlbase, url, data, rawdata, authval, retries-1)
         return res
+
+    def handle_single_curve_response(self, response):
+        if not response.ok:
+            raise MetadataException('Failed to load curve: {}'
+                                    .format(response.content.decode()))
+        metadata = response.json()
+        return self._build_curve(metadata)
+
+    def handle_multi_curve_response(self, response):
+        if not response.ok:
+            raise MetadataException('Curve search failed: {}'
+                                    .format(response.content.decode()))
+        metadata_list = response.json()
+
+        result = []
+        for metadata in metadata_list:
+            result.append(self._build_curve(metadata))
+        return result
