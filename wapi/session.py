@@ -21,11 +21,11 @@ RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 
 
-class MetadataException(Exception):
+class ConfigException(Exception):
     pass
 
 
-class ConfigException(Exception):
+class MetadataException(Exception):
     pass
 
 
