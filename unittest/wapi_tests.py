@@ -303,9 +303,9 @@ def test_tagged_inst_search(tagged_inst_curve):
 
 def test_tagged_inst_get_instance(tagged_inst_curve):
     c,s,m = tagged_inst_curve
-    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+    inst = [{'frequency': 'H', 'points': [[140000000000, 10.0]],
             'name': 'inst_name', 'id': 10, 'tag': 'tag1',
-            'issue_date': '2016-01-01T00:00Z'}
+            'issue_date': '2016-01-01T00:00Z'}]
     m.register_uri('GET',
                    prefix + '/instances/tagged/10/get?tag=tag1&issue_date=2016-01-01T00:00Z&with_data=true',
                    text=json.dumps(inst))

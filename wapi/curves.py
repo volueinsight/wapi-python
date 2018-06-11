@@ -196,13 +196,17 @@ class TaggedInstanceCurve(BaseCurve):
             return result
         return [util.TS(input_dict=r, curve_type=util.TAGGED_INSTANCES) for r in result]
 
-    def get_instance(self, tag, issue_date, with_data=True, data_from=None, data_to=None,
+    def get_instance(self, issue_date, tag=None, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
                      output_time_zone=None, only_accessible=True):
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('tag', tag),
               self._make_arg('issue_date', issue_date),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        unwrap = False
+        if tag is not None:
+            if isinstance(tag, basestring):
+                unwrap = True
+            args.extend(self._flatten('tag', tag))
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
@@ -211,7 +215,10 @@ class TaggedInstanceCurve(BaseCurve):
         result = self._load_data(url, 'Failed to load tagged instance')
         if result is None:
             return result
-        return util.TS(input_dict=result, tag=tag, issue_date=issue_date, curve_type=util.TAGGED_INSTANCES)
+        res = [util.TS(input_dict=r, issue_date=issue_date, curve_type=util.TAGGED_INSTANCES) for r in result]
+        if unwrap and len(res) == 1:
+            res = res[0]
+        return res
 
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
