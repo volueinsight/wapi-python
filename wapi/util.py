@@ -177,6 +177,7 @@ def tags_to_DF(tagged_list):
 # Some parsing helpers
 #
 
+
 def parsetime(datestr, tz=None):
     """
     Parse the input date and optionally convert to correct time zone

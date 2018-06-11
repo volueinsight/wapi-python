@@ -196,7 +196,7 @@ def test_tagged_tags(tagged_curve):
 
 def test_tagged_data(tagged_curve):
     c,s,m = tagged_curve
-    datapoints = {'id': 9, 'frequency': 'H', 'points': [[140000000000, 10.0]]}
+    datapoints = [{'id': 9, 'tag': 'tag1', 'frequency': 'H', 'points': [[140000000000, 10.0]]}]
     m.register_uri('GET', prefix + '/series/tagged/9?tag=tag1', text=json.dumps(datapoints))
     d = c.get_data(tag='tag1')
     assert isinstance(d, wapi.util.TS)
