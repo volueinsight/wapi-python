@@ -6,6 +6,7 @@ except ImportError:
     from urlparse import urljoin
     from urllib import quote_plus
 from builtins import str
+from past.types import basestring
 
 
 class BaseCurve:
@@ -98,7 +99,7 @@ class TaggedCurve(BaseCurve):
         if tag is None:
             args = []
         else:
-            if isinstance(tag, str):
+            if isinstance(tag, basestring):
                 unwrap = True
             args=self._flatten('tag', tag)
         self._add_from_to(args, data_from, data_to)
