@@ -6,11 +6,7 @@ except ImportError:
     from urlparse import urljoin
     from urllib import quote_plus
 from builtins import str
-from past.builtins import basestring
-
-
-class MetadataException(Exception):
-    pass
+from past.types import basestring
 
 
 class BaseCurve:
