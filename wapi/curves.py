@@ -75,6 +75,72 @@ class BaseCurve:
 class TimeSeriesCurve(BaseCurve):
     def get_data(self, data_from=None, data_to=None, time_zone=None, filter=None,
                  function=None, frequency=None, output_time_zone=None):
+        """ Getting data from Time Series curves
+                
+        A Time Series curves holds a single time series. 
+        This is used for actual values, backcasts, normals, etc. This function
+        fetches data between two given timestamps. It also possible to process
+        the curve directly in the API using filter and aggregation functions. 
+        This can be used with great effect to reduce the amount of data 
+        retrieved if the full set of details is not needed. 
+        All time series are returned in a :class:`wapi.util.TS` object.
+
+        Parameters
+        ----------
+        
+        data_from: time-stamp
+            start date (and time) of data to be fetched. If only the date is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in any of the following types (also valid without time):
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+            
+        data_to: time-stamp
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as ´data_from´. 
+            End dates are always excluded in the result!
+        time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}
+            time zone of the provides start `data_from` and `data_to` inputs.
+            If not given or None, the default timezone of the curve 
+            (given in the curve name) is assumed .
+            (IS THAT TRUE?????)
+        filter: NO IDEA WHAT THAT SHOULD BE????
+        function: {'SUM', ANY OTHER???}
+            function used to aggregate data, if other `frequency` than 
+            curves default is given:
+
+            * 'SUM': sum of elements
+
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}
+            time zone of the output data.
+            If not given or None, the default timezone of the curve 
+            (given in the curve name) is assumed .
+            (IS THAT TRUE?????)            
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
+        
         args = []
         astr = ''
         self._add_from_to(args, data_from, data_to)
@@ -90,11 +156,13 @@ class TimeSeriesCurve(BaseCurve):
 
 class TaggedCurve(BaseCurve):
     def get_tags(self):
+        """ WE NEED A DOCSTRING HERE!!!"""
         url = '/api/series/tagged/{}/tags'.format(self.id)
         return self._load_data(url, 'Failed to fetch tags')
 
     def get_data(self, tag=None, data_from=None, data_to=None, time_zone=None, filter=None,
                  function=None, frequency=None, output_time_zone=None):
+        """ WE NEED A DOCSTRING HERE!!!"""
         unwrap = False
         if tag is None:
             args = []
@@ -120,6 +188,7 @@ class InstanceCurve(BaseCurve):
                          issue_dates=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
                          output_time_zone=None, only_accessible=True):
+        """ WE NEED A DOCSTRING HERE!!!"""
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -138,6 +207,7 @@ class InstanceCurve(BaseCurve):
     def get_instance(self, issue_date, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
                      output_time_zone=None, only_accessible=True):
+        """ WE NEED A DOCSTRING HERE!!!"""
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('issue_date', issue_date),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
@@ -154,6 +224,7 @@ class InstanceCurve(BaseCurve):
     def get_latest(self, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
                    function=None, frequency=None, output_time_zone=None, only_accessible=True):
+        """ WE NEED A DOCSTRING HERE!!!"""
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -172,6 +243,7 @@ class InstanceCurve(BaseCurve):
 
 class TaggedInstanceCurve(BaseCurve):
     def get_tags(self):
+        """ WE NEED A DOCSTRING HERE!!!"""
         url = '/api/instances/tagged/{}/tags'.format(self.id)
         return self._load_data(url, 'Failed to fetch tags')
 
@@ -179,6 +251,7 @@ class TaggedInstanceCurve(BaseCurve):
                          issue_dates=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
                          output_time_zone=None, only_accessible=True):
+        """ WE NEED A DOCSTRING HERE!!!"""
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
@@ -199,6 +272,7 @@ class TaggedInstanceCurve(BaseCurve):
     def get_instance(self, issue_date, tag=None, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
                      output_time_zone=None, only_accessible=True):
+        """ WE NEED A DOCSTRING HERE!!!"""
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('issue_date', issue_date),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
@@ -223,6 +297,7 @@ class TaggedInstanceCurve(BaseCurve):
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
                    function=None, frequency=None, output_time_zone=None, only_accessible=True):
+        """ WE NEED A DOCSTRING HERE!!!"""
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
