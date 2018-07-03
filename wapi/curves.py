@@ -88,8 +88,10 @@ class TimeSeriesCurve(BaseCurve):
         Parameters
         ----------
         
-        data_from: time-stamp
-            start date (and time) of data to be fetched. If only the date is 
+        data_from: time-stamp, optinal
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
             given, the time is assumed to be 00:00. The timestamp can be 
             provided in any of the following types (also valid without time):
             
@@ -98,17 +100,16 @@ class TimeSeriesCurve(BaseCurve):
             * pandas.Timestamp object
             * datetime.datetime object
             
-        data_to: time-stamp
+        data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be 
             provided in the same types as ´data_from´. 
             End dates are always excluded in the result!
-        time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}
-            time zone of the provides start `data_from` and `data_to` inputs.
-            If not given or None, the default timezone of the curve 
-            (given in the curve name) is assumed .
-            (IS THAT TRUE?????)
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}, optional
+            Change curve time zone before performing an aggregation
         filter: NO IDEA WHAT THAT SHOULD BE????
-        function: {'SUM', ANY OTHER???}
+        function: {'SUM', ANY OTHER???}, optional
             function used to aggregate data, if other `frequency` than 
             curves default is given:
 
@@ -133,7 +134,7 @@ class TimeSeriesCurve(BaseCurve):
         output_time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}
             time zone of the output data.
             If not given or None, the default timezone of the curve 
-            (given in the curve name) is assumed .
+            (given in the curve name) is assumed.
             (IS THAT TRUE?????)            
               
         Returns

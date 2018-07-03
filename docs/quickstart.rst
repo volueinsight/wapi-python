@@ -24,7 +24,7 @@ Quickstart
         ts = curve.get_data(data_from="2018-06-01", data_to="2018-06-08")
         
         ## TAGGED curve
-        curve = session.get_curve(name=TAGGED CURVE EVERYBODY CA ACCESS)
+        curve = session.get_curve(name=TAGGED CURVE EVERYBODY CAN ACCESS????)
         # TAGGED curves contain a timeseries for each defined tag.
         # Get available tags with: tags = curve.get_tags()
         ts = curve.get_data(tag='Avg', data_from="2018-01-01", data_to="2018-01-05")       
@@ -33,7 +33,7 @@ Quickstart
         ## INSTANCES curve
         curve = session.get_curve(name='tt de con ec00 °c cet min15 f')
         # INSTANCES curves contain a timeseries for each defined issue dates
-        # Get available issue dates within a timerange with: 
+        # Get a list of available curves with issue dates within a timerange with: 
         # curve.search_instances(issue_date_from='2018-01-01', issue_date_to='2018-01-01')
         ts = curve.get_instance(issue_date='2018-01-01T00:00')
         
