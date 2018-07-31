@@ -65,7 +65,7 @@ class TS(object):
                     setattr(self, attr, input_dict[attr])
 
         if self.time_zone is not None:
-            self.tz = pytz.timezone(parse_tz(self.time_zone))
+            self.tz = parse_tz(self.time_zone)
         else:
             self.tz = pytz.timezone('CET')
 
@@ -192,7 +192,7 @@ def parsetime(datestr, tz=None):
         if not isinstance(tz, tzinfo):
             # Raises `pytz.exception.UnknownTimeZoneError`
             # if `tz` is not the name of a timezone
-            tz = pytz.timezone(parse_tz(tz))
+            tz = parse_tz(tz)
 
         if d.tzinfo is not None:
             d = d.astimezone(tz)
