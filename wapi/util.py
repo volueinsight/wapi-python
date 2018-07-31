@@ -9,7 +9,6 @@ import dateutil.parser
 import pytz
 import pandas as pd
 from builtins import str
-from pytz.exceptions import UnknownTimeZoneError
 
 # Curve types
 TIME_SERIES = 'TIME_SERIES'
@@ -58,15 +57,15 @@ class TS(object):
         self.points = points
         #
         # input_dict is the json dict from WAPI
-        attributes = ['id', 'name', 'frequency', 'time_zone',
-                      'tag', 'issue_date', 'curve_type', 'points']
+        attributes = ('id', 'name', 'frequency', 'time_zone',
+                      'tag', 'issue_date', 'curve_type', 'points')
         if input_dict is not None:
             for attr in attributes:
                 if attr in input_dict:
                     setattr(self, attr, input_dict[attr])
 
         if self.time_zone is not None:
-            self.tz = pytz.timezone(self.time_zone)
+            self.tz = pytz.timezone(parse_tz(self.time_zone))
         else:
             self.tz = pytz.timezone('CET')
 
@@ -85,7 +84,7 @@ class TS(object):
         if self.name:
             attrs.append(self.name)
 
-        attrs.extend([self.data_type, self.time_zone, self.frequency])
+        attrs.extend([self.data_type, self.tz.zone, self.frequency])
 
         if self.tag:
             attrs.append(self.tag)
@@ -193,9 +192,9 @@ def parsetime(datestr, tz=None):
         if not isinstance(tz, tzinfo):
             # Raises `pytz.exception.UnknownTimeZoneError`
             # if `tz` is not the name of a timezone
-            tz = pytz.timezone(tz)
+            tz = pytz.timezone(parse_tz(tz))
 
-        if d.tzinfo:
+        if d.tzinfo is not None:
             d = d.astimezone(tz)
         else:
             d = tz.localize(d)
@@ -227,7 +226,7 @@ def parse_tz(time_zone):
         if time_zone == 'WEGT':
             time_zone = 'WET'
         return pytz.timezone(time_zone)
-    except UnknownTimeZoneError:
+    except pytz.exceptions.UnknownTimeZoneError:
         return pytz.timezone('CET')
 
 
