@@ -4,11 +4,10 @@
 #
 
 import calendar
-from datetime import datetime, tzinfo
+import datetime
 import dateutil.parser
 import pytz
 import pandas as pd
-from builtins import str
 
 # Curve types
 TIME_SERIES = 'TIME_SERIES'
@@ -106,7 +105,7 @@ class TS(object):
         for row in self.points:
             if len(row) != 2:
                 raise ValueError('Points have unexpected contents')
-            dt = datetime.fromtimestamp(row[0] / 1000.0, self.tz)
+            dt = datetime.datetime.fromtimestamp(row[0] / 1000.0, self.tz)
             index.append(dt)
             values.append(row[1])
         res = pd.Series(name=name, index=index, data=values)
@@ -189,7 +188,7 @@ def parsetime(datestr, tz=None):
     d = dateutil.parser.parse(datestr)
 
     if tz is not None:
-        if not isinstance(tz, tzinfo):
+        if not isinstance(tz, datetime.tzinfo):
             # Raises `pytz.exception.UnknownTimeZoneError`
             # if `tz` is not the name of a timezone
             tz = parse_tz(tz)
