@@ -189,8 +189,6 @@ def parsetime(datestr, tz=None):
 
     if tz is not None:
         if not isinstance(tz, datetime.tzinfo):
-            # Raises `pytz.exception.UnknownTimeZoneError`
-            # if `tz` is not the name of a timezone
             tz = parse_tz(tz)
 
         if d.tzinfo is not None:
