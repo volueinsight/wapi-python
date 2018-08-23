@@ -24,8 +24,9 @@ setup(
         'requests-mock >= 1.3',
     ],
     version=version,
-    description="Wattsight API python library",
+    description='Wattsight API python library',
+    long_description='This library is meant as a simple toolkit for working with data from https://api.wattsight.com/ (or equivalent services).  Note that access is based on some sort of login credentials, this library is not all that useful unless you have a valid Wattsight account.',
     author='Harald Nordgård-Hansen',
     author_email='hnh@wattsight.com',
-    url='http://www.wattsight.com'
+    url='https://www.wattsight.com'
 )
