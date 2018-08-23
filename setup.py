@@ -9,7 +9,7 @@ with open(os.path.join(here, 'VERSION')) as fv:
     version = fv.read()
 
 setup(
-    name='wapi',
+    name='wapi-python',
     packages=['wapi'],
     install_requires=[
         'requests >= 2.18',
