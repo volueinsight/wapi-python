@@ -3,33 +3,15 @@
 Installation
 ============
 
-If you have an existing python environment installed, 
-you can simply install the Wattsight API python library with pip::
+To use the Wattsight API python library you need to have `Python`_ installed.
+The library is tested against both Python 2.7 and 
+Python 3.6, we recommend using Python 3.
 
-    pip install -U https://github.com/wattsight/wapi-python/archive/master.zip
+You can simply install/update the latest version of Wattsight API python
+library with pip.
+Start a terminal (a shell) and use the following command::
+
+    pip install -U wapi-python
     
+.. _Python: https://www.python.org/downloads/
 
-
-No python installed yet
------------------------
-
-1. Download and install `Anaconda`_ (Python 3.X). Choose the 64-bit installer 
-   if possible. During the installation, keep both checkboxes "modify PATH" 
-   and "register Python" selected!
-2. Install the Wattsight API python library with pip by copying the
-   following line to your command shell::
-
-        pip install -U https://github.com/wattsight/wapi-python/archive/master.zip
-
-
- 
-WE SHOULD put wapi-python to PyPI in order to make the installation simpler!
-
-        
-.. note::
-    
-    It is also possible to install python and pip manually (without Anaconda)
-
-
-.. _Anaconda: https://www.anaconda.com/download/
-.. _git: https://git-scm.com/downloads

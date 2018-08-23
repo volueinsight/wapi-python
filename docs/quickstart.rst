@@ -5,7 +5,7 @@ Quickstart
 
 1. Install with::
 
-    $ pip install -U https://github.com/wattsight/wapi-python/archive/master.zip
+    $ pip install -U wapi-python
     
 2. Import wapi and create a :class:`~wapi.session.Session` to connect to the database using 
    your `authentication credentials`_ ::
