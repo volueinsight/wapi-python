@@ -1,7 +1,5 @@
 """
 This simple example reads data from an TIME_SERIES curve
-Have a look at the documentation for further information:
-XXXXXXXXXXXXXXXXXxx
 """
 import wapi
 import pandas as pd
