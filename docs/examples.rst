@@ -10,7 +10,8 @@ TIME_SERIES curve examples
 * Simple example how to read a TIME_SERIES curve 
   `[view] <https://github.com/wattsight/wapi-python/blob/dev-docs/examples/Timeseries_curve_examples/ts_simple_read.py>`_ , 
   :download:`[download] <../examples/Timeseries_curve_examples/ts_simple_read.py>`),
-  :doc:`[internal link] <../examples/Timeseries_curve_examples/ts_simple_read.py>`
+  :example_file:`[example_file] <Timeseries_curve_examples/ts_simple_read.py>` ,
+  :idf_file:`[idf_file] <examples/Timeseries_curve_examples/ts_simple_read.py>`
 * Aggregation example
 * Aggregation example - changing timezones
 * Filter example
