@@ -4,7 +4,7 @@ Connect to the Wattsight API
 ============================
 
 In order to work with WAPI, first create a session. 
-A session can be configured using a config file, or through by providing
+A session can be configured using a config file, or by providing
 your client_id and client_secret to the `wapi.Session` class 
 (:class:`wapi.session.Session`).
 
@@ -16,8 +16,9 @@ Using a config file
 -------------------
 
 First you have to create a config file `yourfilename.ini`. The simplest way
-is to take the `sample config file`_ provided and insert your client_id 
-and client_secret. Store your file somewhere and refer to it when
+is to take the :download:`sample config file <../sampleconfig.ini>`
+provided and insert your client_id and client_secret. 
+Store your file somewhere and refer to it when
 establishing the connection to WAPI::
 
     import wapi
@@ -35,6 +36,5 @@ the :class:`~wapi.session.Session` class ::
     import wapi
     session = wapi.Session(client_id='client id', client_secret='client secret')
     
- 
 .. _sample config file: https://github.com/wattsight/wapi-python/tree/master/sampleconfig.ini
 .. _here: https://api.wattsight.com/#documentation

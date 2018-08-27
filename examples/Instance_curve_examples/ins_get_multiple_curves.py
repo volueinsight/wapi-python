@@ -58,7 +58,7 @@ for c, curve_name in enumerate(curve_names):
         if not os.path.isdir(dir):
             os.mkdir(dir)
         
-        # get data drom curve
+        # get data from curve
         print('Fetching curve', cname)
         curve = session.get_curve(name=cname)
         instances = curve.search_instances(issue_date_from=date_from, 

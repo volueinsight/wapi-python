@@ -1,7 +1,6 @@
 """
 This simple example reads data from an INSTANCE curve
 Have a look at the documentation for further information:
-XXXXXXXXXXXXXXXXXxx
 """
 
 import wapi

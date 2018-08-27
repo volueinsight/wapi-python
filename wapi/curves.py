@@ -88,7 +88,7 @@ class TimeSeriesCurve(BaseCurve):
         Parameters
         ----------
         
-        data_from: time-stamp, optinal
+        data_from: time-stamp, optional
             start date (and time) of data to be fetched. If not given, the start
             date of the returned timeseries will be the first date with data
             available. If only the date (without time) is 
@@ -106,15 +106,52 @@ class TimeSeriesCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}, optional
-            Change curve time zone before performing an aggregation
-        filter: NO IDEA WHAT THAT SHOULD BE????
-        function: {'SUM', ANY OTHER???}, optional
-            function used to aggregate data, if other `frequency` than 
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
-            * 'SUM': sum of elements
-
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
             the given `function`. The frequency string consists of a letter
@@ -131,11 +168,12 @@ class TimeSeriesCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {I HAVE NO IDEA WHICH FORMATS ARE SUPPORTED!}
-            time zone of the output data.
-            If not given or None, the default timezone of the curve 
-            (given in the curve name) is assumed.
-            (IS THAT TRUE?????)            
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+         
               
         Returns
         -------
@@ -157,13 +195,130 @@ class TimeSeriesCurve(BaseCurve):
 
 class TaggedCurve(BaseCurve):
     def get_tags(self):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Get list of available tags for this curve
+         
+        Returns
+        -------
+        list
+            Returns a list of all available tags for a Tagged Instance curve.   
+        """
         url = '/api/series/tagged/{}/tags'.format(self.id)
         return self._load_data(url, 'Failed to fetch tags')
 
     def get_data(self, tag=None, data_from=None, data_to=None, time_zone=None, filter=None,
                  function=None, frequency=None, output_time_zone=None):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from TAGGED curves
+                
+        A tagged curve holds a set of closely related time series, each
+        identified by a tag. The most common use of tags is for ensemble
+        weather data.
+        
+        This function fetches data for one or multiple given tags and returns
+        a list of :class:`wapi.util.TS` objects.
+        It also possible to process the curve directly in the API using filter 
+        and aggregation functions. This can be used with great effect to reduce
+        the amount of data retrieved if the full set of details is not needed. 
+        All time series are returned in a :class:`wapi.util.TS` object.
+
+        Parameters
+        ----------
+
+        tag: str or list, optional
+            tag or tags to get get the data for. If a list of multiple tags
+            or None (= all tags) is given, the function will return a list
+            with a :class:`wapi.util.TS` object for each tag.
+        
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in any of the following types (also valid without time):
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as ´data_from´. 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         unwrap = False
         if tag is None:
             args = []
@@ -189,7 +344,135 @@ class InstanceCurve(BaseCurve):
                          issue_dates=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
                          output_time_zone=None, only_accessible=True):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from INSTANCE curves for multiple issue_dates
+        
+        An INSTANCE curve typically represents forecast, 
+        and contains a time series for each issue_date of the forecast.
+        This function returns a list of time series for all available 
+        issue_dates (within a given period, if specified)
+        as a a list of :class:`wapi.util.TS` objects. 
+        It also possible to process
+        the curve directly in the API using filter and aggregation functions. 
+        This can be used with great effect to reduce the amount of data 
+        retrieved if the full set of details is not needed.
+        By default this function returns the :class:`wapi.util.TS` objects
+        without data, which can be change by setting the "with_data" argument
+        to True.
+
+        Parameters
+        ----------
+        
+        issue_date_from: time-stamp, optional
+            Limits the timerange to return all available issue_dates.
+            The time-stamp can be provided in any of the following types :
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+            
+        issue_date_to: time-stamp, optional
+            Limits the timerange to return for the latest available issue_date.
+            The time-stamp can be provided in the same types as 
+            "issue_date_from".
+            
+        issue_dates: list of time-stamps, optional
+            List of timestamps to return :class:`wapi.util.TS` objects for.
+            The time-stamps can be provided in the same types as 
+            "issue_date_from".
+            
+        with_data: bool, optional
+            If with_data is False, the returned  :class:`wapi.util.TS` object
+            only contains the attributes and meta data information but no
+            data values.
+            
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in the same types as "issue_date_from".            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as "issue_date_from". 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -208,7 +491,120 @@ class InstanceCurve(BaseCurve):
     def get_instance(self, issue_date, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
                      output_time_zone=None, only_accessible=True):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from INSTANCE curves for a specific issue_date
+        
+        An INSTANCE curve typically represents forecast, 
+        and contains a time series for each issue_date of the forecast.
+        This function returns the time series for a specified issue_date
+        as a :class:`wapi.util.TS` object. It also possible to process
+        the curve directly in the API using filter and aggregation functions. 
+        This can be used with great effect to reduce the amount of data 
+        retrieved if the full set of details is not needed.
+
+        Parameters
+        ----------
+        
+        issue_date: time-stamp
+            Time-stamp representing the issue date to get get data for.
+            The timestamp can be provided in any of the following types :
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+            
+        with_data: bool, optional
+            If with_data is False, the returned  :class:`wapi.util.TS` object
+            only contains the attributes and meta data information but no
+            data values.
+            
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in the same types as "issue_date".            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as "issue_date". 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('issue_date', issue_date),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
@@ -225,7 +621,132 @@ class InstanceCurve(BaseCurve):
     def get_latest(self, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
                    function=None, frequency=None, output_time_zone=None, only_accessible=True):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from INSTANCE curves for the latest available issue_date
+        
+        An INSTANCE curve typically represents forecast, 
+        and contains a time series for each issue_date of the forecast.
+        This function returns the time series for the latest available 
+        issue_date (within a given period, if specified)
+        as a :class:`wapi.util.TS` object. It also possible to process
+        the curve directly in the API using filter and aggregation functions. 
+        This can be used with great effect to reduce the amount of data 
+        retrieved if the full set of details is not needed.
+
+        Parameters
+        ----------
+        
+        issue_date_from: time-stamp, optional
+            Limits the timerange to search for the latest available issue_date.
+            The time-stamp can be provided in any of the following types :
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+            
+        issue_date_to: time-stamp, optional
+            Limits the timerange to search for the latest available issue_date.
+            The time-stamp can be provided in the same types as 
+            "issue_date_from".
+            
+        issue_dates: list of time-stamps, optional
+            List of timestamps in which to search for the latest available 
+            issue_date.
+            The time-stamps can be provided in the same types as 
+            "issue_date_from".
+            
+        with_data: bool, optional
+            If with_data is False, the returned  :class:`wapi.util.TS` object
+            only contains the attributes and meta data information but no
+            data values.
+            
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in the same types as "issue_date_from".            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as "issue_date_from". 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -244,7 +765,13 @@ class InstanceCurve(BaseCurve):
 
 class TaggedInstanceCurve(BaseCurve):
     def get_tags(self):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Get list of available tags for this curve
+         
+        Returns
+        -------
+        list
+            Returns a list of all available tags for a Tagged Instance curve.   
+        """
         url = '/api/instances/tagged/{}/tags'.format(self.id)
         return self._load_data(url, 'Failed to fetch tags')
 
@@ -252,7 +779,144 @@ class TaggedInstanceCurve(BaseCurve):
                          issue_dates=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
                          output_time_zone=None, only_accessible=True):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from TAGGED_INSTANCE curves for multiple issue_dates
+        
+        A TAGGED INSTANCE curve typically represents forecast that contain
+        multiple time series for each issue_date of the forecast, which are
+        assigned to so called tags. Each timeseries is therefore defined by a
+        unique combination of issue_date and tag. Ensamble forecasts are a 
+        typical use case for TAGGED INSTANCE curves.
+        
+        This function returns a list of time series for all available 
+        issue_dates (within a given period, if specified) and tags (from a 
+        given list of tags, if specified) as a a list of :class:`wapi.util.TS` 
+        objects.
+                
+        It also possible to process the curve directly in the API using filter
+        and aggregation functions. This can be used with great effect to reduce
+        the amount of data retrieved if the full set of details is not needed.
+        By default this function returns the :class:`wapi.util.TS` objects
+        without data, which can be change by setting the "with_data" argument
+        to True.
+
+        Parameters
+        ----------
+        
+        tags: str or list, optional
+            tag or tags to consider. The function will only return objects with
+            tags defined here. If None (default) is given, all available tags
+            are considered.
+        issue_date_from: time-stamp, optional
+            Limits the timerange to return all available issue_dates.
+            The time-stamp can be provided in any of the following types :
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+                        
+        issue_date_to: time-stamp, optional
+            Limits the timerange to return for the latest available issue_date.
+            The time-stamp can be provided in the same types as 
+            "issue_date_from".
+            
+        issue_dates: list of time-stamps, optional
+            List of timestamps to return :class:`wapi.util.TS` objects for.
+            The time-stamps can be provided in the same types as 
+            "issue_date_from".
+            
+        with_data: bool, optional
+            If with_data is False, the returned  :class:`wapi.util.TS` object
+            only contains the attributes and meta data information but no
+            data values.
+            
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in the same types as "issue_date_from".            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as "issue_date_from". 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
@@ -273,7 +937,127 @@ class TaggedInstanceCurve(BaseCurve):
     def get_instance(self, issue_date, tag=None, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
                      output_time_zone=None, only_accessible=True):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from TAGGED_INSTANCE curves for a specific issue_date
+        
+        A TAGGED INSTANCE curve typically represents forecast that contain
+        multiple time series for each issue_date of the forecast, which are
+        assigned to so called tags. Each timeseries is therefore defined by a
+        unique combination of issue_date and tag. Ensamble forecasts are a 
+        typical use case for TAGGED INSTANCE curves.
+        
+        This function returns a time series for the combinations of a specified 
+        issue_date and all given tags as a lit of :class:`wapi.util.TS` objects. 
+        It also possible to process the curve directly in the API using filter 
+        and aggregation functions. This can be used with great effect to reduce
+        the amount of data retrieved if the full set of details is not needed.
+
+        Parameters
+        ----------
+        
+        issue_date: time-stamp
+            Time-stamp representing the issue date to get get data for.
+            The timestamp can be provided in any of the following types :
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+        
+        tag: str or list, optional
+            tag or tags to get get the data for. If a list of multiple tags
+            or None (= all tags) is given, the function will return a list
+            with a :class:`wapi.util.TS` object for each tag.
+        with_data: bool, optional
+            If with_data is False, the returned  :class:`wapi.util.TS` object
+            only contains the attributes and meta data information but no
+            data values.      
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in the same types as "issue_date".            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as "issue_date". 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('issue_date', issue_date),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
@@ -298,7 +1082,146 @@ class TaggedInstanceCurve(BaseCurve):
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
                    function=None, frequency=None, output_time_zone=None, only_accessible=True):
-        """ WE NEED A DOCSTRING HERE!!!"""
+        """ Getting data from TAGGED INSTANCE curves for the latest issue_date
+        
+        A TAGGED INSTANCE curve typically represents forecast that contain
+        multiple time series for each issue_date of the forecast, which are
+        assigned to so called tags. Each timeseries is therefore defined by a
+        unique combination of issue_date and tag. Ensamble forecasts are a 
+        typical use case for TAGGED INSTANCE curves.
+        
+        This function returns the time series for ONE tag and the latest  
+        available issue_date (within a given period, if specified)
+        as :class:`wapi.util.TS` objects. The tag to get the data for
+        can be specified in the "tags" argument. If None (=all tags) 
+        or a list of tags is provided, only the timeseries for one of the tags 
+        (the first one found to have valid data) is returned. So it is 
+        recommended to specify ONE desired tag in "tags".
+        
+        It also possible to process
+        the curve directly in the API using filter and aggregation functions. 
+        This can be used with great effect to reduce the amount of data 
+        retrieved if the full set of details is not needed.
+
+        Parameters
+        ----------
+        tags: string or list, optional
+            tag or list of tags to consider when returning the
+            :class:`wapi.util.TS` object. The function returns a timeseries
+            for ONE of the given tags. If you want get data for a specific tag,
+            only specify one tag here (recommended!).
+        issue_date_from: time-stamp, optional
+            Limits the timerange to search for the latest available issue_date.
+            The time-stamp can be provided in any of the following types :
+            
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+            
+        issue_date_to: time-stamp, optional
+            Limits the timerange to search for the latest available issue_date.
+            The time-stamp can be provided in the same types as 
+            "issue_date_from".
+            
+        issue_dates: list of time-stamps, optional
+            List of timestamps in which to search for the latest available 
+            issue_date.
+            The time-stamps can be provided in the same types as 
+            "issue_date_from".
+            
+        with_data: bool, optional
+            If with_data is False, the returned  :class:`wapi.util.TS` object
+            only contains the attributes and meta data information but no
+            data values.
+            
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be the first date with data
+            available. If only the date (without time) is 
+            given, the time is assumed to be 00:00. The timestamp can be 
+            provided in the same types as "issue_date_from".            
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be 
+            provided in the same types as "issue_date_from". 
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be 
+            the last date with data available.
+        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an 
+            aggregation/split or applying a filter and thus AFTER changing 
+            to given "time_zone" here.
+            Defined time zones are:
+            
+            * 'UTC': Coordinated Universal Time
+            * 'CET': Central European Time
+            * 'WET': Western European Time
+            * 'EET': Eastern European Time
+            * 'MSK': Moscow Time
+            * 'CEGT': Central European Gas Time,
+            * 'WEGT': Western European Gas Time
+            * 'TRT': Turkey Time
+            * 'PST': Pacific Time
+            * 'ART': Argentina Time
+            
+        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+            only get a specific subset of the data. Defined filters are:
+            
+            * 'PEAK': Peak hours (8 <= t < 20)
+            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
+            * 'OFFPEAK1': Morning offpeak hours (t < 8)
+            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
+            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
+            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
+            * 'WORKDAYS': Working days (monday-friday)
+            * 'WEEKENDS': Weekend days (saturday-sunday)
+            
+        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+            function used to aggregate or split data, if other `frequency` than 
+            curves default is given:
+
+            * 'AVERAGE': Average value
+            * 'MAX': Maximum value
+            * 'MIN': Minimum value
+            * 'SUM': Standard deviation of values
+            * 'STDDEV': Standard deviation of values
+            * 'SUMAVG': Average value times number of values
+            * 'SAME': Split using the same value
+            * 'DIVIDE': Split using fraction of value
+            
+        frequency: str, optional
+            frequency string, data will be aggregated to defined frequency using
+            the given `function`. The frequency string consists of a letter
+            defining the time unit followed by an integer defining the multiple
+            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
+            an aggregation frequency of "1 hour", where 'H6' stands for 
+            "6 hours" and 'H12' for "12 hours". The following letter<->unit 
+            definitions are valid:
+            
+            * 'Y': year
+            * 'M': month
+            * 'W': week
+            * 'D': day
+            * 'H': hour
+            * 'MIN': minutes
+
+        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve.
+            See "time_zone" argument for a definition of defined timezones.
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to
+         
+              
+        Returns
+        -------
+        :class:`wapi.util.TS` object   
+        """
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:

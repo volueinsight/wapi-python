@@ -34,7 +34,7 @@ print('\n###\nAvailable tags for this curve:\n', tags)
 # One time series in a TAGED_INSTANCE cure is defined by its tag and
 # the issue date (of the forecast)
 # read curve data with issue date 01.01.2018 00:00 and tag='Avg'
-issue_date = pd.Timestamp('2018-1-1 00:00')
+issue_date = pd.Timestamp('2018-7-1 00:00')
 ts = curve.get_instance(issue_date=issue_date, tag='Avg')
 # convert to pandas.Series object
 pv_actuals = ts.to_pandas()
