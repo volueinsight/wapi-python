@@ -7,7 +7,9 @@ Examples
 TIME_SERIES curve examples
 ---------------------------
 
-* `Simple example how to read a TIME_SERIES curve`_
+* Simple example how to read a TIME_SERIES curve 
+  `[view] <https://github.com/wattsight/wapi-python/blob/dev-docs/examples/ts_simple_read.py>`_ , 
+  :download:`[download] <https://github.com/wattsight/wapi-python/blob/dev-docs/examples/ts_simple_read.py>`)
 * Aggregation example
 * Aggregation example - changing timezones
 * Filter example
@@ -26,7 +28,7 @@ TAGGED curve examples
 .. _Simple example how to read a TAGGED curve: https://github.com/wattsight/wapi-python/blob/master/examples/tag_simple_read.py
 
 
-INSTANCES curve examples
+INSTANCE curve examples
 -------------------------
 
 * `Simple example how to read a INSTANCE curve`_
@@ -38,7 +40,7 @@ INSTANCES curve examples
 .. _Simple example how to read a INSTANCE curve: https://github.com/wattsight/wapi-python/blob/master/examples/ins_simple_read.py
 
 
-TAGGED_INSTANCES curve examples
+TAGGED_INSTANCE curve examples
 --------------------------------
 
 * `Simple example how to read a TAGGED_INSTANCE curve`_

@@ -1,7 +1,8 @@
 """
 Example that reads data from wapi TIMESERIES curves
 can read multiple curves, and each curve for multiple regions
-aggregates (averages) output frequency, if specified
+aggregates (averages) output frequency, if specified.
+Save read data to csv files.
 """
 
 import wapi

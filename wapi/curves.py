@@ -106,7 +106,7 @@ class TimeSeriesCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -127,7 +127,7 @@ class TimeSeriesCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -139,7 +139,7 @@ class TimeSeriesCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -168,7 +168,7 @@ class TimeSeriesCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -246,7 +246,7 @@ class TaggedCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -267,7 +267,7 @@ class TaggedCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -279,7 +279,7 @@ class TaggedCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -308,7 +308,7 @@ class TaggedCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -398,7 +398,7 @@ class InstanceCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -419,7 +419,7 @@ class InstanceCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -431,7 +431,7 @@ class InstanceCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -460,7 +460,7 @@ class InstanceCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -530,7 +530,7 @@ class InstanceCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -551,7 +551,7 @@ class InstanceCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -563,7 +563,7 @@ class InstanceCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -592,7 +592,7 @@ class InstanceCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -672,7 +672,7 @@ class InstanceCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -693,7 +693,7 @@ class InstanceCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -705,7 +705,7 @@ class InstanceCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -734,7 +734,7 @@ class InstanceCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -842,7 +842,7 @@ class TaggedInstanceCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -863,7 +863,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -875,7 +875,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -904,7 +904,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -983,7 +983,7 @@ class TaggedInstanceCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -1004,7 +1004,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -1016,7 +1016,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -1045,7 +1045,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.
@@ -1147,7 +1147,7 @@ class TaggedInstanceCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
-        time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve. Note that if
@@ -1168,7 +1168,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'PST': Pacific Time
             * 'ART': Argentina Time
             
-        filter: {'PEAK','OFFPEAK','OFFPEAK1','OFFPEAK2','FUTUREPEAK','FUTUREOFFPEAK','WORKDAYS','WORKDAYS','WEEKENDS}, optional
+        filter: str, optional
             only get a specific subset of the data. Defined filters are:
             
             * 'PEAK': Peak hours (8 <= t < 20)
@@ -1180,7 +1180,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'WORKDAYS': Working days (monday-friday)
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
-        function: {'AVERAGE','MAX','MIN','SUM','STDDEV','SUMAVG','SAME','DIVIDE'}, optional
+        function: str, optional
             function used to aggregate or split data, if other `frequency` than 
             curves default is given:
 
@@ -1209,7 +1209,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'H': hour
             * 'MIN': minutes
 
-        output_time_zone: {'UTC','CET','WET','EET','MSK','CEGT','WEGT','TRT','PST','ART'}, optional
+        output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
             this will simply change the timezone of the curve.

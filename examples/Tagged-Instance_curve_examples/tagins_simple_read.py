@@ -1,7 +1,7 @@
 """
 This simple example reads data from an TAGGED_INSTANCE curve
 Have a look at the documentation for further information:
-XXXXXXXXXXXXXXXXXxx
+https://wattsight-wapi-python.readthedocs-hosted.com/en/latest/index.html
 """
 
 import wapi

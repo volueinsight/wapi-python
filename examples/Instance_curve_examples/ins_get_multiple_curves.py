@@ -1,7 +1,7 @@
 """
 Example that reads data from wapi INSTANCE curves
 can read multiple instances between two dates, saves each instance in seperate 
-file as well as all instances to one file. 
+csv file as well as all instances to one csv file. 
 Multiple curves and multiple regions (for all curves) can be specified
 """
 
