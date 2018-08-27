@@ -49,8 +49,6 @@ tsoffpeak = curve.get_data(data_from=start_date, data_to=end_date,
 # convert to pandas.Series object
 data['offpeak'] = tsoffpeak.to_pandas()
 
-
-
 # plot curve using matplotlib
 fig = plt.figure()
 ax = fig.add_subplot(111)

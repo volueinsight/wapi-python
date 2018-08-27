@@ -1,7 +1,7 @@
 """
 This example shows how to reproduce the plot from these 4 pages:
 Consumption: https://app.wattsight.com/#tab/power/115/2
-Photovoltaic Load: https://app.wattsight.com/#tab/power/135/2
+Photovoltaic: https://app.wattsight.com/#tab/power/135/2
 Wind: https://app.wattsight.com/#tab/power/126/2
 Residual Load: https://app.wattsight.com/#tab/power/109/2
 
@@ -29,7 +29,7 @@ region = 'de'
 # 'wnd' for Wind Power
 # 'spv' for Solar Photovoltaic
 # 'rdl' for Residual Load
-category = 'con'
+category = 'rdl'
 
 # Set the aggregation function ['average','sum'] and output frequency of the
 # aggregation. The frequency string consists of a letter defining the time unit

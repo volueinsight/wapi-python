@@ -8,51 +8,56 @@ TIME_SERIES curve examples
 ---------------------------
 
 * Simple example how to read a TIME_SERIES curve 
-  `[view] <https://github.com/wattsight/wapi-python/blob/dev-docs/examples/Timeseries_curve_examples/ts_simple_read.py>`_ , 
-  :download:`[download] <../examples/Timeseries_curve_examples/ts_simple_read.py>`),
-  :example_file:`[example_file] <Timeseries_curve_examples/ts_simple_read.py>` ,
-  :idf_file:`[idf_file] <examples/Timeseries_curve_examples/ts_simple_read.py>`
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Timeseries_curve_examples/ts_simple_read.py>`_ , 
+  :download:`[download] <../examples/Timeseries_curve_examples/ts_simple_read.py>`)
 * Aggregation example
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Timeseries_curve_examples/ts_aggregation.py>`_ , 
+  :download:`[download] <../examples/Timeseries_curve_examples/ts_aggregation.py>`)
 * Aggregation example - changing timezones
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Timeseries_curve_examples/ts_aggregation_timezone.py>`_ , 
+  :download:`[download] <../examples/Timeseries_curve_examples/ts_aggregation_timezone.py>`)
 * Filter example
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Timeseries_curve_examples/ts_filter.py>`_ , 
+  :download:`[download] <../examples/Timeseries_curve_examples/ts_filter.py>`)
+* Read multiple curves and save them as csv
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Timeseries_curve_examples/ts_get_multiple_curves.py>`_ , 
+  :download:`[download] <../examples/Timeseries_curve_examples/ts_get_multiple_curves.py>`)
 
-
-.. _Simple example how to read a TIME_SERIES curve: https://github.com/wattsight/wapi-python/blob/master/examples/ts_simple_read.py
 
 TAGGED curve examples
 ----------------------
 
-* `Simple example how to read a TAGGED curve`_
+* Simple example how to read a TAGGED curve
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Tagged_curve_examples/tag_simple_read.py>`_ , 
+  :download:`[download] <../examples/Tagged_curve_examples/tag_simple_read.py>`)
 * multiple tags example
-* Aggregation example
-* Filter example
 
-.. _Simple example how to read a TAGGED curve: https://github.com/wattsight/wapi-python/blob/master/examples/tag_simple_read.py
 
 
 INSTANCE curve examples
 -------------------------
 
-* `Simple example how to read a INSTANCE curve`_
-* Aggregation example
-* Search example
-* Get latest example
-* Filter example
+* Simple example how to read an INSTANCE curve
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Instance_curve_examples/ins_simple_read.py>`_ , 
+  :download:`[download] <../examples/Instance_curve_examples/ins_simple_read.py>`)
+* Get multiple instances
+* Get latest instance
+* Get multiple instance curves and save them as csv
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Instance_curve_examples/ins_get_multiple_curves.py>`_ , 
+  :download:`[download] <../examples/Instance_curve_examples/ins_get_multiple_curves.py>`)
 
-.. _Simple example how to read a INSTANCE curve: https://github.com/wattsight/wapi-python/blob/master/examples/ins_simple_read.py
 
 
 TAGGED_INSTANCE curve examples
 --------------------------------
 
-* `Simple example how to read a TAGGED_INSTANCE curve`_
-* Aggregation example
-* multiple tags example
-* Search example
-* Get latest example
-* Filter example
-
-.. _Simple example how to read a TAGGED_INSTANCE curve: https://github.com/wattsight/wapi-python/blob/master/examples/tagins_simple_read.py
+* Simple example how to read a TAGGED_INSTANCE curve
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Tagged-Instance_curve_examples/tagins_simple_read.py>`_ , 
+  :download:`[download] <../examples/Tagged-Instance_curve_examples/tagins_simple_read.py>`)
+* Get available tags
+* Read data for multiple tags
+* Get multiple instances
+* Get latest instance
 
 
 Events example
@@ -71,10 +76,26 @@ General examples
 Reproduce figures from wattsight.com
 -------------------------------------
 
-* https://app.wattsight.com/#tab/power/115/2
-* https://app.wattsight.com/#tab/power/126/2
-* https://app.wattsight.com/#tab/power/135/2
-* https://app.wattsight.com/#tab/power/109/2
+* Reproduce the 4 following Fundamental figures for any region
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Tagged-Instance_curve_examples/tagins_simple_read.py>`_ , 
+  :download:`[download] <../examples/Tagged-Instance_curve_examples/tagins_simple_read.py>`)
+
+.. figure:: img/con_de.png
+   :width: 40%
+   :align: center
+   
+   `Consumption <https://app.wattsight.com/#tab/power/115/2>`_
+  
+  * `Consumption <https://app.wattsight.com/#tab/power/115/2>`_
+    
+    .. figure:: img/con_de.png
+       :width: 60%
+       :align: center
+       
+  * `Photovoltaic <https://app.wattsight.com/#tab/power/135/2>`_
+  * `Wind <https://app.wattsight.com/#tab/power/126/2>`_
+  * `Residual Load <https://app.wattsight.com/#tab/power/109/2>`_
+
 * https://app.wattsight.com/#tab/power/245/2
 * https://app.wattsight.com/#tab/power/255/2
 * https://app.wattsight.com/#tab/power/131/2

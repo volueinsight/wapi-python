@@ -73,7 +73,7 @@ ts1dmin = curve.get_data(data_from=start_date, data_to=end_date, function='MIN',
 # convert to pandas.Series object
 s1dmin = ts1dmin.to_pandas()
 
-# plot curve using matplotlib
+# plot curves using matplotlib
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(s15min, label='15 minutes')
