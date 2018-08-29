@@ -18,8 +18,6 @@ with various
 [examples](https://wattsight-wapi-python.readthedocs-hosted.com/en/latest/examples.html)
 is hosted on Read the Docs.
 
-[![Documentation Status](//readthedocs.com/projects/wattsight-wapi-python/badge/?version=latest)](https://wattsight-wapi-python.readthedocs-hosted.com/en/latest/?badge=latest)
-
 ## Installation
 
 You can simply install/update the latest version of Wattsight API python
