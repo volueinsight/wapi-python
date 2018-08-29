@@ -1,5 +1,5 @@
 """
-This simple example reads data from an TAGGED_INSTANCE curve
+This simple example reads data for multiple tags from an TAGGED_INSTANCE curve
 Have a look at the documentation for further information:
 https://wattsight-wapi-python.readthedocs-hosted.com/en/latest/index.html
 """
@@ -24,23 +24,27 @@ curve_name = 'tt de con ec00ens °c cet min15 f'
 # get the curve
 curve = session.get_curve(name=curve_name)
 
-# Get the available tags for this curve and print them
-# An ensamble usually contains 51 variations of a forecast and their average
-# Each of this forecasts is tagged with a number from '01' to '51'
-# while the average is tagged with 'Avg'
-tags = curve.get_tags()
-print('\n###\nAvailable tags for this curve:\n', tags)
-
 # One time series in a TAGED_INSTANCE cure is defined by its tag and
 # the issue date (of the forecast)
-# read curve data with issue date 01.01.2018 00:00 and tag='Avg'
+# you can define multiple tags using the get_instance method
+# the function will then return a list of TS objects
+# read curve data with issue date 01.01.2018 00:00 and tags=['Avg','01','12']
+tags = ['Avg','01','12']
 issue_date = pd.Timestamp('2018-7-1 00:00')
-ts = curve.get_instance(issue_date=issue_date, tag='Avg')
-# convert to pandas.Series object
-s = ts.to_pandas()
+ts_list = curve.get_instance(issue_date=issue_date, tag=tags)
 
+# create a matplotlib figure and axis
+fig = plt.figure()
+ax = fig.add_subplot(111)
 
-# plot curve using the integrated plot function of pandas
-s.plot()
+# loop through the list of TS objects
+for ts in ts_list:
+    # convert to pandas.Series object
+    s = ts.to_pandas()
+    # plot timeseries and choose tag as label
+    ax.plot(s, label=ts.tag)
+    
+# create a legend for the plot
+ax.legend()
 # show the figure
 plt.show()

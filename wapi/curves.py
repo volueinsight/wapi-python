@@ -1084,7 +1084,7 @@ class TaggedInstanceCurve(BaseCurve):
                    function=None, frequency=None, output_time_zone=None, only_accessible=True):
         """ Getting data from TAGGED INSTANCE curves for the latest issue_date
         
-        A TAGGED INSTANCE curve typically represents forecast that contain
+        A TAGGED INSTANCE curve typically represents forecasts that contain
         multiple time series for each issue_date of the forecast, which are
         assigned to so called tags. Each timeseries is therefore defined by a
         unique combination of issue_date and tag. Ensamble forecasts are a 

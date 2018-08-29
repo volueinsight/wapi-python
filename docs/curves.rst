@@ -145,7 +145,30 @@ Have a look at the detailed method documentation below and at our
 Getting data from a TAGGED curve
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+A tagged curve holds a set of closely related time series, each identified 
+by a tag. The most common use of tags is for ensemble weather data. 
+
+The existing set of tags of a curve can be found using the
+:meth:`~wapi.curves.TaggedCurve.get_tags` method::
+
+    tags = curve.get_tags()
+
+You can get data from a tagged curve using the 
+:meth:`~wapi.curves.TaggedCurve.get_data` method. This method has the same
+inputs and functionality as the :meth:`wapi.curves.TimeSeriesCurve.get_data`
+method for Time Series curves. Additionally you can provide a ``tag`` argument.
+``tag`` can be a single value or a list of values. If omitted, it defaults to 
+all available tags. When a list of tags is requested, a list of time series is 
+returned::
+
+    # get data between two dates for all tags
+    ts_list = curve.get_data(data_from='2018-01-01', data_to='2018-02-01')
+    
+    # get data between two dates for single tag='Avg'
+    ts = curve.get_data(data_from='2018-01-01', data_to='2018-02-01', tag='Avg')
+    
+    # get data between two dates for tags 'Avg', '01' and '12'
+    ts_list = curve.get_data(data_from='2018-01-01', data_to='2018-02-01', tag=['Avg','01','12'])
 
 
 .. automethod:: wapi.curves.TaggedCurve.get_tags
@@ -159,16 +182,44 @@ TBD
 Getting data from a INSTANCES curve
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+A Instance curve contains a time series for each issue_date of the curve. 
+This is typically a forecast with a time series for each issue_date of the
+forecast. 
 
+
+You can fetch a single instance identified by its issue_date using the 
+:meth:`~wapi.curves.InstanceCurve.get_instance` method::
+
+    ts = curve.get_instance(issue_date='2018-01-01T00:00')
+
+
+You can fetch multiple instances (within a given time-range) using the
+:meth:`~wapi.curves.InstanceCurve.search_instances` method. The function
+will only return :class:`~wapi.util.TS` objects with data, when the 
+``with_data`` argument is set to ``True`` (default is ``False`` and will return
+a :class:`~wapi.util.TS` object with meta data only)::
+
+    ts_list = curve.search_instances(issue_date_from='2018-07-01Z00:00',
+                                     issue_date_to='2018-07-04Z00:00',
+                                     with_data=True)
+    
+You can also fetch the latest available instance using the 
+:meth:`~wapi.curves.InstanceCurve.get_latest` method::
+
+    ts = curve.get_latest()
+
+.. note::
+    All three methods allow to process curves directly in the API 
+    (eg. select date ranges, aggregating, filtering, changing timezones) 
+    by using additional inputs. Have a look at the detailed function
+    descriptions below and at the provided :ref:`examples<examples>`.
+
+.. automethod:: wapi.curves.InstanceCurve.get_instance
+    :noindex: 
 
 .. automethod:: wapi.curves.InstanceCurve.search_instances
     :noindex: 
-
-
-.. automethod:: wapi.curves.InstanceCurve.get_instance
-    :noindex:     
-    
+  
 .. automethod:: wapi.curves.InstanceCurve.get_latest
     :noindex: 
     
@@ -176,21 +227,72 @@ TBD
 Getting data from a TAGGED_INSTANCES curve
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+Tagged Instance curves are a combination of Tagged curves and Instance curves.
+A Tagged Instance curve typically represents forecasts that contain
+multiple time series for each issue_date of the forecast, which are
+assigned to tags. Each time series is therefore defined by a
+unique combination of issue_date and tag. Ensamble forecasts are a 
+typical use case for Tagged Instance curves.
 
+The existing set of tags of a curve can be found using the
+:meth:`~wapi.curves.TaggedInstanceCurve.get_tags` method::
+
+    tags = curve.get_tags()
+
+You can fetch a single instance identified by its issue_date using the 
+:meth:`~wapi.curves.InstanceCurve.get_instance` method. 
+This function allows you the specify a single tag or a list of tags to the
+``tag`` argument. If omitted, it defaults to all available tags. ::
+
+    # get all tags for this issue date
+    ts_list = curve.get_instance(issue_date='2018-07-01T00:00')
+    
+    # get data for this issue date for single tag='Avg'
+    ts = curve.get_instance(issue_date='2018-07-01T00:00', tag='Avg')
+    
+     # get data for this issue date for tags 'Avg', '02' and '05'
+    ts_list = curve.get_instance(issue_date='2018-07-01T00:00', tag=['Avg','02','05'])
+    
+You can fetch multiple instances (within a given time-range) using the
+:meth:`~wapi.curves.TaggedInstanceCurve.search_instances` method. The function
+will only return :class:`~wapi.util.TS` objects with data, when the ``with_data``
+argument is set to ``True`` (default is ``False`` and will return a 
+:class:`~wapi.util.TS` object with meta data only). Here you can again omitted 
+the ``tags`` argument, which defaults to return all available tags for each 
+issue_date, or specify a single tag or a list of tags. ::
+
+    ts_list = curve.search_instances(issue_date_from='2018-07-01Z00:00',
+                                     issue_date_to='2018-07-04Z00:00',
+                                     with_data=True,
+                                     tags=['Avg','11'])
+    
+You can also fetch the latest available instance using the 
+:meth:`~wapi.curves.InstanceCurve.get_latest` method. This function will always
+return exactly ONE Time Series curve for ONE tag of the latest issue_date. 
+It is possible to omit the ``tags`` argument or provide a list of tags to it, 
+but it is strongly recommended to specify ONE SINGLE TAG here! ::
+
+    ts = curve.get_latest(tags='03')
+
+.. note::
+    All three methods to get data allow to process curves directly in the API 
+    (eg. select date ranges, aggregating, filtering, changing timezones) 
+    by using additional inputs. Have a look at the detailed function
+    descriptions below and at the provided :ref:`examples<examples>`.
+    
 .. automethod:: wapi.curves.TaggedInstanceCurve.get_tags
     :noindex: 
 
+.. automethod:: wapi.curves.TaggedInstanceCurve.get_instance
+    :noindex:  
+    
 .. automethod:: wapi.curves.TaggedInstanceCurve.search_instances
     :noindex: 
-
-
-.. automethod:: wapi.curves.TaggedInstanceCurve.get_instance
-    :noindex:     
-    
+     
 .. automethod:: wapi.curves.TaggedInstanceCurve.get_latest
     :noindex:    
 
+    
 .. _use-TS:
     
 Working with data from a curve object
@@ -237,11 +339,6 @@ and :meth:`~wapi.util.TS.median` .
 .. automethod:: wapi.util.TS.median
     :noindex: 
 
-
-
-`pandas documentation`_
-`pandas.Series`_
-`pandas.DataFrame`_
 
 
     
