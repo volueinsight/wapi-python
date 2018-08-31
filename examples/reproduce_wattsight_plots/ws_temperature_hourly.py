@@ -1,11 +1,6 @@
 """
-This example shows how to reproduce the plot from these 4 pages:
-Consumption: https://app.wattsight.com/#tab/power/115/2
-Photovoltaic: https://app.wattsight.com/#tab/power/135/2
-Wind: https://app.wattsight.com/#tab/power/126/2
-Residual Load: https://app.wattsight.com/#tab/power/109/2
-
-The pages show the latest forecasts compared to actual values and normals
+This example shows how to reproduce temperature forecast plot for any region:
+https://app.wattsight.com/#tab/power/245/2
 """
 
 import wapi
@@ -20,16 +15,9 @@ import matplotlib.pyplot as plt
 my_config_file = r'C:\Users\databay\OneDrive - Wattsight\Software\wapi\wapi.ini'
 
 # Choose one of the available regions by using its abbreviation
-# as shown on the top of each wattsight page 
-# (eg https://app.wattsight.com/#tab/power/135/2)
+# as shown on the top of the wattsight page 
+# https://app.wattsight.com/#tab/power/245/2
 region = 'de' 
-
-# choose one of the four possible categories for this plot:
-# 'con' for Consumption
-# 'wnd' for Wind Power
-# 'spv' for Solar Photovoltaic
-# 'rdl' for Residual Load
-category = 'rdl'
 
 # Set the aggregation function ['AVERAGE','SUM'] and output frequency of the
 # aggregation. The frequency string consists of a letter defining the time unit
@@ -65,12 +53,7 @@ yesterday = today - pd.Timedelta(days=1)
 end = today + pd.Timedelta(days=10)
 
 # create the first part of the curve name dependent on the category and region
-if category == 'con':
-    curve_part1 = 'con ' + region
-elif category == 'rdl':
-    curve_part1 = 'rdl ' + region
-else:
-    curve_part1 = 'pro ' + region + ' ' + category
+curve_part1 = 'tt '+region+' con'
 
 # specifiy timezone based on region
 if region == 'tr':
@@ -82,28 +65,21 @@ else:
 
 ## get normal data
 # get the curve, create curve name based on category, region and timezone
-curve_normal = session.get_curve(name=curve_part1+' mwh/h '+tz+' min15 n')
+curve_normal = session.get_curve(name=curve_part1+' °c '+tz+' min15 n')
 # get data from curve, apply aggregation if defined
 normal = curve_normal.get_data(data_from=yesterday, data_to=end,
                                function=func, frequency=freq)
-# convert to pandas Series, convert from MWh/h to GWh/h by dividing by 1000
-normal = normal.to_pandas(name='Normal')/1000
-
-# get most recent actual data
-curve_actual = session.get_curve(name=curve_part1+' mwh/h '+tz+' min15 a')
-actual = curve_actual.get_data(data_from=yesterday, function=func,
-                               frequency=freq)
-# convert to pandas Series, convert from MWh/h to GWh/h by dividing by 1000
-actual = actual.to_pandas(name='Actual')/1000
+# convert to pandas Series
+normal = normal.to_pandas(name='Normal')
 
 ## get backcast for last day
 # get the curve, create curve name based on category, region and timezone
-curve_actual = session.get_curve(name=curve_part1+' mwh/h '+tz+' min15 s')
+curve_actual = session.get_curve(name=curve_part1+' °c '+tz+' min15 s')
 # get data from curve, apply aggregation if defined
 backcast = curve_actual.get_data(data_from=yesterday, data_to=today,
                                  function=func, frequency=freq)
-# convert to pandas Series, convert from MWh/h to GWh/h by dividing by 1000
-backcast = backcast.to_pandas(name='Backcast')/1000
+# convert to pandas Series
+backcast = backcast.to_pandas(name='Backcast')
 
 
 # The EC Forecasts are published the following order:
@@ -113,7 +89,7 @@ backcast = backcast.to_pandas(name='Backcast')/1000
 
 ## get EC00 data and issue date
 # get the curve, create curve name based on category, region and timezone
-curve_EC00 = session.get_curve(name=curve_part1+' ec00 mwh/h '+tz+' min15 f')
+curve_EC00 = session.get_curve(name=curve_part1+' ec00 °c '+tz+' min15 f')
 # get data for latest issue_date, apply aggregation if defined
 EC00 = curve_EC00.get_latest(function=func, frequency=freq)
 # get the issue_date if latest issue
@@ -123,12 +99,11 @@ EC00_idate = pd.Timestamp(EC00_idate).tz_convert('CET').strftime('%Y-%m-%d')
 # Convert TS object to pandas Series, create name based on issue_date
 EC00 = EC00.to_pandas(name='EC00 ' + EC00_idate[8:10] + '.' + EC00_idate[5:7])
 # only select data from today until 10 days ahead
-# convert from MWh/h to GWh/h by dividing by 1000
-EC00 = EC00.loc[today:end]/1000
+EC00 = EC00.loc[today:end]
 
 ## get EC12 data and issue date
 # get the curve, create curve name based on category, region and timezone
-curve_EC12 = session.get_curve(name=curve_part1+' ec12 mwh/h '+tz+' min15 f')
+curve_EC12 = session.get_curve(name=curve_part1+' ec12 °c '+tz+' min15 f')
 # get data for latest issue_date, apply aggregation if defined
 EC12 = curve_EC12.get_latest(function=func, frequency=freq)
 # get the issue_date if latest issue
@@ -138,12 +113,12 @@ EC12_idate = pd.Timestamp(EC12_idate).tz_convert('CET').strftime('%Y-%m-%d')
 # Convert TS object to pandas Series, create name based on issue_date
 EC12 = EC12.to_pandas(name='EC12 ' + EC12_idate[8:10] + '.' + EC12_idate[5:7])
 # only select data from today until 10 days ahead
-# convert from MWh/h to GWh/h by dividing by 1000
-EC12 = EC12.loc[today:end]/1000
+EC12 = EC12.loc[today:end]
+
 
 ## get EC00Ens data and issue date
 # get the curve, create curve name based on category, region and timezone
-curve_EC00Ens = session.get_curve(name=curve_part1+' ec00ens mwh/h '+tz+' min15 f')
+curve_EC00Ens = session.get_curve(name=curve_part1+' ec00ens °c '+tz+' min15 f')
 # get the issue_date if latest issue
 EC00Ens_idate = curve_EC00Ens.get_latest(with_data=False).issue_date
 # Get list of TS objects for all available tags for latest issue date
@@ -171,8 +146,7 @@ else:
             # add columns to the DataFrame
             EC00Ens['EC00Ens_'+ts.tag] = ts.to_pandas()
     # only select data from today until 10 days ahead
-    # convert from MWh/h to GWh/h by dividing by 1000
-    EC00Ens = EC00Ens.loc[today:end]/1000
+    EC00Ens = EC00Ens.loc[today:end]
     # Save the "Avg" Ensamble data in own variable
     EC00Ens_avg = EC00Ens['EC00Ens_Avg']
     # Add a name based on the issue date
@@ -180,7 +154,7 @@ else:
     
 ## get EC12Ens data and issue date  
 # get the curve, create curve name based on category, region and timezone
-curve_EC12Ens = session.get_curve(name=curve_part1+' ec12ens mwh/h '+tz+' min15 f')
+curve_EC12Ens = session.get_curve(name=curve_part1+' ec12ens °c '+tz+' min15 f')
 # get the issue_date if latest issue
 EC12Ens_idate = curve_EC12Ens.get_latest(with_data=False).issue_date
 # Get list of TS objects for all available tags for latest issue date
@@ -208,8 +182,7 @@ else:
             # add columns to the DataFrame
             EC12Ens['EC12Ens_'+ts.tag] = ts.to_pandas()
     # only select data from today until 10 days ahead
-    # convert from MWh/h to GWh/h by dividing by 1000
-    EC12Ens = EC12Ens.loc[today:end]/1000
+    EC12Ens = EC12Ens.loc[today:end]
     # Save the "Avg" Ensamble data in own variable
     EC12Ens_avg = EC12Ens['EC12Ens_Avg']
     # Add a name based on the issue date
@@ -279,7 +252,6 @@ ax0.plot(backcast, color='darkgrey', label='Backcast', lw=lw)
 # plot forecasts in right order
 for i, fc in enumerate(fc_order):
     ax0.plot(fc, color= colors[i], label = fc.name, lw=lw)
-ax0.plot(actual, color='black', label='Actual', marker='.', markersize=ms, lw=lw)
 
 # set axis parameters
 plt.setp(ax0.get_xticklabels(), visible=False)
@@ -319,13 +291,6 @@ ax1.set_ylim([-ylim,ylim]) # ensure same negative and positive limit
 #third subplot
 ##############
 
-# backcast - Actual
-ax2.plot(backcast-actual, color='black', label='Backcast-Actual', marker='.', 
-         markersize=ms, lw=lw)
-# add latest forecast - actual
-ax2.plot(fc_order[2]-actual, color='black', marker='.', 
-         markersize=ms, lw=lw)
-
 # plot latest minus second latest forecast       
 ax2.plot(fc_order[2]-fc_order[1], color=colors[1], lw=lw,
          label=fc_order[2].name.split(' ')[0]+'-'+fc_order[1].name.split(' ')[0])
@@ -334,7 +299,7 @@ ax2.plot(fc_order[2]-fc_order[1], color=colors[1], lw=lw,
 ax2.plot(fc_order[1]-fc_order[0], color=colors[0], lw=lw,
          label=fc_order[1].name.split(' ')[0]+'-'+fc_order[0].name.split(' ')[0])
 
-# plot lates forecast minus normals         
+# plot latest forecast minus normals         
 lastfc_normal = fc_order[2]-normal
 # get time resolution of data in hours to specify the bar width
 hours_diff = (lastfc_normal.index[1] - lastfc_normal.index[0]).delta/36e11

@@ -101,7 +101,7 @@ Getting data from a curve object
 There is a different method to get data for each of the 4 types of curves 
 (TIME_SERIES, TAGGED, INSTANCES, TAGGED_INSTANCES)
 
-To find out the type of a given curve, use the `curve.curve_type` attribute::
+To find out the type of a given curve, use the ``curve.curve_type`` attribute::
 
     >>> curve = session.get_curve(name='pro ee wnd intraday mwh/h cet h a')
     >>> curve.curve_type # check the type of the given curve

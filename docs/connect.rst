@@ -5,7 +5,7 @@ Connect to the Wattsight API
 
 In order to work with WAPI, first create a session. 
 A session can be configured using a config file, or by providing
-your client_id and client_secret to the `wapi.Session` class 
+your client_id and client_secret to the ``wapi.Session`` class 
 (:class:`wapi.session.Session`).
 
 You can get the required id and secret by creating an OAuth client
