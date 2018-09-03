@@ -140,7 +140,7 @@ class TimeSeriesCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -154,7 +154,7 @@ class TimeSeriesCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -280,7 +280,7 @@ class TaggedCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -294,7 +294,7 @@ class TaggedCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function`. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -432,7 +432,7 @@ class InstanceCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -446,7 +446,7 @@ class InstanceCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -564,7 +564,7 @@ class InstanceCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -578,7 +578,7 @@ class InstanceCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -706,7 +706,7 @@ class InstanceCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -720,7 +720,7 @@ class InstanceCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -876,7 +876,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -890,7 +890,7 @@ class TaggedInstanceCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -1017,7 +1017,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -1031,7 +1031,7 @@ class TaggedInstanceCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 
@@ -1181,7 +1181,7 @@ class TaggedInstanceCurve(BaseCurve):
             * 'WEEKENDS': Weekend days (saturday-sunday)
             
         function: str, optional
-            function used to aggregate or split data, if other `frequency` than 
+            function used to aggregate or split data, if other frequency than 
             curves default is given:
 
             * 'AVERAGE': Average value
@@ -1195,7 +1195,7 @@ class TaggedInstanceCurve(BaseCurve):
             
         frequency: str, optional
             frequency string, data will be aggregated to defined frequency using
-            the given `function`. The frequency string consists of a letter
+            the given function. The frequency string consists of a letter
             defining the time unit followed by an integer defining the multiple
             of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
             an aggregation frequency of "1 hour", where 'H6' stands for 

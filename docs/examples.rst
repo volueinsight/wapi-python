@@ -95,8 +95,8 @@ Reproduce figures from wattsight.com
 -------------------------------------
 
 * Reproduce one of the 4 following Fundamental figures for any region
-  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Tagged-Instance_curve_examples/tagins_simple_read.py>`_ , 
-  :download:`[download] <../examples/Tagged-Instance_curve_examples/tagins_simple_read.py>`)
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/reproduce_wattsight_plots/ws_fundamentals_hourly.py>`_ , 
+  :download:`[download] <../examples/reproduce_wattsight_plots/ws_fundamentals_hourly.py>`)
 
 
   .. figure:: img/con_de.png
@@ -126,8 +126,17 @@ Reproduce figures from wattsight.com
      
      Residual Load https://app.wattsight.com/#tab/power/109/2
           
-
-* https://app.wattsight.com/#tab/power/245/2
+* Reproduce temperature figures for any region
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/reproduce_wattsight_plots/ws_temperature_hourly.py>`_ , 
+  :download:`[download] <../examples/reproduce_wattsight_plots/ws_temperature_hourly.py>`)
+  
+    .. figure:: img/temp_de.png
+     :width: 40%
+     :align: center
+     
+     Temperature https://app.wattsight.com/#tab/power/245/2
+     
+* 
 * https://app.wattsight.com/#tab/power/255/2
 * https://app.wattsight.com/#tab/power/131/2
 * https://app.wattsight.com/#tab/power/1015/3

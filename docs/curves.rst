@@ -3,7 +3,7 @@
 Access data from WAPI
 =====================
 
-The data in WAPI is stored in `curves` . A curve is a collection of metadata, 
+The data in WAPI is stored in ``curves`` . A curve is a collection of metadata, 
 describing one or more time series. 
 There are 4 types of curves: 
 
@@ -46,7 +46,7 @@ function.
 When supplying a list of alternatives the search is for "any of" the values, 
 while the search is for the combination of attributes requested ("and").
 A search call will return a list of 0 or more curve objects. You can 
-get the name of the found curve(s) by accessing the `curve.name` attribute::
+get the name of the found curve(s) by accessing the ``curve.name`` attribute::
 
     >>> curves = session.search(category='WND', area=['EE', 'LT'], frequency='H')
     >>> [c.name for c in curves]
@@ -75,7 +75,7 @@ method::
 
     curve = session.get_curve(name='pro ee wnd intraday mwh/h cet h a')
     
-Each curve has all of the following `attributes` :
+Each curve has all of the following ``attributes`` :
 
 * id: id of the curve
 * name: name of the curve
@@ -83,7 +83,7 @@ Each curve has all of the following `attributes` :
 * curve_type: one of the 4 defines types (TIME_SERIES, TAGGED, INSTANCES and 
   TAGGED_INSTANCES)    
 
-The value of the attribute can be accessed with `curve.attribute_name`, eg ::
+The value of the attribute can be accessed with ``curve.attribute_name``, eg ::
 
     >>> curve = session.get_curve(name='pro ee wnd intraday mwh/h cet h a')
     >>> curve.name

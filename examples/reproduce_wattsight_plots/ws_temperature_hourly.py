@@ -256,7 +256,7 @@ for i, fc in enumerate(fc_order):
 # set axis parameters
 plt.setp(ax0.get_xticklabels(), visible=False)
 ax0.grid()
-ax0.set_ylabel('Nominal Values GWh/h', fontsize=fs)
+ax0.set_ylabel('Nominal Values °C', fontsize=fs)
 ax0.tick_params(labelsize=fs)
 
 # get legend handl
