@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*- 
-
 #
 # Various utility and conversion functions to make it easier to work with
 # the data from the backend

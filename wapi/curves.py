@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*- 
-
 from . import util
 import datetime
 try:
@@ -104,7 +102,7 @@ class TimeSeriesCurve(BaseCurve):
             
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be 
-            provided in the same types as ´data_from´. 
+            provided in the same types as ``data_from``. 
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
@@ -244,7 +242,7 @@ class TaggedCurve(BaseCurve):
             
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be 
-            provided in the same types as ´data_from´. 
+            provided in the same types as ``data_from``. 
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be 
             the last date with data available.
