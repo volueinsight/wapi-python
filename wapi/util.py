@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*- 
+
 #
 # Various utility and conversion functions to make it easier to work with
 # the data from the backend
@@ -94,7 +96,7 @@ class TS(object):
         return ' '.join(attrs)
 
     def to_pandas(self, name=None):
-        """ Converting `TS` object to a pandas.Series object
+        """ Converting :class:`wapi.util.TS` object to a pandas.Series object
                 
         Parameters
         ----------      
@@ -150,9 +152,9 @@ class TS(object):
 
     @staticmethod
     def sum(ts_list, name):
-        """ calculate the sum of a given list of TS objects
+        """ calculate the sum of a given list of :class:`wapi.util.TS` objects
 
-        Returns a TS (:class:`wapi.util.TS`) object that is 
+        Returns a :class:`~wapi.util.TS` (:class:`wapi.util.TS`) object that is 
         the sum of a list of
         TS objects with the given name.
          
