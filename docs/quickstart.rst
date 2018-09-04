@@ -24,7 +24,7 @@ Quickstart
         ts = curve.get_data(data_from="2018-06-01", data_to="2018-06-08")
         
         ## TAGGED curve
-        curve = session.get_curve(name=TAGGED CURVE EVERYBODY CAN ACCESS????)
+        curve = session.get_curve(name='name of tagged curve')
         # TAGGED curves contain a timeseries for each defined tag.
         # Get available tags with: tags = curve.get_tags()
         ts = curve.get_data(tag='Avg', data_from="2018-01-01", data_to="2018-01-05")       

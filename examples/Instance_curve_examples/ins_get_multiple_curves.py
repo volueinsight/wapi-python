@@ -13,7 +13,7 @@ import os
 ## INPUTS
 ################################################
 # Insert the path to your config file here!
-config_file = r'C:\Users\databay\OneDrive - Wattsight\Software\wapi\wapi.ini'
+my_config_file = 'path/to/your/config.ini'
 
 # curve names to read, in this case EC00 price and PV forecasts
 curve_names = ['pri {region} spot ec00 €/mwh cet h f',

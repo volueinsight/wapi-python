@@ -12,7 +12,7 @@ import os
 ## INPUTS
 ################################################
 # Insert the path to your config file here!
-config_file = r'C:\Users\databay\OneDrive - Wattsight\Software\wapi\wapi.ini'
+my_config_file = 'path/to/your/config.ini'
 
 # curve names to read (in this case temperature and PV production actuals)
 curve_names = ['tt {region} con °c cet {freq} s',

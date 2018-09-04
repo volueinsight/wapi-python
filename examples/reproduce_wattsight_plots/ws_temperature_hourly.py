@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 ## INPUTS
 ############################################
 # Insert the path to your config file here!
-my_config_file = r'C:\Users\databay\OneDrive - Wattsight\Software\wapi\wapi.ini'
+my_config_file = 'path/to/your/config.ini'
 
 # Choose one of the available regions by using its abbreviation
 # as shown on the top of the wattsight page 

@@ -12,7 +12,7 @@ import os
 
 ############################################
 # Insert the path to your config file here!
-my_config_file = r'C:\Users\databay\OneDrive - Wattsight\Software\wapi\wapi.ini'
+my_config_file = 'path/to/your/config.ini'
 ############################################
 
 # Create a session to Connect to Wattsight Database

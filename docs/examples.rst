@@ -27,11 +27,7 @@ TIME_SERIES curve examples
 TAGGED curve examples
 ----------------------
 
-* Simple example how to read a TAGGED curve and get available tags
-  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Tagged_curve_examples/tag_simple_read.py>`_ , 
-  :download:`[download] <../examples/Tagged_curve_examples/tag_simple_read.py>`)
-* multiple tags example
-
+* No example yet
 
 
 INSTANCE curve examples
@@ -136,9 +132,3 @@ Reproduce figures from wattsight.com
      
      Temperature https://app.wattsight.com/#tab/power/245/2
      
-* 
-* https://app.wattsight.com/#tab/power/255/2
-* https://app.wattsight.com/#tab/power/131/2
-* https://app.wattsight.com/#tab/power/1015/3
-* https://app.wattsight.com/#tab/power/847/3
-* https://app.wattsight.com/#tab/power/167/43
