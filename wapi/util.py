@@ -29,6 +29,7 @@ _TS_FREQ_TABLE = {
     'MIN30': '30T',
     'MIN15': '15T',
     'MIN5': '5T',
+    'MIN': 'T',
 }
 # Mapping from Pandas to TS is built from map above
 _PANDAS_FREQ_TABLE = {}
@@ -96,15 +97,15 @@ class TS(object):
 
     def to_pandas(self, name=None):
         """ Converting :class:`wapi.util.TS` object to a pandas.Series object
-                
+
         Parameters
-        ----------      
+        ----------
         name: str, optional
-            Name of the returned pandas.Series object. If not given the name 
+            Name of the returned pandas.Series object. If not given the name
             of the curve will be used.
         Returns
         -------
-        pandas.Series   
+        pandas.Series
         """
         if name is None:
             name = self.name or self.id
@@ -154,12 +155,12 @@ class TS(object):
     def sum(ts_list, name):
         """ calculate the sum of a given list of :class:`wapi.util.TS` objects
 
-        Returns a :class:`~wapi.util.TS` (:class:`wapi.util.TS`) object that is 
+        Returns a :class:`~wapi.util.TS` (:class:`wapi.util.TS`) object that is
         the sum of a list of
         TS objects with the given name.
-         
+
         Parameters
-        ----------      
+        ----------
         ts_list: list
             list of TS objects
         name: str
@@ -175,10 +176,10 @@ class TS(object):
     def mean(ts_list, name):
         """ calculate the mean of a given list of TS objects
 
-        Returns a TS (:class:`wapi.util.TS`) object that is 
+        Returns a TS (:class:`wapi.util.TS`) object that is
         the mean of a list of
         TS objects with the given name.
-         
+
         Parameters
         ----------
         ts_list: list
@@ -196,10 +197,10 @@ class TS(object):
     def median(ts_list, name):
         """ calculate the median of a given list of TS objects
 
-        Returns a TS (:class:`wapi.util.TS`) object that is 
+        Returns a TS (:class:`wapi.util.TS`) object that is
         the median of a list of
         TS objects with the given name.
-         
+
         Parameters
         ----------
         ts_list: list
