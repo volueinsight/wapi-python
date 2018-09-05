@@ -1,7 +1,0 @@
-.. _events:
-
-Events
-======
-
-
-TBD

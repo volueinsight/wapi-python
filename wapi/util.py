@@ -95,17 +95,6 @@ class TS(object):
         return ' '.join(attrs)
 
     def to_pandas(self, name=None):
-        """ Converting :class:`wapi.util.TS` object to a pandas.Series object
-                
-        Parameters
-        ----------      
-        name: str, optional
-            Name of the returned pandas.Series object. If not given the name 
-            of the curve will be used.
-        Returns
-        -------
-        pandas.Series   
-        """
         if name is None:
             name = self.name or self.id
         if self.points is None:
@@ -152,64 +141,16 @@ class TS(object):
 
     @staticmethod
     def sum(ts_list, name):
-        """ calculate the sum of a given list of :class:`wapi.util.TS` objects
-
-        Returns a :class:`~wapi.util.TS` (:class:`wapi.util.TS`) object that is 
-        the sum of a list of
-        TS objects with the given name.
-         
-        Parameters
-        ----------      
-        ts_list: list
-            list of TS objects
-        name: str
-            Name of the returned TS object.
-        Returns
-        -------
-        :class:`wapi.util.TS` object
-        """
         df = _ts_list_to_dataframe(ts_list)
         return _generated_series_to_TS(df.sum(axis=1), name)
 
     @staticmethod
     def mean(ts_list, name):
-        """ calculate the mean of a given list of TS objects
-
-        Returns a TS (:class:`wapi.util.TS`) object that is 
-        the mean of a list of
-        TS objects with the given name.
-         
-        Parameters
-        ----------
-        ts_list: list
-            list of TS objects
-        name: str
-            Name of the returned TS object.
-        Returns
-        -------
-        :class:`wapi.util.TS` object
-        """
         df = _ts_list_to_dataframe(ts_list)
         return _generated_series_to_TS(df.mean(axis=1), name)
 
     @staticmethod
     def median(ts_list, name):
-        """ calculate the median of a given list of TS objects
-
-        Returns a TS (:class:`wapi.util.TS`) object that is 
-        the median of a list of
-        TS objects with the given name.
-         
-        Parameters
-        ----------
-        ts_list: list
-            list of TS objects
-        name: str
-            Name of the returned TS object.
-        Returns
-        -------
-        :class:`wapi.util.TS` object
-        """
         df = _ts_list_to_dataframe(ts_list)
         return _generated_series_to_TS(df.median(axis=1), name)
 
