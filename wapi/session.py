@@ -93,17 +93,33 @@ class Session(object):
         response = self.data_request('GET', self.urlbase, '/api/curves/get?{}'.format(arg))
         return self.handle_single_curve_response(response)
 
-    _search_terms = ['query', 'id', 'name', 'commodity', 'category', 'area', 'station', 'source', 'scenario',
-                     'unit', 'time_zone', 'version', 'frequency', 'data_type', 'curve_state']
-
-    def search(self, **kwargs):
+    def search(self, query=None, id=None, name=None, commodity=None, category=None, area=None, station=None,
+               source=None, scenario=None, unit=None, time_zone=None, version=None, frequency=None, data_type=None,
+               curve_state=None, modified_since=None):
         """Search for a curve."""
-        # First establish query from keyword args
+        search_terms = {
+            'query': query,
+            'id': id,
+            'name': name,
+            'commodity': commodity,
+            'category': category,
+            'area': area,
+            'station': station,
+            'source': source,
+            'scenario': scenario,
+            'unit': unit,
+            'time_zone': time_zone,
+            'version': version,
+            'frequency': frequency,
+            'data_type': data_type,
+            'curve_state': curve_state,
+            'modified_since': modified_since,
+        }
         args = []
         astr = ''
-        for key, val in kwargs.items():
-            if key not in self._search_terms:
-                raise MetadataException("Illegal search parameter {}".format(key))
+        for key, val in search_terms.items():
+            if val is None:
+                continue
             if hasattr(val, '__iter__') and not isinstance(val, str):
                 args.extend(['{}={}'.format(key, v) for v in val])
             else:
@@ -127,7 +143,52 @@ class Session(object):
 
     _attributes = {'commodities', 'categories', 'areas', 'stations', 'sources', 'scenarios',
                    'units', 'time_zones', 'versions', 'frequencies', 'data_types',
-                   'curve_states', 'curve_types'}
+                   'curve_states', 'curve_types', 'functions', 'filters'}
+
+    def get_commodities(self):
+        return self.get_attribute('commodities')
+
+    def get_categories(self):
+        return self.get_attribute('categories')
+
+    def get_areas(self):
+        return self.get_attribute('areas')
+
+    def get_stations(self):
+        return self.get_attribute('stations')
+
+    def get_sources(self):
+        return self.get_attribute('sources')
+
+    def get_scenarios(self):
+        return self.get_attribute('scenarios')
+
+    def get_units(self):
+        return self.get_attribute('units')
+
+    def get_time_zones(self):
+        return self.get_attribute('time_zones')
+
+    def get_versions(self):
+        return self.get_attribute('versions')
+
+    def get_frequencies(self):
+        return self.get_attribute('frequencies')
+
+    def get_data_types(self):
+        return self.get_attribute('data_types')
+
+    def get_curve_states(self):
+        return self.get_attribute('curve_states')
+
+    def get_curve_types(self):
+        return self.get_attribute('curve_types')
+
+    def get_functions(self):
+        return self.get_attribute('functions')
+
+    def get_filters(self):
+        return self.get_attribute('filters')
 
     def get_attribute(self, attribute):
         """Get valid values for an attribute."""
