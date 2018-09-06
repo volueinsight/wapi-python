@@ -119,7 +119,7 @@ class InstanceCurve(BaseCurve):
     def search_instances(self, issue_date_from=None, issue_date_to=None,
                          issue_dates=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
-                         output_time_zone=None, only_accessible=True):
+                         output_time_zone=None, only_accessible=True, modified_since=None):
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -128,6 +128,8 @@ class InstanceCurve(BaseCurve):
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
             args.extend(self._flatten('issue_date', issue_dates))
+        if modified_since is not None:
+            args.extend('modified_since', modified_since)
         astr = '&'.join(args)
         url = '/api/instances/{}?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to find instances')
@@ -178,7 +180,7 @@ class TaggedInstanceCurve(BaseCurve):
     def search_instances(self, tags=None, issue_date_from=None, issue_date_to=None,
                          issue_dates=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
-                         output_time_zone=None, only_accessible=True):
+                         output_time_zone=None, only_accessible=True, modified_since=None):
         args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
               self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
@@ -189,6 +191,8 @@ class TaggedInstanceCurve(BaseCurve):
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
             args.extend(self._flatten('issue_date', issue_dates))
+        if modified_since is not None:
+            args.extend('modified_since', modified_since)
         astr = '&'.join(args)
         url = '/api/instances/tagged/{}?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to find tagged instances')
