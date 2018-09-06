@@ -52,7 +52,7 @@ class TS(object):
         self.time_zone = time_zone
         self.tag = tag
         self.issue_date = issue_date
-        self.data_type = curve_type
+        self.curve_type = curve_type
         self.points = points
         #
         # input_dict is the json dict from WAPI
@@ -68,8 +68,8 @@ class TS(object):
         else:
             self.tz = pytz.timezone('CET')
 
-        if self.data_type is None:
-            self.data_type = detect_data_type(issue_date, tag)
+        if self.curve_type is None:
+            self.curve_type = detect_curve_type(self.issue_date, self.tag)
         # Validation
         if self.id is None and self.name is None:
             raise CurveException('TS must have id or name')
@@ -83,12 +83,12 @@ class TS(object):
         if self.name:
             attrs.append(self.name)
 
-        attrs.extend([self.data_type, self.tz.zone, self.frequency])
+        attrs.extend([self.curve_type, self.tz.zone, self.frequency])
 
         if self.tag:
             attrs.append(self.tag)
         if self.issue_date:
-            attrs.append(self.issue_date.strftime('%Y-%m-%d'))
+            attrs.append(str(self.issue_date))
         if self.points:
             attrs.append('size: {}'.format(len(self.points)))
 
@@ -286,7 +286,7 @@ def parse_tz(time_zone):
         return pytz.timezone('CET')
 
 
-def detect_data_type(issue_date, tag):
+def detect_curve_type(issue_date, tag):
     if issue_date is None and tag is None:
         return TIME_SERIES
     elif issue_date is None:
