@@ -26,7 +26,7 @@ wapi.events module
     :members:
     :undoc-members:
     :show-inheritance:
-    
+
 wapi.util module
 --------------------
 
