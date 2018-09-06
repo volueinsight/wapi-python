@@ -92,17 +92,33 @@ class Session(object):
         response = self.data_request('GET', self.urlbase, '/api/curves/get?{}'.format(arg))
         return self.handle_single_curve_response(response)
 
-    _search_terms = ['query', 'id', 'name', 'commodity', 'category', 'area', 'station', 'source', 'scenario',
-                     'unit', 'time_zone', 'version', 'frequency', 'data_type', 'curve_state']
-
-    def search(self, **kwargs):
+    def search(self, query=None, id=None, name=None, commodity=None, category=None, area=None, station=None,
+               source=None, scenario=None, unit=None, time_zone=None, version=None, frequency=None, data_type=None,
+               curve_state=None, modified_since=None):
         """Search for a curve."""
-        # First establish query from keyword args
+        search_terms = {
+            'query': query,
+            'id': id,
+            'name': name,
+            'commodity': commodity,
+            'category': category,
+            'area': area,
+            'station': station,
+            'source': source,
+            'scenario': scenario,
+            'unit': unit,
+            'time_zone': time_zone,
+            'version': version,
+            'frequency': frequency,
+            'data_type': data_type,
+            'curve_state': curve_state,
+            'modified_since': modified_since,
+        }
         args = []
         astr = ''
-        for key, val in kwargs.items():
-            if key not in self._search_terms:
-                raise MetadataException("Illegal search parameter {}".format(key))
+        for key, val in search_terms.items():
+            if val is None:
+                continue
             if hasattr(val, '__iter__') and not isinstance(val, str):
                 args.extend(['{}={}'.format(key, v) for v in val])
             else:
@@ -126,7 +142,97 @@ class Session(object):
 
     _attributes = {'commodities', 'categories', 'areas', 'stations', 'sources', 'scenarios',
                    'units', 'time_zones', 'versions', 'frequencies', 'data_types',
-                   'curve_states', 'curve_types'}
+                   'curve_states', 'curve_types', 'functions', 'filters'}
+
+    def get_commodities(self):
+        """
+        Get valid values for the commodity attribute
+        """
+        return self.get_attribute('commodities')
+
+    def get_categories(self):
+        """
+        Get valid values for the category attribute
+        """
+        return self.get_attribute('categories')
+
+    def get_areas(self):
+        """
+        Get valid values for the area attribute
+        """
+        return self.get_attribute('areas')
+
+    def get_stations(self):
+        """
+        Get valid values for the station attribute
+        """
+        return self.get_attribute('stations')
+
+    def get_sources(self):
+        """
+        Get valid values for the source attribute
+        """
+        return self.get_attribute('sources')
+
+    def get_scenarios(self):
+        """
+        Get valid values for the scenarios attribute
+        """
+        return self.get_attribute('scenarios')
+
+    def get_units(self):
+        """
+        Get valid values for the unit attribute
+        """
+        return self.get_attribute('units')
+
+    def get_time_zones(self):
+        """
+        Get valid values for the time zone attribute
+        """
+        return self.get_attribute('time_zones')
+
+    def get_versions(self):
+        """
+        Get valid values for the version attribute
+        """
+        return self.get_attribute('versions')
+
+    def get_frequencies(self):
+        """
+        Get valid values for the frequency attribute
+        """
+        return self.get_attribute('frequencies')
+
+    def get_data_types(self):
+        """
+        Get valid values for the data_type attribute
+        """
+        return self.get_attribute('data_types')
+
+    def get_curve_states(self):
+        """
+        Get valid values for the curve_state attribute
+        """
+        return self.get_attribute('curve_states')
+
+    def get_curve_types(self):
+        """
+        Get valid values for the curve_type attribute
+        """
+        return self.get_attribute('curve_types')
+
+    def get_functions(self):
+        """
+        Get valid values for the function attribute
+        """
+        return self.get_attribute('functions')
+
+    def get_filters(self):
+        """
+        Get valid values for the filter attribute
+        """
+        return self.get_attribute('filters')
 
     def get_attribute(self, attribute):
         """Get valid values for an attribute."""
