@@ -13,13 +13,13 @@ Wattsight API python library documentation
 :Copyright:
   2018, Wattsight AS
 
-This library is meant as a simple toolkit for working with data from 
-https://api.wattsight.com/ (or equivalent services). Note that access is 
-based on some sort of login credentials, this library is not all that useful 
+This library is meant as a simple toolkit for working with data from
+https://api.wattsight.com/ (or equivalent services). Note that access is
+based on some sort of login credentials, this library is not all that useful
 unless you have a valid Wattsight account.
 
-The source code of this library is hosted on github and licensed under the 
-``MIT License``. 
+The source code of this library is hosted on github and licensed under the
+``MIT License``.
 
 https://github.com/wattsight/wapi-python
 
