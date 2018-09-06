@@ -152,7 +152,7 @@ class Session(object):
 
     def get_categories(self):
         """
-        Get valid values for the categories attribute
+        Get valid values for the category attribute
         """
         return self.get_attribute('categories')
 
