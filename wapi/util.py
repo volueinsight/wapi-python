@@ -71,8 +71,6 @@ class TS(object):
         if self.data_type is None:
             self.data_type = detect_data_type(issue_date, tag)
         # Validation
-        if self.id is None and self.name is None:
-            raise CurveException('TS must have id or name')
         if self.frequency is None:
             raise CurveException('TS must have frequency')
 
