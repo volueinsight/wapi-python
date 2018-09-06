@@ -145,48 +145,93 @@ class Session(object):
                    'curve_states', 'curve_types', 'functions', 'filters'}
 
     def get_commodities(self):
+        """
+        Get valid values for the commodity attribute
+        """
         return self.get_attribute('commodities')
 
     def get_categories(self):
+        """
+        Get valid values for the categories attribute
+        """
         return self.get_attribute('categories')
 
     def get_areas(self):
+        """
+        Get valid values for the area attribute
+        """
         return self.get_attribute('areas')
 
     def get_stations(self):
+        """
+        Get valid values for the station attribute
+        """
         return self.get_attribute('stations')
 
     def get_sources(self):
+        """
+        Get valid values for the source attribute
+        """
         return self.get_attribute('sources')
 
     def get_scenarios(self):
+        """
+        Get valid values for the scenarios attribute
+        """
         return self.get_attribute('scenarios')
 
     def get_units(self):
+        """
+        Get valid values for the unit attribute
+        """
         return self.get_attribute('units')
 
     def get_time_zones(self):
+        """
+        Get valid values for the time zone attribute
+        """
         return self.get_attribute('time_zones')
 
     def get_versions(self):
+        """
+        Get valid values for the version attribute
+        """
         return self.get_attribute('versions')
 
     def get_frequencies(self):
+        """
+        Get valid values for the frequency attribute
+        """
         return self.get_attribute('frequencies')
 
     def get_data_types(self):
+        """
+        Get valid values for the data_type attribute
+        """
         return self.get_attribute('data_types')
 
     def get_curve_states(self):
+        """
+        Get valid values for the curve_state attribute
+        """
         return self.get_attribute('curve_states')
 
     def get_curve_types(self):
+        """
+        Get valid values for the curve_type attribute
+        """
         return self.get_attribute('curve_types')
 
     def get_functions(self):
+        """
+        Get valid values for the function attribute
+        """
         return self.get_attribute('functions')
 
     def get_filters(self):
+        """
+        Get valid values for the filter attribute
+        """
         return self.get_attribute('filters')
 
     def get_attribute(self, attribute):
