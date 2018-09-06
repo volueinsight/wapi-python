@@ -12,19 +12,10 @@ A number of use cases is presented in order to introduce different data structur
 
 ## Installation of Wattsight API python library
 
-1. Using curl
+1. Using pip
 
 	```command
-	curl -LOk https://github.com/wattsight/wapi-python/archive/wapi-python-0.0.7.zip
-	unzip wapi-python-0.0.7.zip
-	cd wapi-python-wapi-python-0.0.7
-	python setup.py install
-	```
-
-2. Using pip
-
-	```command
-	pip install git+https://github.com/wattsight/wapi-python@wapi-python-0.0.7
+	pip install -U wapi-python
 	```
 
 ## Implementation
