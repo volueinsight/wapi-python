@@ -137,7 +137,7 @@ class Session(object):
         raise CurveException('Bad curve type requested')
 
     def events(self, curve_list, start_time=None, timeout=None):
-        """Get an even listener for a list of curves."""
+        """Get an event listener for a list of curves."""
         return events.EventListener(self, curve_list, start_time=start_time, timeout=timeout)
 
     _attributes = {'commodities', 'categories', 'areas', 'stations', 'sources', 'scenarios',

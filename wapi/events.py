@@ -69,6 +69,9 @@ class EventListener:
         self.worker.join(timeout)
 
     def __iter__(self):
+        return self
+
+    def __next__(self):
         return self.get()
 
     def __enter__(self):
