@@ -6,15 +6,18 @@ language: python
 
 python:
   - 2.7
-  - 3.6.5
+  - 3.6
   - 3.7
-  - pypy3
 
 build:
+  pre_ci_boot:
+    image_name: drydock/u16pytall
+    image_tag: v6.5.4
+    pull: true
+
   ci:
     - mkdir -p shippable/testresults
     - mkdir -p shippable/codecoverage
-    - ls -a /root/venv
     - shippable_retry pip install -r requirements.txt
     - shippable_retry pip install -r test-requirements.txt
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
