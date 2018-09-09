@@ -1,0 +1,24 @@
+#
+# CI of wapi-python with Shippable
+#
+
+language: python
+
+python:
+  - 2.7
+  - 3.6
+  - 3.7
+  - pypy3
+
+build:
+  ci:
+    - mkdir -p shippable/testresults
+    - mkdir -p shippable/codecoverage
+    - shippable_retry pip install -r requirements.txt
+    - shippable_retry pip install -r test-requirements.txt
+    - python -m pytest --junit-xml=shippable/testresults/junit.xml
+    - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
+
+#
+# Todo: Add release to github + pypi when updating master branch
+#
