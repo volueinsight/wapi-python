@@ -6,7 +6,7 @@ language: python
 
 python:
   - 2.7
-  - 3.6
+  - 3.6.5
   - 3.7
   - pypy3
 
@@ -14,6 +14,7 @@ build:
   ci:
     - mkdir -p shippable/testresults
     - mkdir -p shippable/codecoverage
+    - ls -a /root/venv
     - shippable_retry pip install -r requirements.txt
     - shippable_retry pip install -r test-requirements.txt
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
