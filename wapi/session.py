@@ -70,7 +70,7 @@ class Session(object):
             client_secret = config.get(auth_type, 'secret')
             auth_urlbase = config.get(auth_type, 'auth_urlbase')
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
-        if 'proxy' in config:
+        if 'proxy' in config.sections():
             proxies = self._requests_params.get('proxies', {})
             if 'http' in config['proxy']:
                 proxies['http'] = config.get('proxy', 'http')
