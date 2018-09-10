@@ -34,12 +34,16 @@ class Session(object):
     e.g. configuration, access keys, sockets for long-running requests etc.
     """
 
-    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
+    def __init__(self, urlbase=None, config_file=None, client_id=None,
+                 client_secret=None, auth_urlbase=None, requests_params=None):
         self.urlbase = 'https://api.wattsight.com'
         self.auth = None
+        self._requests_params = requests_params or {}
+
         self._curve_cache = {}
         self._name_cache = {}
         self._session = requests.Session()
+
         if config_file is not None:
             self.read_config_file(config_file)
         elif client_id is not None and client_secret is not None:
@@ -66,6 +70,13 @@ class Session(object):
             client_secret = config.get(auth_type, 'secret')
             auth_urlbase = config.get(auth_type, 'auth_urlbase')
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
+        if 'proxy' in config:
+            proxies = self._requests_params.get('proxies', {})
+            if 'http' in config['proxy']:
+                proxies['http'] = config.get('proxy', 'http')
+            if 'https' in config['proxy']:
+                proxies['https'] = config.get('proxy', 'https')
+            self._requests_params['proxies'] = proxies
 
     def configure(self, client_id, client_secret, auth_urlbase=None):
         """Programmatically set authentication parameters"""
@@ -289,7 +300,7 @@ class Session(object):
             headers.update(self.auth.get_headers(databytes))
         req = requests.Request(method=req_type, url=longurl, data=databytes, headers=headers, auth=authval)
         prepared = self._session.prepare_request(req)
-        res = self._session.send(prepared)
+        res = self._session.send(prepared, **self._requests_params)
         if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
