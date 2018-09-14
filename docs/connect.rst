@@ -38,20 +38,9 @@ the :class:`~wapi.session.Session` class ::
 
 Using a proxy
 -------------
-You can set a proxy in the config file ::
 
-    [proxies]
-    http = http://10.10.1.10:3128
-    https = http://10.10.1.10:1080
-
-When creating a :class:`wapi.session.Session`, you can specify arguments that will be passed to :class:`requests.Session.send` ::
-
-    import wapi
-    proxies = {
-      'https': 'https://10.10.1.10:1080',
-    }
-    session = wapi.Session(client_id='client id', client_secret='client secret',
-                           requests_params={'proxies': proxies})
+The library responds to the standard proxy evironment variables
+(https_proxy, etc.) if they are present.
 
 
 .. _sample config file: https://github.com/wattsight/wapi-python/tree/master/sampleconfig.ini
