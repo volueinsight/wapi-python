@@ -37,7 +37,7 @@ build:
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner
       -Dsonar.host.url="https://sonar.dev.wattsight.com"
       -Dsonar.login="$SONAR_TOKEN"
-      -Dsonar.projectName="Wapi-python :: $BRANCH"
+      -Dsonar.projectName="Wapi-python :\: $BRANCH"
       -Dsonar.projectKey="wapi:$BRANCH";
       fi
     - if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
@@ -45,7 +45,7 @@ build:
       -Dsonar.analysis.mode=preview
       -Dsonar.host.url="https://sonar.dev.wattsight.com"
       -Dsonar.login="$SONAR_TOKEN"
-      -Dsonar.projectName="Wapi-python :: $BRANCH"
+      -Dsonar.projectName="Wapi-python :\: $BRANCH"
       -Dsonar.projectKey="wapi:$BRANCH"
       -Dsonar.github.pullRequest="$PULL_REQUEST"
       -Dsonar.github.repository="wattsight/wapi-python"
