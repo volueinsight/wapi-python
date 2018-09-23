@@ -27,16 +27,16 @@ build:
     - shippable_retry pip install -r test-requirements.txt
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
-    - if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ] then
+    - if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
       apt-get install pylint;
       shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
       unzip sonar-scanner-cli-3.2.0.1227.zip;
       fi
-    - if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7"] then
+    - if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7"]; then
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner -Dsonar.analysis.mode=preview;
       fi
     - if [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7"] &&
-      [ "$BRANCH" == "master" -o "$BRANCH" == "development" ] then
+      [ "$BRANCH" == "master" -o "$BRANCH" == "development" ]; then
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner;
       fi
 
