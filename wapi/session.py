@@ -287,9 +287,7 @@ class Session(object):
         if self.auth is not None:
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(databytes))
-        req = requests.Request(method=req_type, url=longurl, data=databytes, headers=headers, auth=authval)
-        prepared = self._session.prepare_request(req)
-        res = self._session.send(prepared)
+        res = self._session.request(method=req_type, url=longurl, data=databytes, headers=headers, auth=authval)
         if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)

@@ -36,5 +36,12 @@ the :class:`~wapi.session.Session` class ::
     import wapi
     session = wapi.Session(client_id='client id', client_secret='client secret')
 
+Using a proxy
+-------------
+
+The library responds to the standard proxy evironment variables
+(https_proxy, etc.) if they are present.
+
+
 .. _sample config file: https://github.com/wattsight/wapi-python/tree/master/sampleconfig.ini
 .. _here: https://api.wattsight.com/#documentation
