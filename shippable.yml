@@ -9,6 +9,11 @@ python:
   - 3.6
   - 3.7
 
+env:
+  global:
+    - secure: jdWSf9ZfCbs6IbktwcfsE/V/oVXdtaT6bGVyDAroLC4lhIknPYD/0+N2oMSllq5jvmsYACLzyxpFVac8iW4CNeFi/thkz1xTMYuK8E3SfHbzoOD0+KjMffvh2ARIGPskgL69/jeWs1GL+Dx/Om4dnp8laoFPjYevC6uMA6VjGKmyRVYvkmhLrEKNt/7kPzb+l67WdAM5PHApArAWRSjlmPNH8CT+1qjoDJlKPK+Jnu3cxpsE7SC7OqEgYnmaZvDJMbGKsJDfYnjs8Y38cPoErf5DBB8wVx7TM8bssSRudR0cLFm9+ofEdvQ824lHmFHgWcJ8ERZ1aw6xQeNzECPZbw==
+    - secure: QyzIuauz4bUPJaw6QnoUq2aAsmWfvlwrocrP3zmd2BkDZmhuT+rtDSjYL7Qp3e4yLg/6suHMJSRUD+lgBqnDDvGalvvtkN2XfqIigOAt18Haz3p843DxGPmo5nH2u9jPhyEgFgs4YsIwMvI2jKTxadtGjwUL4cDF87a0ZTOCuKNKCydXfIbkYQgCazlwpk86Qyt7ykrld1l2AyAjoZVkhnnbLUFQCgC0vBuV1JUo2C48yyRAQ29jAQlJ9BCs7PdaRaHabIclZO85fcBxtWa1nqTtcMPfz9HpqGgsiTEiDb+1JfLRpG2w3oN9RELhSh7RJgqKJgL9TiUznGr/UVgbAQ==
+
 build:
   pre_ci_boot:
     image_name: drydock/u16pytall
@@ -22,6 +27,19 @@ build:
     - shippable_retry pip install -r test-requirements.txt
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
+    - type -a sonar-scanner
+    - ls -la /usr/lib/jvm
+    - type -a pylint
+    - >
+      if [ "$IS_PULL_REQUEST" == "true" ]; then
+      sonar-scanner -Dsonar.analysis.mode=preview
+      fi
+    - >
+      if [ "$IS_PULL_REQUEST" == "false" ] &&
+      [ "$BRANCH" == "master" -o "$BRANCH" == "development" ]; then
+      sonar-scanner
+      fi
+
 
 #
 # Todo: Add release to github + pypi when updating master branch
