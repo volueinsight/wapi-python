@@ -27,13 +27,14 @@ build:
     - shippable_retry pip install -r test-requirements.txt
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
-    - ls -la /usr/lib/jvm
-    - type -a pylint
-    - shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip
-    - unzip sonar-scanner-cli-3.2.0.1227.zip
-    - mkdir -p bin && mv sonar-scanner-3.2.0.1227/bin/sonar-scanner bin/
-    - mkdir -p lib && mv sonar-scanner-3.2.0.1227/lib/*.jar lib/
-    - mkdir -p conf && mv sonar-scanner-3.2.0.1227/conf/* conf/
+    - if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
+      apt-get install pylint;
+      shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
+      unzip sonar-scanner-cli-3.2.0.1227.zip;
+      mkdir -p bin && mv sonar-scanner-3.2.0.1227/bin/sonar-scanner bin/;
+      mkdir -p lib && mv sonar-scanner-3.2.0.1227/lib/*.jar lib/;
+      mkdir -p conf && mv sonar-scanner-3.2.0.1227/conf/* conf/;
+      fi
     - >
       if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7"]; then
       sonar-scanner -Dsonar.analysis.mode=preview
