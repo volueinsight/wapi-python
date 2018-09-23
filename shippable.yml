@@ -32,10 +32,10 @@ build:
       shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
       unzip sonar-scanner-cli-3.2.0.1227.zip;
       fi
-    - if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7"]; then
+    - if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner -Dsonar.analysis.mode=preview;
       fi
-    - if [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7"] &&
+    - if [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ] &&
       [ "$BRANCH" == "master" -o "$BRANCH" == "development" ]; then
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner;
       fi
