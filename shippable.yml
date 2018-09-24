@@ -44,7 +44,7 @@ build:
       -Dsonar.projectKey="wapi-python:$BRANCH";
       fi
     - >
-      if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
+      #if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
       echo ./sonar-scanner-3.2.0.1227/bin/sonar-scanner -X
       -Dsonar.analysis.mode=preview
       -Dsonar.sources=wapi
@@ -56,7 +56,7 @@ build:
       -Dsonar.python.coverage.reportPath=shippable/codecoverage/coverage.xml
       -Dsonar.projectName="Wapi-python :: $BRANCH"
       -Dsonar.projectKey="wapi-python:$BRANCH";
-      fi
+      #fi
 
 
 #
