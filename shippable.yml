@@ -29,13 +29,13 @@ build:
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
     - if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
       apt-get install pylint;
-      shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
-      unzip sonar-scanner-cli-3.2.0.1227.zip;
+      shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778.zip;
+      unzip sonar-scanner-cli-3.0.3.778.zip;
       fi
     - >
       if [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ] &&
       [ "$BRANCH" == "master" -o "$BRANCH" == "development" -o "$BRANCH" == "shippable" ]; then
-      ./sonar-scanner-3.2.0.1227/bin/sonar-scanner
+      ./sonar-scanner-3.0.3.778/bin/sonar-scanner
       -Dsonar.sources=wapi
       -Dsonar.host.url=https://sonar.dev.wattsight.com
       -Dsonar.login=$SONAR_TOKEN
@@ -45,12 +45,11 @@ build:
       fi
     - >
       if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
-      ./sonar-scanner-3.2.0.1227/bin/sonar-scanner
+      ./sonar-scanner-3.0.3.778/bin/sonar-scanner
       -Dsonar.analysis.mode=preview
       -Dsonar.sources=wapi
       -Dsonar.host.url=https://sonar.dev.wattsight.com
       -Dsonar.login=$SONAR_TOKEN
-      -Dsonar.password=""
       -Dsonar.github.oauth=$GITHUB_TRAVIS_TOKEN
       -Dsonar.github.pullRequest=$PULL_REQUEST
       -Dsonar.github.repository=wattsight/wapi-python
