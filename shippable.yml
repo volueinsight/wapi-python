@@ -45,7 +45,7 @@ build:
       fi
     - >
       if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
-      ./sonar-scanner-3.2.0.1227/bin/sonar-scanner -X
+      echo ./sonar-scanner-3.2.0.1227/bin/sonar-scanner -X
       -Dsonar.analysis.mode=preview
       -Dsonar.sources=wapi
       -Dsonar.host.url=https://sonar.dev.wattsight.com
@@ -54,8 +54,8 @@ build:
       -Dsonar.github.pullRequest=$PULL_REQUEST
       -Dsonar.github.repository=wattsight/wapi-python
       -Dsonar.python.coverage.reportPath=shippable/codecoverage/coverage.xml
-      -Dsonar.projectName="Wapi-python :: shippable"
-      -Dsonar.projectKey="wapi-python:shippable";
+      -Dsonar.projectName="Wapi-python :: $BRANCH"
+      -Dsonar.projectKey="wapi-python:$BRANCH";
       fi
 
 
