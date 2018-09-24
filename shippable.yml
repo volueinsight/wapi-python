@@ -16,7 +16,6 @@ build:
     pull: true
 
   ci:
-    - env
     - mkdir -p shippable/testresults
     - mkdir -p shippable/codecoverage
     - shippable_retry pip install -r requirements.txt
