@@ -16,6 +16,7 @@ build:
     pull: true
 
   ci:
+    - env
     - mkdir -p shippable/testresults
     - mkdir -p shippable/codecoverage
     - shippable_retry pip install -r requirements.txt
@@ -40,7 +41,7 @@ build:
       fi
     - >
       if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
-      ./sonar-scanner-3.2.0.1227/bin/sonar-scanner -X
+      ./sonar-scanner-3.2.0.1227/bin/sonar-scanner
       -Dsonar.analysis.mode=preview
       -Dsonar.sources=wapi
       -Dsonar.host.url=https://sonar.dev.wattsight.com
