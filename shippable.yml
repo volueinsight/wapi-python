@@ -24,7 +24,7 @@ build:
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
     - if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
       apt-get install pylint;
-      shippable_retry wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
+      shippable_retry wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
       unzip sonar-scanner-cli-3.2.0.1227.zip;
       fi
     - >
