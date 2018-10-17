@@ -3,6 +3,9 @@
 Access data from WAPI
 =====================
 
+Example
+-------
+    
 The data in WAPI is stored in ``curves`` . A curve is a collection of metadata,
 describing one or more time series.
 There are 4 types of curves:
@@ -20,12 +23,12 @@ how to access the stored data, based on the given curve type.
 Searching for curves
 --------------------
 
-Each curve can have various of the following `metadata` attributes that
-describe the curve:
+Each curve can have various of the following ``metadata`` attributes that
+describe the curve. 
 
 * commodity
-* categories
-* area
+* categories 
+* area 
 * border_source
 * station
 * sources
@@ -36,6 +39,7 @@ describe the curve:
 * frequency
 * data_type
 
+
 The standard way of finding curves, is by searching using a combination of these
 metadata attributes. To search for curves, you can either
 use the `api web interface`_ (see the `documentation`_ for more info)
@@ -43,22 +47,10 @@ or search for curves within python.
 
 To search for curves within python, use the :meth:`wapi.session.Session.search`
 function.
-When supplying a list of alternatives the search is for "any of" the values,
-while the search is for the combination of attributes requested ("and").
-A search call will return a list of 0 or more curve objects. You can
-get the name of the found curve(s) by accessing the ``curve.name`` attribute::
-
-    >>> curves = session.search(category='WND', area=['EE', 'LT'], frequency='H')
-    >>> [c.name for c in curves]
-    ['pro ee wnd intraday ec00da mwh/h cet h f',
-     'pro ee wnd intraday lastec mwh/h cet h f',
-     'pro ee wnd intraday tso mwh/h cet h f',
-     'pro lt wnd intraday ec00da mwh/h cet h f',
-     'pro lt wnd intraday lastec mwh/h cet h f',
-     'pro lt wnd intraday tso mwh/h cet h f',
-     'pro ee wnd intraday mwh/h cet h a',
-     'pro lt wnd intraday mwh/h cet h a']
-
+    
+The valid values for each attribute can be accessed using
+the specific ``session.get_ATTRIBUTE`` function:
+     
 .. automethod:: wapi.session.Session.search
     :noindex:
 

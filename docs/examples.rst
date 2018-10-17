@@ -65,10 +65,13 @@ TAGGED_INSTANCE curve examples
   :download:`[download] <../examples/Tagged-Instance_curve_examples/tagins_latest_instance.py>`)
 
 
-Events example
---------------
+Listening for changes example
+-----------------------------
 
-* tbd
+* Listening for changes for several Solar and Wind curves and append new data to
+  a csv file for each new event
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Listening_for_changes/renewables_database.py>`_ ,
+  :download:`[download] <../examples/Listening_for_changes/renewables_database.py>`)
 
 General examples
 -----------------

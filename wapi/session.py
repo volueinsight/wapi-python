@@ -29,9 +29,31 @@ class MetadataException(Exception):
 
 
 class Session(object):
-    """
-    Class to hold the state which is needed when talking to the Wattsight data center,
-    e.g. configuration, access keys, sockets for long-running requests etc.
+    """ Establish a connection to Wattsight API
+    
+    Creates an object that holds the state which is needed when talking to the 
+    Wattsight data center. To establish a session, you have to provide
+    suthentication information either directly by using a ```client_id` and
+    ``client_secret`` or using a ``config_file`` .
+
+    See https://api.wattsight.com/#documentation for information how to get
+    your authentication data.
+    
+    Parameters
+    ----------
+
+    config_file: path
+        path to the config.ini file which contains your authentication
+        information.
+    client_id: str
+        Your client ID
+    client_secret:
+        Your client secret.
+        
+    Returns
+    -------
+    session: :class:`wapi.session.Session` object
+    
     """
 
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
@@ -76,7 +98,29 @@ class Session(object):
         self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
 
     def get_curve(self, id=None, name=None):
-        """Return a curve object of the correct type.  Either id or name must be specified."""
+        """Getting a curve object 
+        
+        Returns a curve object of the correct type.  Either id or name must 
+        be specified.
+        
+        Parameters
+        ----------
+        
+        id: int 
+            curve id
+        name: str
+            curve name
+        
+        Returns
+        -------
+        curve object
+            Curve objects, can be one of:
+            :class:`~wapi.curves.TimeSeriesCurve` , 
+            :class:`~wapi.curves.TaggedCurve` , 
+            :class:`~wapi.curves.InstanceCurve` ,
+            :class:`~wapi.curves.TaggedInstanceCurve` .
+        """
+        
         if id is None and name is None:
             raise MetadataException('No curve specified')
         if id is None:
@@ -95,7 +139,106 @@ class Session(object):
     def search(self, query=None, id=None, name=None, commodity=None, category=None, area=None, station=None,
                source=None, scenario=None, unit=None, time_zone=None, version=None, frequency=None, data_type=None,
                curve_state=None, modified_since=None):
-        """Search for a curve."""
+        """Search for a curve by query, id, name or attributes
+        
+        This function searches for curves that matches the given search 
+        parameters and returns a list of 0 or more curve objects. 
+        A curve object can be a 
+        :class:`~wapi.curves.TimeSeriesCurve` , 
+        :class:`~wapi.curves.TaggedCurve`, 
+        :class:`~wapi.curves.InstanceCurve` or a
+        :class:`~wapi.curves.TaggedInstanceCurve` object.
+        
+        When supplying a list of alternatives the search is for "any of" the 
+        values, while the search is for the combination of attributes 
+        requested ("and").
+        
+        Example
+        -------
+        
+        >>> curves = session.search(category='WND', area=['EE', 'LT'], frequency='H')
+        >>> [c.name for c in curves]
+            ['pro ee wnd intraday ec00da mwh/h cet h f',
+             'pro ee wnd intraday lastec mwh/h cet h f',
+             'pro ee wnd intraday tso mwh/h cet h f',
+             'pro lt wnd intraday ec00da mwh/h cet h f',
+             'pro lt wnd intraday lastec mwh/h cet h f',
+             'pro lt wnd intraday tso mwh/h cet h f',
+             'pro ee wnd intraday mwh/h cet h a',
+             'pro lt wnd intraday mwh/h cet h a']
+        
+        Parameters
+        ----------
+        
+        query: str
+            A query string to search for curve, eg: query='pro de wnd f'
+        id: int or lits of int 
+            search for one or more specific id's 
+        name: str or list of str
+            search for one or more curve names, you can use the ``*`` as
+            placeholder. eg names='de*wnd*f'
+        commodity: str or list of str
+            search for curves that match the given ``commodity`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_commodities`
+        category: str or list of str
+            search for curves that match the given ``category`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_categories`
+        area: str or list of str
+            search for curves that match the given ``area`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_areas`
+        station: str or list of str
+            search for curves that match the given ``station`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_stations`
+        source: str or list of str
+            search for curves that match the given ``source`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_sources`
+        scenario: str or list of str
+            search for curves that match the given ``scenario`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_scenarios`
+        unit: str or list of str
+            search for curves that match the given ``unit`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_units`
+        time_zone: str or list of str
+            search for curves that match the given ``time_zone`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_time_zones`
+        version: str or list of str
+            search for curves that match the given ``version`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_versions`            
+        frequency: str or list of str
+            search for curves that match the given ``frequency`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_frequencies`
+        data_type: str or list of str
+            search for curves that match the given ``data_type`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_data_types`
+        curve_state: str or list of str
+            search for curves that match the given ``curve_state`` attribute. 
+            Get valid values for this attribute with 
+            :meth:`wapi.session.Session.get_curve_state`
+        modified_since: datestring, pandas.Timestamp or datetime.datetime
+            only search for curves that where modified after given datetime
+            
+        Returns
+        -------
+        curves: list
+            list of curve objects, can be one of:
+            :class:`~wapi.curves.TimeSeriesCurve` , 
+            :class:`~wapi.curves.TaggedCurve` , 
+            :class:`~wapi.curves.InstanceCurve` ,
+            :class:`~wapi.curves.TaggedInstanceCurve` .
+        """
+        
+        
         search_terms = {
             'query': query,
             'id': id,
