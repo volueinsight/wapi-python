@@ -37,7 +37,7 @@ class OAuth:
         # Prevent loop
         if self.revalidating:
             return
-        if self.valid_until is None or time.time() > self.valid_until:
+        if self.valid_until is None or time.time() > self.valid_until - 60:
             self.revalidating = True
             self._authenticate()
             self.revalidating = False
