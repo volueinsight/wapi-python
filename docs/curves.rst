@@ -71,7 +71,8 @@ Each curve has all of the following ``attributes`` :
 
 * id: id of the curve
 * name: name of the curve
-* curve_state: NOT SURE IF THAT SHOULD BE PUBLIC
+* curve_state: state of the curve (`Normal availability`, 
+  `Beta release` or `Scheduled for removal`)
 * curve_type: one of the 4 defines types (TIME_SERIES, TAGGED, INSTANCES and
   TAGGED_INSTANCES)
 
