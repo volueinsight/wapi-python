@@ -8,6 +8,12 @@ import datetime
 import dateutil.parser
 import pytz
 import pandas as pd
+from past.types import basestring
+try:
+    from urllib.parse import quote_plus
+except ImportError:
+    from urllib import quote_plus
+
 
 # Curve types
 TIME_SERIES = 'TIME_SERIES'
@@ -301,3 +307,15 @@ def is_integer(s):
         return True
     except ValueError:
         return False
+
+
+def make_arg(key, value):
+    if hasattr(value, '__iter__') and not isinstance(value, basestring):
+        return '&'.join([make_arg(key, v) for v in value])
+
+    if isinstance(value, datetime.date):
+        tmp = value.isoformat()
+    else:
+        tmp = '{}'.format(value)
+    v = quote_plus(tmp)
+    return '{}={}'.format(key, v)
