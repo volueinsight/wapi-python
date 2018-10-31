@@ -901,7 +901,7 @@ class TaggedInstanceCurve(BaseCurve):
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
               util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
-            args.extend(util.make_arg('tag', tags))
+            args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
