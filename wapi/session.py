@@ -6,11 +6,11 @@ try:
     from urllib.parse import urljoin
 except ImportError:
     from urlparse import urljoin
-from builtins import str
 
 import requests
 import json
 import time
+from past.types import basestring
 
 from . import auth, curves, events, util
 from .util import CurveException
@@ -86,9 +86,9 @@ class Session(object):
             return self._curve_cache[id]
 
         if id is not None:
-            arg = 'id={}'.format(id)
+            arg = util.make_arg('id', id)
         else:
-            arg = 'name={}'.format(name)
+            arg = util.make_arg('name', name)
         response = self.data_request('GET', self.urlbase, '/api/curves/get?{}'.format(arg))
         return self.handle_single_curve_response(response)
 
@@ -119,10 +119,7 @@ class Session(object):
         for key, val in search_terms.items():
             if val is None:
                 continue
-            if hasattr(val, '__iter__') and not isinstance(val, str):
-                args.extend(['{}={}'.format(key, v) for v in val])
-            else:
-                args.append('{}={}'.format(key, val))
+            args.append(util.make_arg(key, val))
         if len(args):
             astr = "?{}".format("&".join(args))
         # Now run the search, and try to produce a list of curves
@@ -278,7 +275,7 @@ class Session(object):
         databytes = None
         if data is not None:
             headers['content_type'] = 'application/json'
-            if isinstance(data, str):
+            if isinstance(data, basestring):
                 databytes = data.encode()
             else:
                 databytes = json.dumps(data).encode()
