@@ -6,15 +6,9 @@ language: python
 
 python:
   - 2.7
-  - 3.6
   - 3.7
 
 build:
-  pre_ci_boot:
-    image_name: drydock/u16pytall
-    image_tag: v6.5.4
-    pull: true
-
   ci:
     - mkdir -p shippable/testresults
     - mkdir -p shippable/codecoverage
@@ -22,14 +16,15 @@ build:
     - shippable_retry pip install -r test-requirements.txt
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
-    - if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
-      apt-get install pylint;
-      shippable_retry wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip;
+    - >
+      if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
+      apt-get install pylint &&
+      shippable_retry wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip &&
       unzip sonar-scanner-cli-3.2.0.1227.zip;
       fi
     - >
       if [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ] &&
-      [ "$BRANCH" == "master" -o "$BRANCH" == "development" -o "$BRANCH" == "shippable" ]; then
+      [ "$BRANCH" == "master" -o "$BRANCH" == "development" ]; then
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner
       -Dsonar.sources=wapi
       -Dsonar.host.url=https://sonar.dev.wattsight.com
@@ -53,10 +48,10 @@ build:
       -Dsonar.projectKey="wapi-python:$BRANCH";
       fi
 
-
-#
-# Todo: Add release to github + pypi when updating master branch
-#
+  post_ci:
+    - ./releases/release_package.sh test
+    - [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" -a "$BASE_BRANCH" == "master" ] && ./releases/release_package.sh test
+    - [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" -a "$BRANCH" == "master" ] && ./releases/release_package.sh release
 
 integrations:
   generic:
