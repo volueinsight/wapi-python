@@ -1,0 +1,6 @@
+Use requests so that system proxy configuration is honored.
+
+Escape REST arguments properly.
+
+Add margin when authentication token expires, and fix event
+authentication, thanks to @kfollesdal.
