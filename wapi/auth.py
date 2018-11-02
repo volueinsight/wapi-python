@@ -58,7 +58,7 @@ class OAuth:
         rsp = json.loads(response.content.decode())
         self.token = rsp['access_token']
         self.token_type = rsp['token_type']
-        self.valid_until = now + rsp['expires_in']
+        self.valid_until = now + int(rsp['expires_in'] * 0.95)
 
     def get_headers(self, data):
         """The web-token auth header is simple"""

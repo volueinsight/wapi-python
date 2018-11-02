@@ -127,6 +127,7 @@ class SSEClientWithAuth(sseclient.SSEClient):
         if self.do_shutdown:
             raise StopIteration()
         if self.auth is not None:
+            self.auth.validate_auth()
             headers = self.auth.get_headers(None)
             self.requests_kwargs['headers'].update(headers)
         super(SSEClientWithAuth, self)._connect()
