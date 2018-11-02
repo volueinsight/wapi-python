@@ -43,7 +43,7 @@ def test_configure_by_file():
     assert s.auth.token_type == 'Bearer'
     assert s.auth.token == 'secrettoken'
     lifetime = s.auth.valid_until - time.time()
-    assert lifetime > 990
+    assert lifetime > 900
     assert lifetime < 1010
 
 
@@ -67,7 +67,7 @@ def test_configure_by_param():
     assert s.auth.token_type == 'Bearer'
     assert s.auth.token == 'secrettoken'
     lifetime = s.auth.valid_until - time.time()
-    assert lifetime > 990
+    assert lifetime > 900
     assert lifetime < 1010
 
 

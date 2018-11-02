@@ -1,12 +1,6 @@
-from . import util
-import datetime
-try:
-    from urllib.parse import urljoin, quote_plus
-except ImportError:
-    from urlparse import urljoin
-    from urllib import quote_plus
-from builtins import str
 from past.types import basestring
+
+from . import util
 
 
 class BaseCurve:
@@ -25,21 +19,21 @@ class BaseCurve:
 
     def _add_from_to(self, args, first, last, prefix=''):
         if first is not None:
-            args.append(self._make_arg('{}from'.format(prefix), first))
+            args.append(util.make_arg('{}from'.format(prefix), first))
         if last is not None:
-            args.append(self._make_arg('{}to'.format(prefix), last))
+            args.append(util.make_arg('{}to'.format(prefix), last))
 
     def _add_functions(self, args, time_zone, filter, function, frequency, output_time_zone):
         if time_zone is not None:
-            args.append(self._make_arg('time_zone', time_zone))
+            args.append(util.make_arg('time_zone', time_zone))
         if filter is not None:
-            args.append(self._make_arg('filter', filter))
+            args.append(util.make_arg('filter', filter))
         if function is not None:
-            args.append(self._make_arg('function', function))
+            args.append(util.make_arg('function', function))
         if frequency is not None:
-            args.append(self._make_arg('frequency', frequency))
+            args.append(util.make_arg('frequency', frequency))
         if output_time_zone is not None:
-            args.append(self._make_arg('output_time_zone', output_time_zone))
+            args.append(util.make_arg('output_time_zone', output_time_zone))
 
     def _load_data(self, url, failmsg, urlbase=None):
         if urlbase is None:
@@ -51,21 +45,6 @@ class BaseCurve:
         elif response.status_code == 204 or response.status_code == 404:
             return None
         raise util.CurveException('{}: {} ({})'.format(failmsg, response.content, response.status_code))
-
-    @staticmethod
-    def _make_arg(key, value):
-        if isinstance(value, datetime.date):
-            tmp = value.isoformat()
-        else:
-            tmp = '{}'.format(value)
-        v = quote_plus(tmp)
-        return '{}={}'.format(key, v)
-
-    @staticmethod
-    def _flatten(key, data):
-        if hasattr(data, '__iter__') and not isinstance(data, str):
-            return [BaseCurve._make_arg(key, d) for d in data]
-        return [BaseCurve._make_arg(key, data)]
 
     def access(self):
         url = '/api/curves/{}/access'.format(self.id)
@@ -339,7 +318,7 @@ class TaggedCurve(BaseCurve):
         else:
             if isinstance(tag, basestring):
                 unwrap = True
-            args=self._flatten('tag', tag)
+            args=[util.make_arg('tag', tag)]
         self._add_from_to(args, data_from, data_to)
         self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         astr = '&'.join(args)
@@ -494,16 +473,16 @@ class InstanceCurve(BaseCurve):
         :class:`wapi.util.TS` object
         """
         
-        args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
+              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
-            args.extend(self._flatten('issue_date', issue_dates))
+            args.append(util.make_arg('issue_date', issue_dates))
         if modified_since is not None:
-            args.extend('modified_since', modified_since)
+            args.append(util.make_arg('modified_since', modified_since))
         astr = '&'.join(args)
         url = '/api/instances/{}?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to find instances')
@@ -634,9 +613,9 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('issue_date', issue_date),
-              self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
+              util.make_arg('issue_date', issue_date),
+              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
@@ -783,14 +762,14 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
+              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
-            args.extend(self._flatten('issue_date', issue_dates))
+            args.append(util.make_arg('issue_date', issue_dates))
         astr = '&'.join(args)
         url = '/api/instances/{}/latest?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to load instance')
@@ -960,18 +939,18 @@ class TaggedInstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
+              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
-            args.extend(self._flatten('tag', tags))
+            args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
-            args.extend(self._flatten('issue_date', issue_dates))
+            args.append(util.make_arg('issue_date', issue_dates))
         if modified_since is not None:
-            args.extend('modified_since', modified_since)
+            args.append(util.make_arg('modified_since', modified_since))
         astr = '&'.join(args)
         url = '/api/instances/tagged/{}?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to find tagged instances')
@@ -1110,14 +1089,14 @@ class TaggedInstanceCurve(BaseCurve):
         :class:`wapi.util.TS` object
         """
         
-        args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('issue_date', issue_date),
-              self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
+              util.make_arg('issue_date', issue_date),
+              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         unwrap = False
         if tag is not None:
             if isinstance(tag, basestring):
                 unwrap = True
-            args.extend(self._flatten('tag', tag))
+            args.append(util.make_arg('tag', tag))
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
@@ -1281,16 +1260,16 @@ class TaggedInstanceCurve(BaseCurve):
         :class:`wapi.util.TS` object
         """
         
-        args=[self._make_arg('with_data', '{}'.format(with_data).lower()),
-              self._make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
+              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
-            args.extend(self._flatten('tag', tags))
+            args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
-            args.extend(self._flatten('issue_date', issue_dates))
+            args.append(util.make_arg('issue_date', issue_dates))
         astr = '&'.join(args)
         url = '/api/instances/tagged/{}/latest?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to load tagged instance')
