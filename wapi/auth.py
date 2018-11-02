@@ -37,7 +37,7 @@ class OAuth:
         # Prevent loop
         if self.revalidating:
             return
-        if self.valid_until is None or time.time() > self.valid_until - 60:
+        if self.valid_until is None or time.time() > self.valid_until:
             self.revalidating = True
             self._authenticate()
             self.revalidating = False
@@ -58,7 +58,7 @@ class OAuth:
         rsp = json.loads(response.content.decode())
         self.token = rsp['access_token']
         self.token_type = rsp['token_type']
-        self.valid_until = now + rsp['expires_in']
+        self.valid_until = now + int(rsp['expires_in'] * 0.95)
 
     def get_headers(self, data):
         """The web-token auth header is simple"""
