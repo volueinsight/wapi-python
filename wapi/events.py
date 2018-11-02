@@ -24,9 +24,9 @@ class EventListener:
                 self.curve_cache[curve.id] = curve
             else:
                 ids.append(curve)
-        args = ['id={}'.format(c) for c in map(str, ids)]
+        args = [util.make_arg('id', ids)]
         if start_time is not None:
-            args.append('start_time={}'.format(start_time))
+            args.append(util.make_arg('start_time', start_time))
         url = urljoin(session.urlbase, '/api/events?{}'.format('&'.join(args)))
         self.client = SSEClientWithAuth(url, session=session._session, auth=session.auth)
         self.timeout = timeout
