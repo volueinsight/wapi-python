@@ -34,7 +34,7 @@ build:
       -Dsonar.projectKey="wapi-python:$BRANCH";
       fi
     - >
-      if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" ]; then
+      if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" -a -n "$SONAR_TOKEN" ]; then
       ./sonar-scanner-3.2.0.1227/bin/sonar-scanner
       -Dsonar.analysis.mode=preview
       -Dsonar.sources=wapi
