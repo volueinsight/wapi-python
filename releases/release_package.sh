@@ -28,9 +28,6 @@ if [ ! -r "./releases/relnote-$VERSION" ]; then
   exit 1
 fi
 
-BODY_STRING=$(cat ./releases/relnote-$VERSION | sed -e 's/"/\\"/g' -e 's/$/\\n/' | tr -d '\n')
-echo "Have $BODY_STRING"
-
 if [ "$MODE" == "test" ]; then
   echo "Testing passed."
   exit 0
@@ -40,6 +37,7 @@ fi
 # Release to github
 #
 
+BODY_STRING=$(cat ./releases/relnote-$VERSION | sed -e 's/"/\\"/g' -e 's/$/\\n/' | tr -d '\n')
 JSON_DATA="{
   \"tag_name\": \"$RELEASE\",
   \"target_commitish\": \"master\",
@@ -54,4 +52,4 @@ curl -d "$JSON_DATA" -H "Authorization: token $GITHUB_TRAVIS_TOKEN" \
 # Release to pypi
 #
 
-echo "Release to PYPI missing, do it manually."
+echo "Release to PYPI missing for now, do it manually."
