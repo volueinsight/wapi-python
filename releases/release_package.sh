@@ -16,7 +16,8 @@ if [ "$MODE" != "test" -a "$MODE" != "release" ]; then
   exit 1
 fi
 
-if curl -H "Authorization: token $GITHUB_TRAVIS_TOKEN" https://api.github.com/repos/wattsight/$REPO/releases/$RELEASE
+if curl -f -H "Authorization: token $GITHUB_TRAVIS_TOKEN" \
+        https://api.github.com/repos/wattsight/$REPO/releases/tags/$RELEASE
 then
   echo "Release $RELEASE already exists, update VERSION (and wapi-python/__init__.py)"
   exit 1
@@ -45,8 +46,8 @@ JSON_DATA="{
   \"name\": \"$RELEASE\",
   \"body\": \"$BODY_STRING\"
 }"
-curl -d "$JSON_DATA" https://api.github.com/repos/wattsight/$REPO/releases
-
+curl -d "$JSON_DATA" -H "Authorization: token $GITHUB_TRAVIS_TOKEN" \
+        https://api.github.com/repos/wattsight/$REPO/releases
 
 
 #

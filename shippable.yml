@@ -49,7 +49,10 @@ build:
       fi
 
   post_ci:
-    - ./releases/release_package.sh test
+    - |
+      if [ "$IS_PULL_REQUEST" == "false" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" -a "$BRANCH" == "shippable" ]; then
+        ./releases/release_package.sh test
+      fi
     - |
       if [ "$IS_PULL_REQUEST" == "true" -a "$SHIPPABLE_PYTHON_VERSION" == "3.7" -a "$BASE_BRANCH" == "master" ]; then
         ./releases/release_package.sh test
