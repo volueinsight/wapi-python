@@ -61,3 +61,4 @@ build:
 integrations:
   generic:
     - integrationName: sonar_keys
+    - integrationName: pypi_twine
