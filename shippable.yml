@@ -40,7 +40,7 @@ build:
       -Dsonar.sources=wapi
       -Dsonar.host.url=https://sonar.dev.wattsight.com
       -Dsonar.login=$SONAR_TOKEN
-      -Dsonar.github.oauth=$GITHUB_TRAVIS_TOKEN
+      -Dsonar.github.oauth=$SQ_GITHUB_TOKEN
       -Dsonar.github.pullRequest=$PULL_REQUEST
       -Dsonar.github.repository=wattsight/wapi-python
       -Dsonar.python.coverage.reportPath=shippable/codecoverage/coverage.xml
