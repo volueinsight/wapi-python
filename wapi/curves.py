@@ -320,7 +320,8 @@ class TaggedCurve(BaseCurve):
 
 class InstanceCurve(BaseCurve):
     def search_instances(self, issue_date_from=None, issue_date_to=None,
-                         issue_dates=None, with_data=False, data_from=None, data_to=None,
+                         issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None,
+                         issue_times=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
                          output_time_zone=None, only_accessible=True, modified_since=None):
         """ Getting data from INSTANCE curves for multiple issue_dates
@@ -359,6 +360,15 @@ class InstanceCurve(BaseCurve):
             List of timestamps to return :class:`wapi.util.TS` objects for.
             The time-stamps can be provided in the same types as
             "issue_date_from".
+
+        issue_weekdays: list of str, optional
+            Filter issue_date on day of week.
+        issue_days: list of int, optional
+            Filter issue_date on day of month
+        issue_months: list of str, optional
+            Filter issue_date on month
+        issue_times: list of str, optional
+            Filter issue_date on time of day
 
         with_data: bool, optional
             If with_data is False, the returned  :class:`wapi.util.TS` object
@@ -460,6 +470,14 @@ class InstanceCurve(BaseCurve):
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
             args.append(util.make_arg('issue_date', issue_dates))
+        if issue_weekdays is not None:
+            args.append(util.make_arg('issue_weekday', issue_weekdays))
+        if issue_days is not None:
+            args.append(util.make_arg('issue_day', issue_days))
+        if issue_months is not None:
+            args.append(util.make_arg('issue_month', issue_months))
+        if issue_times is not None:
+            args.append(util.make_arg('issue_time', issue_times))
         if modified_since is not None:
             args.append(util.make_arg('modified_since', modified_since))
         astr = '&'.join(args)
@@ -590,7 +608,7 @@ class InstanceCurve(BaseCurve):
               util.make_arg('issue_date', issue_date),
               util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if with_data:
-            self._add_from_to(args, data_from, data_to, prefix='data_')
+            self._add_from_to(args, data_from, data_to)
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         astr = '&'.join(args)
         url = '/api/instances/{}/get?{}'.format(self.id, astr)
@@ -757,7 +775,8 @@ class TaggedInstanceCurve(BaseCurve):
         return self._load_data(url, 'Failed to fetch tags')
 
     def search_instances(self, tags=None, issue_date_from=None, issue_date_to=None,
-                         issue_dates=None, with_data=False, data_from=None, data_to=None,
+                         issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None,
+                         issue_times=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
                          output_time_zone=None, only_accessible=True, modified_since=None):
         """ Getting data from TAGGED_INSTANCE curves for multiple issue_dates
@@ -805,6 +824,15 @@ class TaggedInstanceCurve(BaseCurve):
             List of timestamps to return :class:`wapi.util.TS` objects for.
             The time-stamps can be provided in the same types as
             "issue_date_from".
+
+        issue_weekdays: list of str, optional
+            Filter issue_date on day of week.
+        issue_days: list of int, optional
+            Filter issue_date on day of month
+        issue_months: list of str, optional
+            Filter issue_date on month
+        issue_times: list of str, optional
+            Filter issue_date on time of day
 
         with_data: bool, optional
             If with_data is False, the returned  :class:`wapi.util.TS` object
@@ -908,6 +936,14 @@ class TaggedInstanceCurve(BaseCurve):
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         if issue_dates is not None:
             args.append(util.make_arg('issue_date', issue_dates))
+        if issue_weekdays is not None:
+            args.append(util.make_arg('issue_weekday', issue_weekdays))
+        if issue_days is not None:
+            args.append(util.make_arg('issue_day', issue_days))
+        if issue_months is not None:
+            args.append(util.make_arg('issue_month', issue_months))
+        if issue_times is not None:
+            args.append(util.make_arg('issue_time', issue_times))
         if modified_since is not None:
             args.append(util.make_arg('modified_since', modified_since))
         astr = '&'.join(args)
@@ -1050,7 +1086,7 @@ class TaggedInstanceCurve(BaseCurve):
                 unwrap = True
             args.append(util.make_arg('tag', tag))
         if with_data:
-            self._add_from_to(args, data_from, data_to, prefix='data_')
+            self._add_from_to(args, data_from, data_to)
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
         astr = '&'.join(args)
         url = '/api/instances/tagged/{}/get?{}'.format(self.id, astr)
