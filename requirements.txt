@@ -1,5 +1,5 @@
 requests >= 2.18
-sseclient >= 0.0.18, < 0.0.23
+sseclient >= 0.0.24
 pytz
 pandas >= 0.21
 future >= 0.16
