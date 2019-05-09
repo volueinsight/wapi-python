@@ -5,7 +5,7 @@ Access data from WAPI
 
 Example
 -------
-    
+
 The data in WAPI is stored in ``curves`` . A curve is a collection of metadata,
 describing one or more time series.
 There are 4 types of curves:
@@ -24,11 +24,11 @@ Searching for curves
 --------------------
 
 Each curve can have various of the following ``metadata`` attributes that
-describe the curve. 
+describe the curve.
 
 * commodity
-* categories 
-* area 
+* categories
+* area
 * border_source
 * station
 * sources
@@ -47,10 +47,10 @@ or search for curves within python.
 
 To search for curves within python, use the :meth:`wapi.session.Session.search`
 function.
-    
+
 The valid values for each attribute can be accessed using
 the specific ``session.get_ATTRIBUTE`` function:
-     
+
 .. automethod:: wapi.session.Session.search
     :noindex:
 
@@ -71,7 +71,7 @@ Each curve has all of the following ``attributes`` :
 
 * id: id of the curve
 * name: name of the curve
-* curve_state: state of the curve (`Normal availability`, 
+* curve_state: state of the curve (`Normal availability`,
   `Beta release` or `Scheduled for removal`)
 * curve_type: one of the 4 defines types (TIME_SERIES, TAGGED, INSTANCES and
   TAGGED_INSTANCES)
