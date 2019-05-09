@@ -63,4 +63,4 @@ echo "Release to PYPI."
 shippable_retry pip install -U twine
 rm -rf dist
 python setup.py sdist bdist_wheel
-twine upload dist/wapi-python-$VERSION-*
+twine upload dist/wapi-python-$VERSION.tar.gz dist/wapi_python-$VERSION-*.whl

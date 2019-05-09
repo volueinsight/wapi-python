@@ -17,7 +17,7 @@ build:
     - python -m pytest --junit-xml=shippable/testresults/junit.xml
     - python -m pytest --cov=wapi --cov-report=xml:shippable/codecoverage/coverage.xml
     - >
-      if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" ] && [ "$IS_PULL_REQUEST" == "true" -o "$BRANCH" == "development" ]; then
+      if [ "$SHIPPABLE_PYTHON_VERSION" == "3.7" -a -n "$SQ_SCANNER_VERSION" ] && [ "$IS_PULL_REQUEST" == "true" -o "$BRANCH" == "development" ]; then
       apt-get update &&
       apt-get install pylint &&
       shippable_retry wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SQ_SCANNER_VERSION.zip &&

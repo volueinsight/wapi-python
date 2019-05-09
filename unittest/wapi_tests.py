@@ -90,12 +90,12 @@ def test_reconfigure_session():
     assert 'already done' in str(exinfo.value)
 
 #
-# Fixtures to set up the various session types for the rest of the tests
+# Fixtures to set up the session for the rest of the tests
 # Returns both a session and a request mock linked into the session.
 #
 
-@pytest.fixture()
-def oauth_session():
+@pytest.fixture
+def session():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
     s = wapi.Session()
     mock = requests_mock.Adapter()
@@ -106,17 +106,12 @@ def oauth_session():
     s.read_config_file(config_file)
     return s, mock
 
-@pytest.fixture(params=[oauth_session])
-def sessions(request):
-    return request.param()
-
-
 #
 # Test the various authorization headers
 #
 
-def test_login_header(oauth_session):
-    s,m = oauth_session
+def test_login_header(session):
+    s,m = session
     m.register_uri('GET', prefix + '/units', text='{"res": "ok"}',
                    request_headers={'Authorization': '{} {}'.format(s.auth.token_type,
                                                                     s.auth.token)})
@@ -128,8 +123,8 @@ def test_login_header(oauth_session):
 # Test curves
 #
 
-def test_search(sessions):
-    s,m = sessions
+def test_search(session):
+    s,m = session
     metadata = [{'id': 5, 'name': 'testcurve',
                 'frequency': 'H', 'time_zone': 'CET',
                 'curve_type': 'TIME_SERIES'},
@@ -142,9 +137,9 @@ def test_search(sessions):
     assert isinstance(c[0], wapi.curves.TimeSeriesCurve)
     assert isinstance(c[1], wapi.curves.InstanceCurve)
 
-@pytest.fixture()
-def ts_curve(sessions):
-    s,m = sessions
+@pytest.fixture
+def ts_curve(session):
+    s,m = session
     metadata = {'id': 5, 'name': 'testcurve',
                 'frequency': 'H', 'time_zone': 'CET',
                 'curve_type': 'TIME_SERIES'}
@@ -169,9 +164,9 @@ def test_ts_data(ts_curve):
     assert d.frequency == 'H'
 
 
-@pytest.fixture()
-def tagged_curve(sessions):
-    s,m = sessions
+@pytest.fixture
+def tagged_curve(session):
+    s,m = session
     metadata = {'id': 9, 'name': 'testcurve',
                 'frequency': 'H', 'time_zone': 'CET',
                 'curve_type': 'TAGGED'}
@@ -204,9 +199,9 @@ def test_tagged_data(tagged_curve):
     assert d.tag == 'tag1'
 
 
-@pytest.fixture()
-def inst_curve(sessions):
-    s,m = sessions
+@pytest.fixture
+def inst_curve(session):
+    s,m = session
     metadata = {'id': 7, 'name': 'testcurve',
                 'frequency': 'D', 'time_zone': 'CET',
                 'curve_type': 'INSTANCES'}
@@ -262,9 +257,9 @@ def test_inst_get_latest(inst_curve):
     assert res.name == 'inst_name'
 
 
-@pytest.fixture()
-def tagged_inst_curve(sessions):
-    s,m = sessions
+@pytest.fixture
+def tagged_inst_curve(session):
+    s,m = session
     metadata = {'id': 10, 'name': 'testcurve',
                 'frequency': 'D', 'time_zone': 'CET',
                 'curve_type': 'TAGGED_INSTANCES'}
@@ -333,10 +328,10 @@ def test_tagged_inst_get_latest(tagged_inst_curve):
 # Test events
 #
 
-def test_events(sessions):
-    s, m = sessions
-    c1 = ts_curve(sessions)[0]
-    c2 = inst_curve(sessions)[0]
+def test_events(session, ts_curve, inst_curve):
+    s, m = session
+    c1 = ts_curve[0]
+    c2 = inst_curve[0]
     sse_data = []
     ids = [5, 7, 7, 7, 5, 5, 7]
     for n, id in enumerate(ids):
