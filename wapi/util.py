@@ -81,21 +81,24 @@ class TS(object):
             raise CurveException('TS must have frequency')
 
     def __str__(self):
-        attrs = ['TS:']
-        if self.id:
-            attrs.append(str(self.id))
+        size = ''
+        if self.points:
+            size = ' size: {}'.format(len(self.points))
+        return 'TS: {}{}'.format(self.fullname, size)
+
+    @property
+    def fullname(self):
+        attrs = []
         if self.name:
             attrs.append(self.name)
-
-        attrs.extend([self.curve_type, self.tz.zone, self.frequency])
-
+        else:
+            if self.id:
+                attrs.append(str(self.id))
+            attrs.extend([self.curve_type, self.tz.zone, self.frequency])
         if self.tag:
             attrs.append(self.tag)
         if self.issue_date:
             attrs.append(str(self.issue_date))
-        if self.points:
-            attrs.append('size: {}'.format(len(self.points)))
-
         return ' '.join(attrs)
 
     def to_pandas(self, name=None):
@@ -111,7 +114,7 @@ class TS(object):
         pandas.Series
         """
         if name is None:
-            name = self.name or self.id
+            name = self.fullname
         if self.points is None:
             return pd.Series(name=name)
 

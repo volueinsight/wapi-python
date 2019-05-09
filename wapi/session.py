@@ -123,7 +123,7 @@ class Session(object):
             :class:`~wapi.curves.TaggedInstanceCurve`.
         """
         if id is not None:
-            warnings.warn("Looking up a curve by ID will be removed in the future.", FutureWarning)
+            warnings.warn("Looking up a curve by ID will be removed in the future.", FutureWarning, stacklevel=2)
         if id is None and name is None:
             raise MetadataException('No curve specified')
         if id is None:
@@ -268,7 +268,7 @@ class Session(object):
             'modified_since': modified_since,
         }
         if id is not None:
-            warnings.warn("Searching for curves by ID will be removed in the future.", FutureWarning)
+            warnings.warn("Searching for curves by ID will be removed in the future.", FutureWarning, stacklevel=2)
         args = []
         astr = ''
         for key, val in search_terms.items():

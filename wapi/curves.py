@@ -17,6 +17,17 @@ class BaseCurve:
         self.id = id
         self.tz = util.parse_tz(self.time_zone)
 
+    def __str__(self):
+        if hasattr(self, 'curve_type'):
+            curve_type = self.curve_type
+        else:
+            curve_type = 'UNKNOWN'
+        if hasattr(self, 'name'):
+            name = self.name
+        else:
+            name = str(self.id)
+        return "{}({})".format(curve_type, name)
+
     def _add_from_to(self, args, first, last, prefix=''):
         if first is not None:
             args.append(util.make_arg('{}from'.format(prefix), first))
@@ -167,7 +178,7 @@ class TaggedCurve(BaseCurve):
         ----------
 
         tag: str or list, optional
-            tag or tags to get get the data for. If not supplied, the default
+            tag or tags to get get the data for. If omitted, the default
             tag is returned. If a list of multiple tags is given, the function
             will return a list with a :class:`wapi.util.TS` object for each tag.
 
@@ -230,6 +241,7 @@ class TaggedCurve(BaseCurve):
         unwrap = False
         if tag is None:
             args = []
+            unwrap = True
         else:
             if isinstance(tag, basestring):
                 unwrap = True
@@ -792,9 +804,9 @@ class TaggedInstanceCurve(BaseCurve):
             * datetime.datetime object
 
         tag: str or list, optional
-            tag or tags to get get the data for. If a list of multiple tags
-            or None (= all tags) is given, the function will return a list
-            with a :class:`wapi.util.TS` object for each tag.
+            tag or tags to get get the data for. If omitted, the default
+            tag is returned. If a list of multiple tags is given, the function
+            will return a list with a :class:`wapi.util.TS` object for each tag.
 
         with_data: bool, optional
             If with_data is False, the returned  :class:`wapi.util.TS` object
@@ -860,7 +872,9 @@ class TaggedInstanceCurve(BaseCurve):
               util.make_arg('issue_date', issue_date),
               util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         unwrap = False
-        if tag is not None:
+        if tag is None:
+            unwrap = True
+        else:
             if isinstance(tag, basestring):
                 unwrap = True
             args.append(util.make_arg('tag', tag))
