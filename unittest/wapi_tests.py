@@ -125,14 +125,14 @@ def test_login_header(session):
 
 def test_search(session):
     s,m = session
-    metadata = [{'id': 5, 'name': 'testcurve',
+    metadata = [{'id': 5, 'name': 'testcurve5',
                 'frequency': 'H', 'time_zone': 'CET',
                 'curve_type': 'TIME_SERIES'},
-                {'id': 6, 'name': 'testcurve2',
+                {'id': 6, 'name': 'testcurve6',
                 'frequency': 'D', 'time_zone': 'CET',
                 'curve_type': 'INSTANCES'}]
-    m.register_uri('GET', prefix + '/curves?id=5&id=6', text=json.dumps(metadata))
-    c = s.search(id=[5,6])
+    m.register_uri('GET', prefix + '/curves?name=testcurve5&name=testcurve6', text=json.dumps(metadata))
+    c = s.search(name=['testcurve5', 'testcurve6'])
     assert len(c) == 2
     assert isinstance(c[0], wapi.curves.TimeSeriesCurve)
     assert isinstance(c[1], wapi.curves.InstanceCurve)
@@ -140,18 +140,18 @@ def test_search(session):
 @pytest.fixture
 def ts_curve(session):
     s,m = session
-    metadata = {'id': 5, 'name': 'testcurve',
+    metadata = {'id': 5, 'name': 'testcurve5',
                 'frequency': 'H', 'time_zone': 'CET',
                 'curve_type': 'TIME_SERIES'}
-    m.register_uri('GET', prefix + '/curves/get?id=5', text=json.dumps(metadata))
-    c = s.get_curve(id=5)
+    m.register_uri('GET', prefix + '/curves/get?name=testcurve5', text=json.dumps(metadata))
+    c = s.get_curve(name='testcurve5')
     return c,s,m
 
 def test_time_series(ts_curve):
     c,s,m = ts_curve
     assert isinstance(c, wapi.curves.TimeSeriesCurve)
     assert c.id == 5
-    assert c.name == 'testcurve'
+    assert c.name == 'testcurve5'
     assert c.frequency == 'H'
     assert c.time_zone == 'CET'
 
@@ -167,18 +167,18 @@ def test_ts_data(ts_curve):
 @pytest.fixture
 def tagged_curve(session):
     s,m = session
-    metadata = {'id': 9, 'name': 'testcurve',
+    metadata = {'id': 9, 'name': 'testcurve9',
                 'frequency': 'H', 'time_zone': 'CET',
                 'curve_type': 'TAGGED'}
-    m.register_uri('GET', prefix + '/curves/get?id=9', text=json.dumps(metadata))
-    c = s.get_curve(id=9)
+    m.register_uri('GET', prefix + '/curves/get?name=testcurve9', text=json.dumps(metadata))
+    c = s.get_curve(name='testcurve9')
     return c,s,m
 
 def test_tagged(tagged_curve):
     c,s,m = tagged_curve
     assert isinstance(c, wapi.curves.TaggedCurve)
     assert c.id == 9
-    assert c.name == 'testcurve'
+    assert c.name == 'testcurve9'
     assert c.frequency == 'H'
     assert c.time_zone == 'CET'
 
@@ -202,18 +202,18 @@ def test_tagged_data(tagged_curve):
 @pytest.fixture
 def inst_curve(session):
     s,m = session
-    metadata = {'id': 7, 'name': 'testcurve',
+    metadata = {'id': 7, 'name': 'testcurve7',
                 'frequency': 'D', 'time_zone': 'CET',
                 'curve_type': 'INSTANCES'}
-    m.register_uri('GET', prefix + '/curves/get?id=7', text=json.dumps(metadata))
-    c = s.get_curve(id=7)
+    m.register_uri('GET', prefix + '/curves/get?name=testcurve7', text=json.dumps(metadata))
+    c = s.get_curve(name='testcurve7')
     return c,s,m
 
 def test_inst_curve(inst_curve):
     c,s,m = inst_curve
     assert isinstance(c, wapi.curves.InstanceCurve)
     assert c.id == 7
-    assert c.name == 'testcurve'
+    assert c.name == 'testcurve7'
     assert c.frequency == 'D'
     assert c.time_zone == 'CET'
 
@@ -260,18 +260,18 @@ def test_inst_get_latest(inst_curve):
 @pytest.fixture
 def tagged_inst_curve(session):
     s,m = session
-    metadata = {'id': 10, 'name': 'testcurve',
+    metadata = {'id': 10, 'name': 'testcurve10',
                 'frequency': 'D', 'time_zone': 'CET',
                 'curve_type': 'TAGGED_INSTANCES'}
-    m.register_uri('GET', prefix + '/curves/get?id=10', text=json.dumps(metadata))
-    c = s.get_curve(id=10)
+    m.register_uri('GET', prefix + '/curves/get?name=testcurve10', text=json.dumps(metadata))
+    c = s.get_curve(name='testcurve10')
     return c,s,m
 
 def test_tagged_inst_curve(tagged_inst_curve):
     c,s,m = tagged_inst_curve
     assert isinstance(c, wapi.curves.TaggedInstanceCurve)
     assert c.id == 10
-    assert c.name == 'testcurve'
+    assert c.name == 'testcurve10'
     assert c.frequency == 'D'
     assert c.time_zone == 'CET'
 

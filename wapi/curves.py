@@ -17,6 +17,17 @@ class BaseCurve:
         self.id = id
         self.tz = util.parse_tz(self.time_zone)
 
+    def __str__(self):
+        if hasattr(self, 'curve_type'):
+            curve_type = self.curve_type
+        else:
+            curve_type = 'UNKNOWN'
+        if hasattr(self, 'name'):
+            name = self.name
+        else:
+            name = str(self.id)
+        return "{}({})".format(curve_type, name)
+
     def _add_from_to(self, args, first, last, prefix=''):
         if first is not None:
             args.append(util.make_arg('{}from'.format(prefix), first))
@@ -85,6 +96,7 @@ class TimeSeriesCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -93,66 +105,29 @@ class TimeSeriesCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters`.
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions`.
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function. You can find the valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-
+            or applying a filter.
 
         Returns
         -------
@@ -203,9 +178,9 @@ class TaggedCurve(BaseCurve):
         ----------
 
         tag: str or list, optional
-            tag or tags to get get the data for. If a list of multiple tags
-            or None (= all tags) is given, the function will return a list
-            with a :class:`wapi.util.TS` object for each tag.
+            tag or tags to get get the data for. If omitted, the default
+            tag is returned. If a list of multiple tags is given, the function
+            will return a list with a :class:`wapi.util.TS` object for each tag.
 
         data_from: time-stamp, optional
             start date (and time) of data to be fetched. If not given, the start
@@ -225,6 +200,7 @@ class TaggedCurve(BaseCurve):
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -233,66 +209,30 @@ class TaggedCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function`. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-
+            or applying a filter.
 
         Returns
         -------
@@ -301,6 +241,7 @@ class TaggedCurve(BaseCurve):
         unwrap = False
         if tag is None:
             args = []
+            unwrap = True
         else:
             if isinstance(tag, basestring):
                 unwrap = True
@@ -363,10 +304,13 @@ class InstanceCurve(BaseCurve):
 
         issue_weekdays: list of str, optional
             Filter issue_date on day of week.
+
         issue_days: list of int, optional
             Filter issue_date on day of month
+
         issue_months: list of str, optional
             Filter issue_date on month
+
         issue_times: list of str, optional
             Filter issue_date on time of day
 
@@ -381,12 +325,14 @@ class InstanceCurve(BaseCurve):
             available. If only the date (without time) is
             given, the time is assumed to be 00:00. The timestamp can be
             provided in the same types as "issue_date_from".
+
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be
             provided in the same types as "issue_date_from".
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -395,68 +341,36 @@ class InstanceCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to
+            or applying a filter.
 
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to.
+
+        modified_since: datestring, pandas.Timestamp or datetime.datetime
+            only return instances that where modified after given datetime.
 
         Returns
         -------
@@ -502,7 +416,6 @@ class InstanceCurve(BaseCurve):
 
         Parameters
         ----------
-
         issue_date: time-stamp
             Time-stamp representing the issue date to get get data for.
             The timestamp can be provided in any of the following types :
@@ -523,12 +436,14 @@ class InstanceCurve(BaseCurve):
             available. If only the date (without time) is
             given, the time is assumed to be 00:00. The timestamp can be
             provided in the same types as "issue_date".
+
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be
             provided in the same types as "issue_date".
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -537,68 +452,33 @@ class InstanceCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to
+            or applying a filter.
 
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to.
 
         Returns
         -------
@@ -665,12 +545,14 @@ class InstanceCurve(BaseCurve):
             available. If only the date (without time) is
             given, the time is assumed to be 00:00. The timestamp can be
             provided in the same types as "issue_date_from".
+
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be
             provided in the same types as "issue_date_from".
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -679,68 +561,33 @@ class InstanceCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to
+            or applying a filter.
 
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to.
 
         Returns
         -------
@@ -806,6 +653,7 @@ class TaggedInstanceCurve(BaseCurve):
             tag or tags to consider. The function will only return objects with
             tags defined here. If None (default) is given, all available tags
             are considered.
+
         issue_date_from: time-stamp, optional
             Limits the timerange to return all available issue_dates.
             The time-stamp can be provided in any of the following types :
@@ -827,15 +675,18 @@ class TaggedInstanceCurve(BaseCurve):
 
         issue_weekdays: list of str, optional
             Filter issue_date on day of week.
+
         issue_days: list of int, optional
             Filter issue_date on day of month
+
         issue_months: list of str, optional
             Filter issue_date on month
+
         issue_times: list of str, optional
             Filter issue_date on time of day
 
         with_data: bool, optional
-            If with_data is False, the returned  :class:`wapi.util.TS` object
+            If with_data is False, the returned :class:`wapi.util.TS` object
             only contains the attributes and meta data information but no
             data values.
 
@@ -845,12 +696,14 @@ class TaggedInstanceCurve(BaseCurve):
             available. If only the date (without time) is
             given, the time is assumed to be 00:00. The timestamp can be
             provided in the same types as "issue_date_from".
+
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be
             provided in the same types as "issue_date_from".
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -859,68 +712,36 @@ class TaggedInstanceCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to
+            or applying a filter.
 
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to.
+
+        modified_since: datestring, pandas.Timestamp or datetime.datetime
+            only return instances that where modified after given datetime.
 
         Returns
         -------
@@ -983,25 +804,29 @@ class TaggedInstanceCurve(BaseCurve):
             * datetime.datetime object
 
         tag: str or list, optional
-            tag or tags to get get the data for. If a list of multiple tags
-            or None (= all tags) is given, the function will return a list
-            with a :class:`wapi.util.TS` object for each tag.
+            tag or tags to get get the data for. If omitted, the default
+            tag is returned. If a list of multiple tags is given, the function
+            will return a list with a :class:`wapi.util.TS` object for each tag.
+
         with_data: bool, optional
             If with_data is False, the returned  :class:`wapi.util.TS` object
             only contains the attributes and meta data information but no
             data values.
+
         data_from: time-stamp, optional
             start date (and time) of data to be fetched. If not given, the start
             date of the returned timeseries will be the first date with data
             available. If only the date (without time) is
             given, the time is assumed to be 00:00. The timestamp can be
             provided in the same types as "issue_date".
+
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be
             provided in the same types as "issue_date".
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -1010,78 +835,46 @@ class TaggedInstanceCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to
+            or applying a filter.
 
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to.
 
         Returns
         -------
         :class:`wapi.util.TS` object
         """
+
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
               util.make_arg('issue_date', issue_date),
               util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         unwrap = False
-        if tag is not None:
+        if tag is None:
+            unwrap = True
+        else:
             if isinstance(tag, basestring):
                 unwrap = True
             args.append(util.make_arg('tag', tag))
@@ -1129,6 +922,7 @@ class TaggedInstanceCurve(BaseCurve):
             :class:`wapi.util.TS` object. The function returns a timeseries
             for ONE of the given tags. If you want get data for a specific tag,
             only specify one tag here (recommended!).
+
         issue_date_from: time-stamp, optional
             Limits the timerange to search for the latest available issue_date.
             The time-stamp can be provided in any of the following types :
@@ -1160,12 +954,14 @@ class TaggedInstanceCurve(BaseCurve):
             available. If only the date (without time) is
             given, the time is assumed to be 00:00. The timestamp can be
             provided in the same types as "issue_date_from".
+
         data_to: time-stamp, optional
             end date (and time) of data to be fetched. The time-stamp can be
             provided in the same types as "issue_date_from".
             End dates are always excluded in the result!
             If not given, the end date of the returned timeseries will be
             the last date with data available.
+
         time_zone: str, optional
             Change curve time zone BEFORE performing an aggregation/split
             or applying a filter. If no aggregation/split or filter is applied,
@@ -1174,73 +970,39 @@ class TaggedInstanceCurve(BaseCurve):
             returned curve, since it is applied AFTER performing an
             aggregation/split or applying a filter and thus AFTER changing
             to given "time_zone" here.
-            Defined time zones are:
 
-            * 'UTC': Coordinated Universal Time
-            * 'CET': Central European Time
-            * 'WET': Western European Time
-            * 'EET': Eastern European Time
-            * 'MSK': Moscow Time
-            * 'CEGT': Central European Gas Time,
-            * 'WEGT': Western European Gas Time
-            * 'TRT': Turkey Time
-            * 'PST': Pacific Time
-            * 'ART': Argentina Time
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
 
         filter: str, optional
-            only get a specific subset of the data. Defined filters are:
-
-            * 'PEAK': Peak hours (8 <= t < 20)
-            * 'OFFPEAK': Offpeak hours (8 > t >= 20)
-            * 'OFFPEAK1': Morning offpeak hours (t < 8)
-            * 'OFFPEAK2': Evening offpeak hours (t >= 20)
-            * 'FUTUREPEAK': Workday peak hours (monday-friday AND 8 <= t < 20)
-            * 'FUTUREOFFPEAK': Weekend or offpeak hours (saturday, sunday OR 8 > t >= 20)
-            * 'WORKDAYS': Working days (monday-friday)
-            * 'WEEKENDS': Weekend days (saturday-sunday)
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
 
         function: str, optional
-            function used to aggregate or split data, if other frequency than
-            curves default is given:
-
-            * 'AVERAGE': Average value
-            * 'MAX': Maximum value
-            * 'MIN': Minimum value
-            * 'SUM': Standard deviation of values
-            * 'STDDEV': Standard deviation of values
-            * 'SUMAVG': Average value times number of values
-            * 'SAME': Split using the same value
-            * 'DIVIDE': Split using fraction of value
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
 
         frequency: str, optional
-            frequency string, data will be aggregated to defined frequency using
-            the given function. The frequency string consists of a letter
-            defining the time unit followed by an integer defining the multiple
-            of this unit. eg the letter 'H' means "hour", so 'H' or 'H1' defines
-            an aggregation frequency of "1 hour", where 'H6' stands for
-            "6 hours" and 'H12' for "12 hours". The following letter<->unit
-            definitions are valid:
-
-            * 'Y': year
-            * 'M': month
-            * 'W': week
-            * 'D': day
-            * 'H': hour
-            * 'MIN': minutes
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
 
         output_time_zone: str, optional
             Change curve time zone AFTER performing an aggregation/split
-            or applying a filter. If no aggregation/split or filter is applied,
-            this will simply change the timezone of the curve.
-            See "time_zone" argument for a definition of defined timezones.
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to
+            or applying a filter.
 
+        only_accessible: bool, optional
+            If TRUE, only return instances you have access to.
 
         Returns
         -------
         :class:`wapi.util.TS` object
         """
+
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
               util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
         if tags is not None:
