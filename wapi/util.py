@@ -115,7 +115,7 @@ class TS(object):
         """
         if name is None:
             name = self.fullname
-        if self.points is None:
+        if self.points is None or len(self.points) == 0:
             return pd.Series(name=name)
 
         index = []
