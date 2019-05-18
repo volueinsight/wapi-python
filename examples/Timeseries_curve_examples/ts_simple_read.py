@@ -19,7 +19,7 @@ session = wapi.Session(config_file=my_config_file)
 start_date = pd.Timestamp('2018-6-1 00:00')
 # end_date
 end_date =  pd.Timestamp('2018-6-8 00:00')
-  
+
 # define curve name to read, in this case temperature for Germany
 curve_name = 'tt de con °c cet min15 s'
 # get the curve

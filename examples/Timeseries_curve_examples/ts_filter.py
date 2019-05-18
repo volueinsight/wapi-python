@@ -19,7 +19,7 @@ session = wapi.Session(config_file=my_config_file)
 start_date = pd.Timestamp('2018-6-1 00:00')
 # end_date
 end_date =  pd.Timestamp('2018-6-8 00:00')
-  
+
 # define curve name to read, in this case temperature for Germany
 curve_name = 'tt de con °c cet min15 s'
 # get the curve
@@ -35,14 +35,14 @@ ts15min = curve.get_data(data_from=start_date, data_to=end_date)
 data['no filter'] = ts15min.to_pandas()
 
 ## Filter Peak Values
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to hourly frequency
 tspeak = curve.get_data(data_from=start_date, data_to=end_date, filter='PEAK')
 # convert to pandas.Series object
 data['peak'] = tspeak.to_pandas()
 
 ## Filter OFF-Peak Values
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to hourly frequency
 tsoffpeak = curve.get_data(data_from=start_date, data_to=end_date,
                            filter='OFFPEAK')

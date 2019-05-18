@@ -42,8 +42,8 @@ for r in regions:
     s = ts.to_pandas()
     # add the series as a new column to the DataFrame, set the region as name
     df1[r] = s
-    
-# plot the dataframe using the plotting function from pandas    
+
+# plot the dataframe using the plotting function from pandas
 df1.plot()
 
 
@@ -78,10 +78,9 @@ for issue_date in issue_dates:
     # use the pandas.concat() function to add a new column and keep all indexes
     df2 = pd.concat([df2,s], axis=1)
 
-# plot the dataframe using the plotting function from pandas    
+# plot the dataframe using the plotting function from pandas
 df2.plot()
 
 
 # show the figures
 plt.show()
-    

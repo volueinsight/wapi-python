@@ -21,7 +21,7 @@ session = wapi.Session(config_file=my_config_file)
 start_date = pd.Timestamp('2018-6-1 00:00')
 # end_date
 end_date =  pd.Timestamp('2018-6-8 00:00')
-  
+
 # define curve name to read, in this case temperature for Germany
 curve_name = 'tt de con °c cet min15 s'
 # get the curve
@@ -34,7 +34,7 @@ ts15min = curve.get_data(data_from=start_date, data_to=end_date)
 s15min = ts15min.to_pandas()
 
 ## Hourly average aggregation
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to hourly frequency
 ts1h = curve.get_data(data_from=start_date, data_to=end_date, function='AVERAGE',
                     frequency='H')
@@ -42,7 +42,7 @@ ts1h = curve.get_data(data_from=start_date, data_to=end_date, function='AVERAGE'
 s1h = ts1h.to_pandas()
 
 ## 6 Hourly average aggregation
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to 6 hourly frequency
 ts6h = curve.get_data(data_from=start_date, data_to=end_date, function='AVERAGE',
                     frequency='H6')
@@ -50,7 +50,7 @@ ts6h = curve.get_data(data_from=start_date, data_to=end_date, function='AVERAGE'
 s6h = ts6h.to_pandas()
 
 ## Daily average aggregation
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to daily average
 ts1d = curve.get_data(data_from=start_date, data_to=end_date, function='AVERAGE',
                     frequency='D')
@@ -58,7 +58,7 @@ ts1d = curve.get_data(data_from=start_date, data_to=end_date, function='AVERAGE'
 s1d = ts1d.to_pandas()
 
 ## Daily max aggregation
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to daily max
 ts1dmax = curve.get_data(data_from=start_date, data_to=end_date, function='MAX',
                     frequency='D')
@@ -66,7 +66,7 @@ ts1dmax = curve.get_data(data_from=start_date, data_to=end_date, function='MAX',
 s1dmax = ts1dmax.to_pandas()
 
 ## Daily min aggregation
-# read curve data from start_date to end_date to ts object and 
+# read curve data from start_date to end_date to ts object and
 # aggregate to daily min
 ts1dmin = curve.get_data(data_from=start_date, data_to=end_date, function='MIN',
                     frequency='D')

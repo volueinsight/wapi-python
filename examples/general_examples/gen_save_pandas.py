@@ -47,7 +47,7 @@ for r in regions:
     s = ts.to_pandas()
     # add the series as a new column to the DataFrame, set the region as name
     df1[r] = s
-    
+
 
 ### Save to csv
 #########################
@@ -59,28 +59,28 @@ for r in regions:
 # You can find more information about this function here:
 # https://pandas.pydata.org/pandas-docs/stable/io.html#io-store-in-csv
 
-# create the filenames to save the data to. In this case, we save it to 
-# csv files called "series.csv" and "frame.csv" into the same folder as this 
+# create the filenames to save the data to. In this case, we save it to
+# csv files called "series.csv" and "frame.csv" into the same folder as this
 # python script
 filename_s = os.path.join(file_dir,'series.csv')
 filename_df = os.path.join(file_dir,'frame.csv')
 
-# When using to_csv, by default the csv file is comma separated with point 
+# When using to_csv, by default the csv file is comma separated with point
 # as decimal separator.
 # save the series data to the csv file
 s.to_csv(filename_s)
 # save the dataframe data to the csv file
 df1.to_csv(filename_df)
 
-# We can also change the data separator and the decimal separator of the csv 
+# We can also change the data separator and the decimal separator of the csv
 # file. Here we save to semicolon separated csv with comma as decimal separator
 # and call the files "series_comma.csv" and "frame_comma.csv".
 filename_s = os.path.join(file_dir,'series_comma.csv')
 filename_df = os.path.join(file_dir,'frame_comma.csv')
 # save the series data to the csv file, set data and decimal separator
-s.to_csv(filename_s, sep=';', decimal=',') 
+s.to_csv(filename_s, sep=';', decimal=',')
 # save the dataframe data to the csv file, set data and decimal separator
-df1.to_csv(filename_df, sep=';', decimal=',') 
+df1.to_csv(filename_df, sep=';', decimal=',')
 
 
 ### Save to xlsx
@@ -93,8 +93,8 @@ df1.to_csv(filename_df, sep=';', decimal=',')
 # You can find more information about this function here:
 # https://pandas.pydata.org/pandas-docs/stable/io.html#io-excel-writer
 
-# create the filenames to save the data to. In this case, we save it to 
-# xlsx files called "series.xlsx" and "frame.xlsx" into the same folder as this 
+# create the filenames to save the data to. In this case, we save it to
+# xlsx files called "series.xlsx" and "frame.xlsx" into the same folder as this
 # python script
 filename_s = os.path.join(file_dir,'series.xlsx')
 filename_df = os.path.join(file_dir,'frame.xlsx')
@@ -104,7 +104,7 @@ filename_df = os.path.join(file_dir,'frame.xlsx')
 # the Series and DataFrame before we can save to excel. Otherwise this will
 # raise an error.
 # We do this by calling the tz_localize(None) method right before calling
-# the to_excel function. This will remove the timezone information just for 
+# the to_excel function. This will remove the timezone information just for
 # this call of the to_excel method and not overwrite the Series or DataFrame
 # object.
 # save the series data without timezone awareness to xlsx
@@ -118,7 +118,7 @@ df1.tz_localize(None).to_excel(filename_df)
 # to different sheets of the same xlsx file
 
 # Therefore we create a Pandas Excel writer, where we define the name and path
-# of the xlsx file. Here we save the data to a file called "series_frame.xlsx" 
+# of the xlsx file. Here we save the data to a file called "series_frame.xlsx"
 # which is located in the same folder as this python script
 filename = os.path.join(file_dir,'series_frame.xlsx')
 writer = pd.ExcelWriter(filename)

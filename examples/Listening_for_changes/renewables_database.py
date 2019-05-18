@@ -1,12 +1,12 @@
 """
 This example shows how to set up an event listener, so we can run some code
 whenever there are changes in the defined curves.
-In this case, we want to write PV and Wind actuals for the 4 German TSO'a, 
-France, Belgium and the two price zones in Denmark to our 
+In this case, we want to write PV and Wind actuals for the 4 German TSO'a,
+France, Belgium and the two price zones in Denmark to our
 database whenever there is new data.
 Here our "database" is simply a csv file for each curve, where we append
-the latest data. 
-Be aware, that it might take up to 15 minutes until there is new data in the 
+the latest data.
+Be aware, that it might take up to 15 minutes until there is new data in the
 curves and this script actually does something
 """
 
@@ -44,7 +44,7 @@ curve_names = ['pro be spv intraday mwh/h cet min15 a',
                'pro dk1 wnd intraday mwh/h cet min15 a',
                'pro dk2 wnd intraday mwh/h cet min15 a',
                'pro fr wnd intraday mwh/h cet min15 a']
-               
+
 # search for the curves in wapi and return curve object
 curves = session.search(name=curve_names)
 
@@ -62,18 +62,18 @@ if os.path.isdir('data_base') is False:
 # So here we get the starting time
 t_start = time.time()
 
-# This for loop waits until there is a new event and then runs the 
+# This for loop waits until there is a new event and then runs the
 # code ones for each events
 for e in events:
 
     if isinstance(e, wapi.events.EventTimeout):
         # If there is a timeout, you can handle this here, eg raise a warning
         print('TIMEOUT!')
-    
+
     elif isinstance(e, wapi.events.CurveEvent):
         print('New event in curve: ' + e.curve.name)
         curve = e.curve
-        # since actuals are usually a bit delayed, we get data 
+        # since actuals are usually a bit delayed, we get data
         # since the last 24 hours from the curve
         data_from = pd.Timestamp.now() - pd.Timedelta(hours=24)
         # get the TS object
@@ -82,22 +82,20 @@ for e in events:
         data = ts.to_pandas()
         # get last timestep
         data_last = data.tail(1)
-        
+
         # the name of the csv file for each curve is the curve name,
         # where the spaces and '/' are replaced by underscores
         csv_file = curve.name.replace(' ','_').replace('/','_')
         # we want the csv file to be in the "data_base" folder
         csv_file = os.path.join('data_base',csv_file)
-        
+
         # Now write the last value to the csv file of the curve
         # To make sure we append the data, if there is an existing csv file
         # we set the mode in pandas.to_csv to "a" (=append) and we skip
         # writing the header
         data_last.to_csv(csv_file, mode='a', header=False)
-        
+
     if (time.time() - t_start) > (60*60):
         # We don't want this example script to run forever, so we will stop it
         # when there is a new event and the run time exceeds 1 hour
         break
-        
-        
