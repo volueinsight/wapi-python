@@ -1,0 +1,13 @@
+Update tagged curve handling, if no tags are requested we now return
+only the default tag (usually Avg).  This aligns with current API
+behaviour.
+
+Add string representations for classes to make it easier to work with,
+include issue_date and tag in default pandas series names.
+
+Remove name/curve cache, the gain is quite small and it broke
+getting the latest modification time for the curve.
+
+Update documentation strings, add example for the event system.
+
+Require a sseclient version that works with both python 2.7 and 3.x.
