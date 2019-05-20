@@ -35,6 +35,7 @@ _TS_FREQ_TABLE = {
     'MIN30': '30T',
     'MIN15': '15T',
     'MIN5': '5T',
+    'MIN': 'T',
 }
 # Mapping from Pandas to TS is built from map above
 _PANDAS_FREQ_TABLE = {}
@@ -115,7 +116,7 @@ class TS(object):
         """
         if name is None:
             name = self.fullname
-        if self.points is None:
+        if self.points is None or len(self.points) == 0:
             return pd.Series(name=name)
 
         index = []

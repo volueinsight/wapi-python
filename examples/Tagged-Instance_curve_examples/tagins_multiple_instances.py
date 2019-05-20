@@ -17,8 +17,8 @@ my_config_file = 'path/to/your/config.ini'
 # Create a session to Connect to Wattsight Database
 session = wapi.Session(config_file=my_config_file)
 
-  
-# define curve name to read, in this case the ensamble forecast  
+
+# define curve name to read, in this case the ensamble forecast
 # of the temperature for Germany
 curve_name = 'tt de con ec00ens °c cet min15 f'
 # get the curve
@@ -36,7 +36,7 @@ issue_date_to = pd.Timestamp('2018-7-4 00:00')
 ts_list = curve.search_instances(issue_date_from=issue_date_from,
                                  issue_date_to=issue_date_to,
                                  with_data=True)
-                                
+
 # Since we have too many curves to plot them all, we only want to plot the
 # curves with tag='01' now. Therefore we loop through all TS objects
 # But first we create a figure and axis to plot
@@ -55,7 +55,7 @@ for ts in ts_list:
 ax.legend()
 
 
-# As described before, we can limit the returned curves by specifying a list 
+# As described before, we can limit the returned curves by specifying a list
 # of tags or a single tag to consider. So in this case we try to reproduce
 # the plot by only getting the curves we actually want to plot
 ts_list_limit = curve.search_instances(issue_date_from=issue_date_from,

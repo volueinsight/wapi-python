@@ -60,8 +60,6 @@ class Session(object):
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
         self.urlbase = 'https://api.wattsight.com'
         self.auth = None
-        self._curve_cache = {}
-        self._name_cache = {}
         self._session = requests.Session()
         if config_file is not None:
             self.read_config_file(config_file)
@@ -126,11 +124,6 @@ class Session(object):
             warnings.warn("Looking up a curve by ID will be removed in the future.", FutureWarning, stacklevel=2)
         if id is None and name is None:
             raise MetadataException('No curve specified')
-        if id is None:
-            if name in self._name_cache:
-                id = self._name_cache[name]
-        if id in self._curve_cache:
-            return self._curve_cache[id]
 
         if id is not None:
             arg = util.make_arg('id', id)
@@ -414,8 +407,6 @@ class Session(object):
         curve_id = int(metadata['id'])
         if metadata['curve_type'] in self._curve_types:
             c = self._curve_types[metadata['curve_type']](curve_id, metadata, self)
-            self._curve_cache[curve_id] = c
-            self._name_cache[c.name] = curve_id
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 

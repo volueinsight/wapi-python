@@ -17,8 +17,8 @@ my_config_file = 'path/to/your/config.ini'
 # Create a session to Connect to Wattsight Database
 session = wapi.Session(config_file=my_config_file)
 
-  
-# define curve name to read, in this case the ensamble forecast  
+
+# define curve name to read, in this case the ensamble forecast
 # of the temperature for Germany
 curve_name = 'tt de con ec00ens °c cet min15 f'
 # get the curve

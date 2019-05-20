@@ -17,13 +17,13 @@ my_config_file = 'path/to/your/config.ini'
 # Create a session to Connect to Wattsight Database
 session = wapi.Session(config_file=my_config_file)
 
-  
+
 # define curve name to read, in this case temperature forecast for Germany
 curve_name = 'tt de con ec00 °c cet min15 f'
 # get the curve
 curve = session.get_curve(name=curve_name)
 
-# An INSTANCE curve contains a timeseries for each defined issue date  
+# An INSTANCE curve contains a timeseries for each defined issue date
 # we want to get the latest instance from this curve
 ts = curve.get_latest()
 # convert TS object to pandas Series
