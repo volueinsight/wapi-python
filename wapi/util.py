@@ -63,12 +63,9 @@ class TS(object):
         self.points = points
         #
         # input_dict is the json dict from WAPI
-        attributes = ('id', 'name', 'frequency', 'time_zone',
-                      'tag', 'issue_date', 'curve_type', 'points')
         if input_dict is not None:
-            for attr in attributes:
-                if attr in input_dict:
-                    setattr(self, attr, input_dict[attr])
+            for k, v in input_dict.items():
+                setattr(self, k, v)
 
         if self.time_zone is not None:
             self.tz = parse_tz(self.time_zone)
