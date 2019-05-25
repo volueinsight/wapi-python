@@ -282,7 +282,7 @@ def parserange(rangeobj, tz=None):
 _tzmap = {
     'CEGT': 'CET',
     'WEGT': 'WET',
-    'PST': 'PST8PDT',
+    'PST': 'US/Pacific',
     'TRT': 'Turkey',
     'MSK': 'Europe/Moscow',
     'ART': 'America/Argentina/Buenos_Aires',
