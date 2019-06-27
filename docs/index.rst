@@ -35,6 +35,9 @@ This documentation contains the following pages:
    events
    examples
    modules
+   API documentation <https://wattsight.com/docs>
+
+   < Back to app <https://api.wattsight.com/>
 
 
 

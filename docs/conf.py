@@ -160,3 +160,7 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+
+#Custom css to the documentation
+def setup(app):
+    app.add_stylesheet('css/custom.css')
