@@ -279,13 +279,20 @@ def parserange(rangeobj, tz=None):
     return (begin, end)
 
 
+_tzmap = {
+    'CEGT': 'CET',
+    'WEGT': 'WET',
+    'PST': 'US/Pacific',
+    'TRT': 'Turkey',
+    'MSK': 'Europe/Moscow',
+    'ART': 'America/Argentina/Buenos_Aires',
+}
+
+
 def parse_tz(time_zone):
     try:
-        # TODO: Add more fancy implementation of the gas time zones?
-        if time_zone == 'CEGT':
-            time_zone = 'CET'
-        if time_zone == 'WEGT':
-            time_zone = 'WET'
+        if time_zone in _tzmap:
+            time_zone = _tzmap[time_zone]
         return pytz.timezone(time_zone)
     except pytz.exceptions.UnknownTimeZoneError:
         return pytz.timezone('CET')
