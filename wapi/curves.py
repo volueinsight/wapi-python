@@ -1,4 +1,5 @@
 from past.types import basestring
+import warnings
 
 from . import util
 
@@ -264,7 +265,7 @@ class InstanceCurve(BaseCurve):
                          issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None,
                          issue_times=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
-                         output_time_zone=None, only_accessible=True, modified_since=None):
+                         output_time_zone=None, only_accessible=None, modified_since=None):
         """ Getting data from INSTANCE curves for multiple issue_dates
 
         An INSTANCE curve typically represents forecast,
@@ -366,9 +367,6 @@ class InstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         modified_since: datestring, pandas.Timestamp or datetime.datetime
             only return instances that where modified after given datetime.
 
@@ -376,8 +374,9 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
@@ -403,7 +402,7 @@ class InstanceCurve(BaseCurve):
 
     def get_instance(self, issue_date, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
-                     output_time_zone=None, only_accessible=True):
+                     output_time_zone=None, only_accessible=None):
         """ Getting data from INSTANCE curves for a specific issue_date
 
         An INSTANCE curve typically represents forecast,
@@ -477,16 +476,14 @@ class InstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('issue_date', issue_date),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+              util.make_arg('issue_date', issue_date)]
         if with_data:
             self._add_from_to(args, data_from, data_to)
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
@@ -499,7 +496,7 @@ class InstanceCurve(BaseCurve):
 
     def get_latest(self, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
-                   function=None, frequency=None, output_time_zone=None, only_accessible=True):
+                   function=None, frequency=None, output_time_zone=None, only_accessible=None):
         """ Getting data from INSTANCE curves for the latest available issue_date
 
         An INSTANCE curve typically represents forecast,
@@ -586,15 +583,13 @@ class InstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
@@ -625,7 +620,7 @@ class TaggedInstanceCurve(BaseCurve):
                          issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None,
                          issue_times=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
-                         output_time_zone=None, only_accessible=True, modified_since=None):
+                         output_time_zone=None, only_accessible=None, modified_since=None):
         """ Getting data from TAGGED_INSTANCE curves for multiple issue_dates
 
         A TAGGED INSTANCE curve typically represents forecast that contain
@@ -737,9 +732,6 @@ class TaggedInstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         modified_since: datestring, pandas.Timestamp or datetime.datetime
             only return instances that where modified after given datetime.
 
@@ -747,8 +739,9 @@ class TaggedInstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         if tags is not None:
             args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -776,7 +769,7 @@ class TaggedInstanceCurve(BaseCurve):
 
     def get_instance(self, issue_date, tag=None, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
-                     output_time_zone=None, only_accessible=True):
+                     output_time_zone=None, only_accessible=None):
         """ Getting data from TAGGED_INSTANCE curves for a specific issue_date
 
         A TAGGED INSTANCE curve typically represents forecast that contain
@@ -860,17 +853,15 @@ class TaggedInstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
 
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('issue_date', issue_date),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+              util.make_arg('issue_date', issue_date)]
         unwrap = False
         if tag is None:
             unwrap = True
@@ -893,7 +884,7 @@ class TaggedInstanceCurve(BaseCurve):
 
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
-                   function=None, frequency=None, output_time_zone=None, only_accessible=True):
+                   function=None, frequency=None, output_time_zone=None, only_accessible=None):
         """ Getting data from TAGGED INSTANCE curves for the latest issue_date
 
         A TAGGED INSTANCE curve typically represents forecasts that contain
@@ -995,16 +986,14 @@ class TaggedInstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
 
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         if tags is not None:
             args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
