@@ -256,6 +256,32 @@ def test_inst_get_latest(inst_curve):
     assert res.frequency == 'H'
     assert res.name == 'inst_name'
 
+def test_inst_get_relative(inst_curve):
+    c,s,m = inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 7}
+    m.register_uri('GET', prefix + '/instances/7/relative?data_offset=PT1H&issue_date_from=2016-01-01' +
+                                   '&issue_date_to=2016-02-01&data_max_length=PT1H',
+                   text=json.dumps(inst))
+    res = c.get_relative(data_offset='PT1H', data_max_length='PT1H', issue_date_from='2016-01-01',
+                         issue_date_to='2016-02-01')
+    assert isinstance(res, wapi.util.TS)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+
+def test_inst_get_absolute(inst_curve):
+    c,s,m = inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 7}
+    m.register_uri('GET', prefix + '/instances/7/absolute?data_date=2016-01-01T12:00&issue_frequency=H' +
+                                   '&issue_date_from=2016-01-01&issue_date_to=2016-02-01',
+                   text=json.dumps(inst))
+    res = c.get_absolute(data_date='2016-01-01T12:00', issue_frequency='H', issue_date_from='2016-01-01',
+                         issue_date_to='2016-02-01')
+    assert isinstance(res, wapi.util.TS)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+
 
 @pytest.fixture
 def tagged_inst_curve(session):
@@ -318,6 +344,34 @@ def test_tagged_inst_get_latest(tagged_inst_curve):
     m.register_uri('GET', prefix + '/instances/tagged/10/latest?with_data=false&issue_date=56',
                    text=json.dumps(inst))
     res = c.get_latest(issue_dates=56, with_data=False)
+    assert isinstance(res, wapi.util.TS)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+    assert res.tag == 'tag1'
+
+def test_tagged_inst_get_relative(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 10, 'tag': 'tag1'}
+    m.register_uri('GET', prefix + '/instances/tagged/10/relative?data_offset=PT1H&issue_date_from=2016-01-01' +
+                                   '&issue_date_to=2016-02-01&data_max_length=PT1H&tag=tag1',
+                   text=json.dumps(inst))
+    res = c.get_relative(data_offset='PT1H', data_max_length='PT1H', issue_date_from='2016-01-01',
+                         issue_date_to='2016-02-01', tag='tag1')
+    assert isinstance(res, wapi.util.TS)
+    assert res.frequency == 'H'
+    assert res.name == 'inst_name'
+    assert res.tag == 'tag1'
+
+def test_tagged_inst_get_absolute(tagged_inst_curve):
+    c,s,m = tagged_inst_curve
+    inst = {'frequency': 'H', 'points': [[140000000000, 10.0]],
+            'name': 'inst_name', 'id': 10, 'tag': 'tag1'}
+    m.register_uri('GET', prefix + '/instances/tagged/10/absolute?data_date=2016-01-01T12:00&issue_frequency=H' +
+                                   '&tag=tag1&issue_date_from=2016-01-01&issue_date_to=2016-02-01',
+                   text=json.dumps(inst))
+    res = c.get_absolute(data_date='2016-01-01T12:00', issue_frequency='H', issue_date_from='2016-01-01',
+                         issue_date_to='2016-02-01', tag='tag1')
     assert isinstance(res, wapi.util.TS)
     assert res.frequency == 'H'
     assert res.name == 'inst_name'

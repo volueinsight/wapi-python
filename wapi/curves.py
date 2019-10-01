@@ -314,6 +314,7 @@ class InstanceCurve(BaseCurve):
 
         issue_times: list of str, optional
             Filter issue_date on time of day
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
 
         with_data: bool, optional
             If with_data is False, the returned  :class:`wapi.util.TS` object
@@ -604,7 +605,7 @@ class InstanceCurve(BaseCurve):
         return util.TS(input_dict=result, curve_type=util.INSTANCES)
 
     def get_relative(self, data_offset, data_max_length=None, issue_date_from=None, issue_date_to=None,
-                     issue_dates=None, issue_weekday=None, issue_day=None, issue_month=None, issue_time=None,
+                     issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None, issue_times=None,
                      data_from=None, data_to=None, time_zone=None, filter=None, function=None,
                      frequency=None, output_time_zone=None):
         """ Get a relative forecast from the INSTANCE curve
@@ -649,18 +650,18 @@ class InstanceCurve(BaseCurve):
             The time-stamps can be provided in the same types as
             "issue_date_from".
 
-        issue_weekday: list of strings, optional
+        issue_weekdays: list of strings, optional
             Limits the instances to those matching the given weekdays.
 
-        issue_day: list of integers, optional
+        issue_days: list of integers, optional
             Limits the instances to those matching the given days of month.
 
-        issue_month: list of strings, optional
+        issue_months: list of strings, optional
             Limits the instances to those matching the given months.
 
-        issue_time: list of strings, optional
+        issue_times: list of strings, optional
             Limits the instances to those matching the given times of day.
-            Format is 'HH:mm' or 'HH:mm:ss'.
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
 
         data_from: time-stamp, optional
             start date (and time) of data to be fetched. If not given, the start
@@ -714,7 +715,28 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        pass
+        args = [util.make_arg('data_offset', '{}'.format(data_offset))]
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        self._add_from_to(args, data_from, data_to, prefix='data_')
+        self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
+        if data_max_length is not None:
+            args.append(util.make_arg('data_max_length', data_max_length))
+        if issue_dates is not None:
+            args.append(util.make_arg('issue_date', issue_dates))
+        if issue_weekdays is not None:
+            args.append(util.make_arg('issue_weekday', issue_weekdays))
+        if issue_days is not None:
+            args.append(util.make_arg('issue_day', issue_days))
+        if issue_months is not None:
+            args.append(util.make_arg('issue_month', issue_months))
+        if issue_times is not None:
+            args.append(util.make_arg('issue_time', issue_times))
+        astr = '&'.join(args)
+        url = '/api/instances/{}/relative?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.INSTANCES)
 
     def get_absolute(self, data_date, issue_frequency=None, issue_date_from=None, issue_date_to=None):
         """ Get an absolute forecast from the INSTANCE curve
@@ -757,7 +779,16 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        pass
+        args = [util.make_arg('data_date', '{}'.format(data_date))]
+        if issue_frequency is not None:
+            args.append(util.make_arg('issue_frequency', issue_frequency))
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        astr = '&'.join(args)
+        url = '/api/instances/{}/absolute?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.INSTANCES)
 
 
 class TaggedInstanceCurve(BaseCurve):
@@ -835,6 +866,7 @@ class TaggedInstanceCurve(BaseCurve):
 
         issue_times: list of str, optional
             Filter issue_date on time of day
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
 
         with_data: bool, optional
             If with_data is False, the returned :class:`wapi.util.TS` object
@@ -1167,7 +1199,7 @@ class TaggedInstanceCurve(BaseCurve):
 
 
     def get_relative(self, data_offset, data_max_length=None, tag=None, issue_date_from=None, issue_date_to=None,
-                     issue_dates=None, issue_weekday=None, issue_day=None, issue_month=None, issue_time=None,
+                     issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None, issue_times=None,
                      data_from=None, data_to=None, time_zone=None, filter=None, function=None,
                      frequency=None, output_time_zone=None):
         """ Get a relative forecast from the TAGGED INSTANCE curve
@@ -1215,18 +1247,18 @@ class TaggedInstanceCurve(BaseCurve):
             The time-stamps can be provided in the same types as
             "issue_date_from".
 
-        issue_weekday: list of strings, optional
+        issue_weekdays: list of strings, optional
             Limits the instances to those matching the given weekdays.
 
-        issue_day: list of integers, optional
+        issue_days: list of integers, optional
             Limits the instances to those matching the given days of month.
 
-        issue_month: list of strings, optional
+        issue_months: list of strings, optional
             Limits the instances to those matching the given months.
 
-        issue_time: list of strings, optional
+        issue_times: list of strings, optional
             Limits the instances to those matching the given times of day.
-            Format is 'HH:mm' or 'HH:mm:ss'.
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
 
         data_from: time-stamp, optional
             start date (and time) of data to be fetched. If not given, the start
@@ -1280,7 +1312,30 @@ class TaggedInstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        pass
+        args = [util.make_arg('data_offset', '{}'.format(data_offset))]
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        self._add_from_to(args, data_from, data_to, prefix='data_')
+        self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
+        if data_max_length is not None:
+            args.append(util.make_arg('data_max_length', data_max_length))
+        if tag is not None:
+            args.append(util.make_arg('tag', tag))
+        if issue_dates is not None:
+            args.append(util.make_arg('issue_date', issue_dates))
+        if issue_weekdays is not None:
+            args.append(util.make_arg('issue_weekday', issue_weekdays))
+        if issue_days is not None:
+            args.append(util.make_arg('issue_day', issue_days))
+        if issue_months is not None:
+            args.append(util.make_arg('issue_month', issue_months))
+        if issue_times is not None:
+            args.append(util.make_arg('issue_time', issue_times))
+        astr = '&'.join(args)
+        url = '/api/instances/tagged/{}/relative?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.TAGGED_INSTANCES)
 
     def get_absolute(self, data_date, issue_frequency=None, tag=None, issue_date_from=None, issue_date_to=None):
         """ Get an absolute forecast from the INSTANCE curve
@@ -1326,4 +1381,15 @@ class TaggedInstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        pass
+        args = [util.make_arg('data_date', '{}'.format(data_date))]
+        if issue_frequency is not None:
+            args.append(util.make_arg('issue_frequency', issue_frequency))
+        if tag is not None:
+            args.append(util.make_arg('tag', tag))
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        astr = '&'.join(args)
+        url = '/api/instances/tagged/{}/absolute?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.TAGGED_INSTANCES)
