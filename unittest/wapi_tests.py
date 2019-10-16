@@ -390,7 +390,7 @@ def test_events(session, ts_curve, inst_curve):
     ids = [5, 7, 7, 7, 5, 5, 7]
     for n, id in enumerate(ids):
         d = {'id': id, 'created': '2016-10-01T00:01:02.345+01:00', 'operation': 'modify',
-             'range': [None, None]}
+             'range': {'begin': None, 'end': None}}
         sse_data.append('id: {}\nevent: curve_event\ndata: {}\n\n'.format(n, json.dumps(d)))
     m.register_uri('GET', prefix + '/events?id=5&id=7', text=''.join(sse_data))
     with wapi.events.EventListener(s, [c1, c2]) as e:
