@@ -7,3 +7,5 @@ Add 'only_accessible' parameter to curve search.
 Add preliminary support for absolute and relative forecast.
 Access in the backend is still restricted while final validation
 goes on, but it should look like this when it becomes available.
+
+Fix range parsing in event code.

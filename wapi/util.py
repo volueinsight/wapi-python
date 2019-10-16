@@ -271,7 +271,10 @@ def parserange(rangeobj, tz=None):
     """
     Parse a range object (a pair of date strings, which may each be None)
     """
-    begin, end = rangeobj
+    if rangeobj.get('empty') is True:
+        return None
+    begin = rangeobj.get('begin')
+    end = rangeobj.get('end')
     if begin is not None:
         begin = parsetime(begin, tz=tz)
     if end is not None:
