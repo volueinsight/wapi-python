@@ -1,0 +1,11 @@
+Deprecate and disable 'only_accessible' parameter on instance
+and tagged instance methods, it does not work and has been
+removed in the backend.
+
+Add 'only_accessible' parameter to curve search.
+
+Add preliminary support for absolute and relative forecast.
+Access in the backend is still restricted while final validation
+goes on, but it should look like this when it becomes available.
+
+Fix range parsing in event code.

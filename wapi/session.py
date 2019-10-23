@@ -134,7 +134,7 @@ class Session(object):
 
     def search(self, query=None, id=None, name=None, commodity=None, category=None, area=None, station=None,
                source=None, scenario=None, unit=None, time_zone=None, version=None, frequency=None, data_type=None,
-               curve_state=None, modified_since=None):
+               curve_state=None, modified_since=None, only_accessible=None):
         """
         Search for a curve matching various metadata.
 
@@ -233,6 +233,9 @@ class Session(object):
         modified_since: datestring, pandas.Timestamp or datetime.datetime
             only return curves that where modified after given datetime.
 
+        only_accessible: bool
+            If True, only return curves you have (some) access to.
+
         Returns
         -------
         curves: list
@@ -259,6 +262,7 @@ class Session(object):
             'data_type': data_type,
             'curve_state': curve_state,
             'modified_since': modified_since,
+            'only_accessible': only_accessible,
         }
         if id is not None:
             warnings.warn("Searching for curves by ID will be removed in the future.", FutureWarning, stacklevel=2)

@@ -1,4 +1,5 @@
 from past.types import basestring
+import warnings
 
 from . import util
 
@@ -178,7 +179,7 @@ class TaggedCurve(BaseCurve):
         ----------
 
         tag: str or list, optional
-            tag or tags to get get the data for. If omitted, the default
+            tag or tags to get the data for. If omitted, the default
             tag is returned. If a list of multiple tags is given, the function
             will return a list with a :class:`wapi.util.TS` object for each tag.
 
@@ -264,7 +265,7 @@ class InstanceCurve(BaseCurve):
                          issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None,
                          issue_times=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
-                         output_time_zone=None, only_accessible=True, modified_since=None):
+                         output_time_zone=None, only_accessible=None, modified_since=None):
         """ Getting data from INSTANCE curves for multiple issue_dates
 
         An INSTANCE curve typically represents forecast,
@@ -313,6 +314,7 @@ class InstanceCurve(BaseCurve):
 
         issue_times: list of str, optional
             Filter issue_date on time of day
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
 
         with_data: bool, optional
             If with_data is False, the returned  :class:`wapi.util.TS` object
@@ -366,9 +368,6 @@ class InstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         modified_since: datestring, pandas.Timestamp or datetime.datetime
             only return instances that where modified after given datetime.
 
@@ -376,8 +375,9 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
@@ -403,7 +403,7 @@ class InstanceCurve(BaseCurve):
 
     def get_instance(self, issue_date, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
-                     output_time_zone=None, only_accessible=True):
+                     output_time_zone=None, only_accessible=None):
         """ Getting data from INSTANCE curves for a specific issue_date
 
         An INSTANCE curve typically represents forecast,
@@ -417,7 +417,7 @@ class InstanceCurve(BaseCurve):
         Parameters
         ----------
         issue_date: time-stamp
-            Time-stamp representing the issue date to get get data for.
+            Time-stamp representing the issue date to get data for.
             The timestamp can be provided in any of the following types :
 
             * datestring in format '%Y-%M-%DT%h:%m:%sZ',
@@ -477,16 +477,14 @@ class InstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('issue_date', issue_date),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+              util.make_arg('issue_date', issue_date)]
         if with_data:
             self._add_from_to(args, data_from, data_to)
             self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
@@ -499,7 +497,7 @@ class InstanceCurve(BaseCurve):
 
     def get_latest(self, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
-                   function=None, frequency=None, output_time_zone=None, only_accessible=True):
+                   function=None, frequency=None, output_time_zone=None, only_accessible=None):
         """ Getting data from INSTANCE curves for the latest available issue_date
 
         An INSTANCE curve typically represents forecast,
@@ -586,15 +584,13 @@ class InstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
         if with_data:
             self._add_from_to(args, data_from, data_to, prefix='data_')
@@ -604,6 +600,192 @@ class InstanceCurve(BaseCurve):
         astr = '&'.join(args)
         url = '/api/instances/{}/latest?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to load instance')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.INSTANCES)
+
+    def get_relative(self, data_offset, data_max_length=None, issue_date_from=None, issue_date_to=None,
+                     issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None, issue_times=None,
+                     data_from=None, data_to=None, time_zone=None, filter=None, function=None,
+                     frequency=None, output_time_zone=None):
+        """ Get a relative forecast from the INSTANCE curve
+
+        A relative forecast is a time series created by joining multiple
+        instances so that the data date is issue_date + data_offset.
+        If the data frequency is higher than the frequency of the selected
+        instances, a range of data values from each instance will be used.
+        Similarly if the issue frequency is higher than the data frequency,
+        the same data date will be used from several instances.
+
+        Parameters allow control of the set of instances used and how they
+        are joined together, as well as post-processing of the result.
+
+        Parameters
+        ----------
+
+        data_offset: duration, mandatory
+            The duration added to the issue_date to find the start of the data
+            fragment.  Format is an ISO-8601 duration string.
+
+        data_max_length: duration, optional
+            The longest duration selected from a single instance, mostly used
+            to detect missing instances.  ISO-8601 duration string.
+
+        issue_date_from: time-stamp, optional
+            Limits the timerange used to select instances.
+            The time-stamp can be provided in any of the following types :
+
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+
+        issue_date_to: time-stamp, optional
+            Limits the timerange used to select instances.
+            The time-stamp can be provided in the same types as
+            "issue_date_from".
+
+        issue_dates: list of time-stamps, optional
+            List of timestamps used to select instances.
+            The time-stamps can be provided in the same types as
+            "issue_date_from".
+
+        issue_weekdays: list of strings, optional
+            Limits the instances to those matching the given weekdays.
+
+        issue_days: list of integers, optional
+            Limits the instances to those matching the given days of month.
+
+        issue_months: list of strings, optional
+            Limits the instances to those matching the given months.
+
+        issue_times: list of strings, optional
+            Limits the instances to those matching the given times of day.
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
+
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be determined by the first
+            selected instance and the data_offset parameter. If only the date
+            (without time) is given, the time is assumed to be 00:00. The
+            timestamp can be provided in the same types as "issue_date_from".
+
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be
+            provided in the same types as "issue_date_from".
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be
+            the last date with data available in the last instance selected,
+            optionally limited by the data_max_length parameter.
+
+        time_zone: str, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an
+            aggregation/split or applying a filter and thus AFTER changing
+            to given "time_zone" here.
+
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
+
+        filter: str, optional
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
+
+        function: str, optional
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
+
+        frequency: str, optional
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
+
+        output_time_zone: str, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter.
+
+        Returns
+        -------
+        :class:`wapi.util.TS` object
+        """
+        args = [util.make_arg('data_offset', '{}'.format(data_offset))]
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        self._add_from_to(args, data_from, data_to, prefix='data_')
+        self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
+        if data_max_length is not None:
+            args.append(util.make_arg('data_max_length', data_max_length))
+        if issue_dates is not None:
+            args.append(util.make_arg('issue_date', issue_dates))
+        if issue_weekdays is not None:
+            args.append(util.make_arg('issue_weekday', issue_weekdays))
+        if issue_days is not None:
+            args.append(util.make_arg('issue_day', issue_days))
+        if issue_months is not None:
+            args.append(util.make_arg('issue_month', issue_months))
+        if issue_times is not None:
+            args.append(util.make_arg('issue_time', issue_times))
+        astr = '&'.join(args)
+        url = '/api/instances/{}/relative?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.INSTANCES)
+
+    def get_absolute(self, data_date, issue_frequency=None, issue_date_from=None, issue_date_to=None):
+        """ Get an absolute forecast from the INSTANCE curve
+
+        An absolute forecast is a time series created by selecting a single
+        data date from a range of instances, using the issue_date as
+        data date in the result.
+
+        Parameters
+        ----------
+
+        data_date: time-stamp, mandatory
+            The data date of the absolute forecast.
+            The time-stamp can be provided in any of the following types :
+
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+
+        issue_frequency: str, optional
+            The frequency of the returned time series.  Mandatory if the
+            issue frequency of the curve is 'ANY'.  Data will only be
+            returned for those instances whose issue_date is compatible
+            with issue_frequency.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
+
+        issue_date_from: time-stamp, optional
+            The start of the timerange used to select instances.
+            The time-stamp can be provided in the same types as
+            "data_date".
+
+        issue_date_to: time-stamp, optional
+            The end of the timerange used to select instances.
+            The time-stamp can be provided in the same types as
+            "data_date".
+
+        Returns
+        -------
+        :class:`wapi.util.TS` object
+        """
+        args = [util.make_arg('data_date', '{}'.format(data_date))]
+        if issue_frequency is not None:
+            args.append(util.make_arg('issue_frequency', issue_frequency))
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        astr = '&'.join(args)
+        url = '/api/instances/{}/absolute?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
         if result is None:
             return result
         return util.TS(input_dict=result, curve_type=util.INSTANCES)
@@ -625,7 +807,7 @@ class TaggedInstanceCurve(BaseCurve):
                          issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None,
                          issue_times=None, with_data=False, data_from=None, data_to=None,
                          time_zone=None, filter=None, function=None, frequency=None,
-                         output_time_zone=None, only_accessible=True, modified_since=None):
+                         output_time_zone=None, only_accessible=None, modified_since=None):
         """ Getting data from TAGGED_INSTANCE curves for multiple issue_dates
 
         A TAGGED INSTANCE curve typically represents forecast that contain
@@ -684,6 +866,7 @@ class TaggedInstanceCurve(BaseCurve):
 
         issue_times: list of str, optional
             Filter issue_date on time of day
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
 
         with_data: bool, optional
             If with_data is False, the returned :class:`wapi.util.TS` object
@@ -737,9 +920,6 @@ class TaggedInstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         modified_since: datestring, pandas.Timestamp or datetime.datetime
             only return instances that where modified after given datetime.
 
@@ -747,8 +927,9 @@ class TaggedInstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         if tags is not None:
             args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -776,7 +957,7 @@ class TaggedInstanceCurve(BaseCurve):
 
     def get_instance(self, issue_date, tag=None, with_data=True, data_from=None, data_to=None,
                      time_zone=None, filter=None, function=None, frequency=None,
-                     output_time_zone=None, only_accessible=True):
+                     output_time_zone=None, only_accessible=None):
         """ Getting data from TAGGED_INSTANCE curves for a specific issue_date
 
         A TAGGED INSTANCE curve typically represents forecast that contain
@@ -795,7 +976,7 @@ class TaggedInstanceCurve(BaseCurve):
         ----------
 
         issue_date: time-stamp
-            Time-stamp representing the issue date to get get data for.
+            Time-stamp representing the issue date to get data for.
             The timestamp can be provided in any of the following types :
 
             * datestring in format '%Y-%M-%DT%h:%m:%sZ',
@@ -804,7 +985,7 @@ class TaggedInstanceCurve(BaseCurve):
             * datetime.datetime object
 
         tag: str or list, optional
-            tag or tags to get get the data for. If omitted, the default
+            tag or tags to get the data for. If omitted, the default
             tag is returned. If a list of multiple tags is given, the function
             will return a list with a :class:`wapi.util.TS` object for each tag.
 
@@ -860,17 +1041,15 @@ class TaggedInstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
 
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
         args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('issue_date', issue_date),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+              util.make_arg('issue_date', issue_date)]
         unwrap = False
         if tag is None:
             unwrap = True
@@ -893,7 +1072,7 @@ class TaggedInstanceCurve(BaseCurve):
 
     def get_latest(self, tags=None, issue_date_from=None, issue_date_to=None, issue_dates=None,
                    with_data=True, data_from=None, data_to=None, time_zone=None, filter=None,
-                   function=None, frequency=None, output_time_zone=None, only_accessible=True):
+                   function=None, frequency=None, output_time_zone=None, only_accessible=None):
         """ Getting data from TAGGED INSTANCE curves for the latest issue_date
 
         A TAGGED INSTANCE curve typically represents forecasts that contain
@@ -995,16 +1174,14 @@ class TaggedInstanceCurve(BaseCurve):
             Change curve time zone AFTER performing an aggregation/split
             or applying a filter.
 
-        only_accessible: bool, optional
-            If TRUE, only return instances you have access to.
-
         Returns
         -------
         :class:`wapi.util.TS` object
         """
 
-        args=[util.make_arg('with_data', '{}'.format(with_data).lower()),
-              util.make_arg('only_accessible', '{}'.format(only_accessible).lower())]
+        if only_accessible is not None:
+            warnings.warn("only_accessible parameter will be removed soon.", FutureWarning, stacklevel=2)
+        args=[util.make_arg('with_data', '{}'.format(with_data).lower())]
         if tags is not None:
             args.append(util.make_arg('tag', tags))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -1016,6 +1193,203 @@ class TaggedInstanceCurve(BaseCurve):
         astr = '&'.join(args)
         url = '/api/instances/tagged/{}/latest?{}'.format(self.id, astr)
         result = self._load_data(url, 'Failed to load tagged instance')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.TAGGED_INSTANCES)
+
+
+    def get_relative(self, data_offset, data_max_length=None, tag=None, issue_date_from=None, issue_date_to=None,
+                     issue_dates=None, issue_weekdays=None, issue_days=None, issue_months=None, issue_times=None,
+                     data_from=None, data_to=None, time_zone=None, filter=None, function=None,
+                     frequency=None, output_time_zone=None):
+        """ Get a relative forecast from the TAGGED INSTANCE curve
+
+        A relative forecast is a time series created by joining multiple
+        instances so that the data date is issue_date + data_offset.
+        If the data frequency is higher than the frequency of the selected
+        instances, a range of data values from each instance will be used.
+        Similarly if the issue frequency is higher than the data frequency,
+        the same data date will be used from several instances.
+
+        Parameters allow control of the set of instances used and how they
+        are joined together, as well as post-processing of the result.
+
+        Parameters
+        ----------
+
+        data_offset: duration, mandatory
+            The duration added to the issue_date to find the start of the data
+            fragment.  Format is an ISO-8601 duration string.
+
+        data_max_length: duration, optional
+            The longest duration selected from a single instance, mostly used
+            to detect missing instances.  ISO-8601 duration string.
+
+        tag: str, optional
+            tag to get the data for. If omitted, the default tag is used.
+
+        issue_date_from: time-stamp, optional
+            Limits the timerange used to select instances.
+            The time-stamp can be provided in any of the following types :
+
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+
+        issue_date_to: time-stamp, optional
+            Limits the timerange used to select instances.
+            The time-stamp can be provided in the same types as
+            "issue_date_from".
+
+        issue_dates: list of time-stamps, optional
+            List of timestamps used to select instances.
+            The time-stamps can be provided in the same types as
+            "issue_date_from".
+
+        issue_weekdays: list of strings, optional
+            Limits the instances to those matching the given weekdays.
+
+        issue_days: list of integers, optional
+            Limits the instances to those matching the given days of month.
+
+        issue_months: list of strings, optional
+            Limits the instances to those matching the given months.
+
+        issue_times: list of strings, optional
+            Limits the instances to those matching the given times of day.
+            Format is 'HH', 'HH:mm' or 'HH:mm:ss'.
+
+        data_from: time-stamp, optional
+            start date (and time) of data to be fetched. If not given, the start
+            date of the returned timeseries will be determined by the first
+            selected instance and the data_offset parameter. If only the date
+            (without time) is given, the time is assumed to be 00:00. The
+            timestamp can be provided in the same types as "issue_date_from".
+
+        data_to: time-stamp, optional
+            end date (and time) of data to be fetched. The time-stamp can be
+            provided in the same types as "issue_date_from".
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be
+            the last date with data available in the last instance selected,
+            optionally limited by the data_max_length parameter.
+
+        time_zone: str, optional
+            Change curve time zone BEFORE performing an aggregation/split
+            or applying a filter. If no aggregation/split or filter is applied,
+            this will simply change the timezone of the curve. Note that if
+            "output_time_zone" is given, this will define the timezone of the
+            returned curve, since it is applied AFTER performing an
+            aggregation/split or applying a filter and thus AFTER changing
+            to given "time_zone" here.
+
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_time_zones`.
+
+        filter: str, optional
+            only get a specific subset of the data.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_filters` :
+
+        function: str, optional
+            function used to aggregate or split data, must be used together
+            with the ``frequency`` parameter.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_functions` :
+
+        frequency: str, optional
+            data will be aggregated or split to the requested frequency using
+            the given function.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
+
+        output_time_zone: str, optional
+            Change curve time zone AFTER performing an aggregation/split
+            or applying a filter.
+
+        Returns
+        -------
+        :class:`wapi.util.TS` object
+        """
+        args = [util.make_arg('data_offset', '{}'.format(data_offset))]
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        self._add_from_to(args, data_from, data_to, prefix='data_')
+        self._add_functions(args, time_zone, filter, function, frequency, output_time_zone)
+        if data_max_length is not None:
+            args.append(util.make_arg('data_max_length', data_max_length))
+        if tag is not None:
+            args.append(util.make_arg('tag', tag))
+        if issue_dates is not None:
+            args.append(util.make_arg('issue_date', issue_dates))
+        if issue_weekdays is not None:
+            args.append(util.make_arg('issue_weekday', issue_weekdays))
+        if issue_days is not None:
+            args.append(util.make_arg('issue_day', issue_days))
+        if issue_months is not None:
+            args.append(util.make_arg('issue_month', issue_months))
+        if issue_times is not None:
+            args.append(util.make_arg('issue_time', issue_times))
+        astr = '&'.join(args)
+        url = '/api/instances/tagged/{}/relative?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
+        if result is None:
+            return result
+        return util.TS(input_dict=result, curve_type=util.TAGGED_INSTANCES)
+
+    def get_absolute(self, data_date, issue_frequency=None, tag=None, issue_date_from=None, issue_date_to=None):
+        """ Get an absolute forecast from the INSTANCE curve
+
+        An absolute forecast is a time series created by selecting a single
+        data date from a range of instances, using the issue_date as
+        data date in the result.
+
+        Parameters
+        ----------
+
+        data_date: time-stamp, mandatory
+            The data date of the absolute forecast.
+            The time-stamp can be provided in any of the following types :
+
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+
+        issue_frequency: str, optional
+            The frequency of the returned time series.  Mandatory if the
+            issue frequency of the curve is 'ANY'.  Data will only be
+            returned for those instances whose issue_date is compatible
+            with issue_frequency.
+            You can find valid values for this by calling
+            :meth:`wapi.session.Session.get_frequencies`.
+
+        tag: str, optional
+            tag to get the data for. If omitted, the default tag is used.
+
+        issue_date_from: time-stamp, optional
+            The start of the timerange used to select instances.
+            The time-stamp can be provided in the same types as
+            "data_date".
+
+        issue_date_to: time-stamp, optional
+            The end of the timerange used to select instances.
+            The time-stamp can be provided in the same types as
+            "data_date".
+
+        Returns
+        -------
+        :class:`wapi.util.TS` object
+        """
+        args = [util.make_arg('data_date', '{}'.format(data_date))]
+        if issue_frequency is not None:
+            args.append(util.make_arg('issue_frequency', issue_frequency))
+        if tag is not None:
+            args.append(util.make_arg('tag', tag))
+        self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
+        astr = '&'.join(args)
+        url = '/api/instances/tagged/{}/absolute?{}'.format(self.id, astr)
+        result = self._load_data(url, 'Failed to find instances')
         if result is None:
             return result
         return util.TS(input_dict=result, curve_type=util.TAGGED_INSTANCES)
