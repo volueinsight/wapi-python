@@ -149,7 +149,8 @@ EC00Ens_idate = curve_EC00Ens.get_latest(with_data=False).issue_date
 # Get list of TS objects for all available tags for latest issue date
 # apply aggregation if defined
 EC00Ens_tslist = curve_EC00Ens.get_instance(EC00Ens_idate, function=func,
-                                            frequency=freq)
+                                            frequency=freq,
+                                            tag=curve_EC00Ens.get_tags())
 # Convert issue date from UTC to CET make it a string again
 EC00Ens_idate = pd.Timestamp(EC00Ens_idate).tz_convert('CET').strftime('%Y-%m-%d')
 if EC00Ens_tslist is None:
@@ -186,7 +187,8 @@ EC12Ens_idate = curve_EC12Ens.get_latest(with_data=False).issue_date
 # Get list of TS objects for all available tags for latest issue date
 # apply aggregation if defined
 EC12Ens_tslist = curve_EC12Ens.get_instance(EC12Ens_idate, function=func,
-                                            frequency=freq)
+                                            frequency=freq,
+                                            tag=curve_EC12Ens.get_tags())
 # Convert issue date from UTC to CET make it a string again
 EC12Ens_idate = pd.Timestamp(EC12Ens_idate).tz_convert('CET').strftime('%Y-%m-%d')
 if EC12Ens_tslist is None:

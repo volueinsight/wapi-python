@@ -150,8 +150,8 @@ You can get data from a tagged curve using the
 :meth:`~wapi.curves.TaggedCurve.get_data` method. This method has the same
 inputs and functionality as the :meth:`wapi.curves.TimeSeriesCurve.get_data`
 method for Time Series curves. Additionally you can provide a ``tag`` argument.
-``tag`` can be a single value or a list of values. If omitted, it defaults to
-all available tags. When a list of tags is requested, a list of time series is
+``tag`` can be a single value or a list of values. If omitted, the default tag
+is returned. When a list of tags is requested, a list of time series is
 returned::
 
     # get data between two dates for all tags
@@ -235,7 +235,7 @@ The existing set of tags of a curve can be found using the
 You can fetch a single instance identified by its issue_date using the
 :meth:`~wapi.curves.InstanceCurve.get_instance` method.
 This function allows you the specify a single tag or a list of tags to the
-``tag`` argument. If omitted, it defaults to all available tags. ::
+``tag`` argument. If omitted, the default tag is returned. ::
 
     # get all tags for this issue date
     ts_list = curve.get_instance(issue_date='2018-07-01T00:00')
@@ -250,8 +250,8 @@ You can fetch multiple instances (within a given time-range) using the
 :meth:`~wapi.curves.TaggedInstanceCurve.search_instances` method. The function
 will only return :class:`~wapi.util.TS` objects with data, when the ``with_data``
 argument is set to ``True`` (default is ``False`` and will return a
-:class:`~wapi.util.TS` object with meta data only). Here you can again omitted
-the ``tags`` argument, which defaults to return all available tags for each
+:class:`~wapi.util.TS` object with meta data only). Here you can again omit
+the ``tags`` argument, which returns the default tag for each
 issue_date, or specify a single tag or a list of tags. ::
 
     ts_list = curve.search_instances(issue_date_from='2018-07-01Z00:00',
@@ -262,8 +262,9 @@ issue_date, or specify a single tag or a list of tags. ::
 You can also fetch the latest available instance using the
 :meth:`~wapi.curves.InstanceCurve.get_latest` method. This function will always
 return exactly ONE Time Series curve for ONE tag of the latest issue_date.
-It is possible to omit the ``tags`` argument or provide a list of tags to it,
-but it is strongly recommended to specify ONE SINGLE TAG here! ::
+It is possible to provide a list of tags to the ``tags`` argument,
+but it is strongly recommended to specify ONE SINGLE TAG here! If omitted,
+the default tag is returned. ::
 
     ts = curve.get_latest(tags='03')
 
