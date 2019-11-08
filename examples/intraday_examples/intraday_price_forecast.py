@@ -1,6 +1,7 @@
 """
-This simple example reads data from an INSTANCE curve that contains our intraday price forecast.
-Have a look at the documentation for further information:
+This simple example reads data from a TAGGED_INSTANCE curve that contains our 
+intraday price forecast. Have a look at the documentation for further information:
+https://wattsight-wapi-python.readthedocs-hosted.com/en/latest/
 """
 
 import wapi
@@ -35,7 +36,7 @@ issue_date = pd.Timestamp(year=2019, month=11, day=8, hour=6, minute=45, tz='CET
 tag='90-30'
 
 # Fetch data for a specific issue.
-intraday_price_forecast_wapi = curve.get_instance(tag=tag, issue_date=issue_date, time_zone='CET')
+intraday_price_forecast_wapi = curve.get_instance(tag=tag, issue_date=issue_date)
 
 # convert to pandas.Series object
 intraday_price_forecast = intraday_price_forecast_wapi.to_pandas()
@@ -52,7 +53,7 @@ intraday_price_forecast.plot(color='green', marker='o', label='2019-11-08 - 6:45
 # issue_date.
 
 # Fetch data for the latest issue date. Rember to get the curve first.
-latest_intraday_price_forecast_wapi = curve.get_latest(tags=tag, time_zone='CET')
+latest_intraday_price_forecast_wapi = curve.get_latest(tags=tag)
 
 # convert to pandas.Series object
 intraday_price_forecast = intraday_price_forecast_wapi.to_pandas()
