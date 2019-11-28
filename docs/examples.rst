@@ -45,7 +45,9 @@ INSTANCE curve examples
 * Get multiple instance curves and save them as csv
   (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Instance_curve_examples/ins_get_multiple_curves.py>`_ ,
   :download:`[download] <../examples/Instance_curve_examples/ins_get_multiple_curves.py>`)
-
+* Simple example on how to get a relative forecast
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Instance_curve_examples/ins_get_relative.py>`_ ,
+  :download:`[download] <../examples/Instance_curve_examples/ins_get_relative.py>`)
 
 
 TAGGED_INSTANCE curve examples
