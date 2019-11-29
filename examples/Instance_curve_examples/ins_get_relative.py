@@ -37,7 +37,7 @@ issue_date_from = pd.Timestamp(year=2019, month=10, day=10, hour=0, tz='CET')
 issue_date_to = pd.Timestamp(year=2019, month=10, day=14, hour=0, tz='CET')
 
 # Specify the offset:
-# For each instance, a subset of the time series starting at the first entry plus the
+# For each instance, a subset of the time series starting at the issue_date plus the
 # data_offset is selected.
 # as ISO 8601 duration (here: 6 hours)
 data_offset = 'PT6H0M0S'
@@ -59,7 +59,7 @@ relative_forecast = relative_forecast_wapi.to_pandas()
 # The relative forecast can be applied to track the wind power production forecast based on the most 
 # recent results of the ec00 weather model. In this example, an offset of 6 hours and a max_length of 6 
 # hours are specified. This means that the data consists of slices for every issue_date that start 6 hours 
-# after the first entry of the timeseries of that issue and ends 6 hours later.
+# after the issue_date and end 6 hours later.
 
 
 # Plot curve using the integrated plot function of pandas.
