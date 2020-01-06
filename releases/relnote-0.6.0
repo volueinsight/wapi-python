@@ -1,0 +1,7 @@
+Fix the event listener implementation to be more robust.
+
+NB! This changes the sseclient library used by wapi-python.
+    There is a conflict in naming, so if you are upgrading
+    from a previous version you _must_ manually uninstall
+    the 'sseclient' package.  From this version onwards we
+    use 'sseclient-py'.

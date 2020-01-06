@@ -1,12 +1,9 @@
 import json
+import time
+
 import sseclient
 import threading
 import queue
-import socket
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
 
 from . import curves, util
 from builtins import str
@@ -27,9 +24,11 @@ class EventListener:
         args = [util.make_arg('id', ids)]
         if start_time is not None:
             args.append(util.make_arg('start_time', start_time))
-        url = urljoin(session.urlbase, '/api/events?{}'.format('&'.join(args)))
-        self.client = SSEClientWithAuth(url, session=session._session, auth=session.auth)
+        self.url = '/api/events?{}'.format('&'.join(args))
+        self.session = session
         self.timeout = timeout
+        self.retry = 3000 # Retry time in milliseconds
+        self.client = None
         self.queue = queue.Queue()
         self.do_shutdown = False
         self.worker = threading.Thread(target=self.fetch_events)
@@ -40,7 +39,7 @@ class EventListener:
         try:
             val = self.queue.get(timeout=self.timeout)
             if isinstance(val, EventError):
-                raise StopIteration()
+                raise val.exception
             return val
         except queue.Empty:
             return EventTimeout()
@@ -48,24 +47,33 @@ class EventListener:
     def fetch_events(self):
         while not self.do_shutdown:
             try:
-                sse_event = next(self.client)
-                if sse_event.event == 'curve_event' or sse_event.event == 'message':
-                    event = CurveEvent(sse_event)
-                else:
-                    event = DefaultEvent(sse_event)
-                if hasattr(event, 'id') and event.id in self.curve_cache:
-                    event.curve = self.curve_cache[event.id]
-                self.queue.put(event)
+                with self.session.data_request("GET", self.session.urlbase, self.url, stream=True) as stream:
+                    self.client = sseclient.SSEClient(stream)
+                    for sse_event in self.client.events():
+                        if sse_event.event == 'curve_event':
+                            event = CurveEvent(sse_event)
+                        else:
+                            event = DefaultEvent(sse_event)
+                        if hasattr(event, 'id') and event.id in self.curve_cache:
+                            event.curve = self.curve_cache[event.id]
+                        self.queue.put(event)
+                        if sse_event.retry is not None:
+                            try:
+                                self.retry = int(sse_event.retry)
+                            except:
+                                pass
+                        if self.do_shutdown:
+                            break
+                    # Session was closed by server/network, wait for retry before looping.
+                    time.sleep(self.retry / 1000.0)
             except Exception as e:
                 self.queue.put(EventError(e))
                 break
 
     def close(self, timeout=1):
         self.do_shutdown = True
-        try:
+        if self.client is not None:
             self.client.close()
-        except:
-            raise
         self.worker.join(timeout)
 
     def __iter__(self):
@@ -96,7 +104,11 @@ class EventTimeout:
 
 class DefaultEvent(object):
     def __init__(self, sse_event):
-        self.json_data = json.loads(sse_event.data)
+        self._raw_event = sse_event
+        try:
+            self.json_data = json.loads(sse_event.data)
+        except:
+            self.json_data = None
 
 
 class CurveEvent(DefaultEvent):
@@ -115,30 +127,3 @@ class CurveEvent(DefaultEvent):
             self.issue_date = util.parsetime(self.json_data['issue_date'])
         if 'range' in self.json_data:
             self.range = util.parserange(self.json_data['range'])
-
-
-class SSEClientWithAuth(sseclient.SSEClient):
-    def __init__(self, url, last_id=None, retry=3000, session=None, auth=None, **kwargs):
-        self.auth = auth
-        self.do_shutdown = False
-        super(SSEClientWithAuth, self).__init__(url, last_id, retry, session, **kwargs)
-
-    def _connect(self):
-        if self.do_shutdown:
-            raise StopIteration()
-        if self.auth is not None:
-            self.auth.validate_auth()
-            headers = self.auth.get_headers(None)
-            self.requests_kwargs['headers'].update(headers)
-        super(SSEClientWithAuth, self)._connect()
-
-    def close(self):
-        """Attempt to close a hanging request forcibly, typically called from another thread."""
-        self.do_shutdown = True
-        try:
-            # This is ugly, things are wrapped way too deep, this is the
-            # most common pattern seen.
-            self.resp.raw._fp.fp.raw._sock.shutdown(socket.SHUT_RDWR)
-            self.resp.raw._fp.fp.raw._sock.close()
-        except:
-            pass

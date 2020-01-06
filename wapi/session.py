@@ -414,7 +414,8 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None, retries=RETRY_COUNT):
+    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
+                     stream=False, retries=RETRY_COUNT):
         """Run a call to the backend, dealing with authentication etc."""
         headers = {}
 
@@ -434,11 +435,12 @@ class Session(object):
         if self.auth is not None:
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(databytes))
-        res = self._session.request(method=req_type, url=longurl, data=databytes, headers=headers, auth=authval)
+        res = self._session.request(method=req_type, url=longurl, data=databytes,
+                                    headers=headers, auth=authval, stream=stream)
         if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
-            return self.data_request(req_type, urlbase, url, data, rawdata, authval, retries-1)
+            return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
         return res
 
     def handle_single_curve_response(self, response):

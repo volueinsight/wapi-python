@@ -13,7 +13,7 @@ setup(
     packages=['wapi'],
     install_requires=[
         'requests >= 2.18',
-        'sseclient >= 0.0.18',
+        'sseclient-py >= 1.7',
         'pytz',
         'pandas >= 0.21',
         'future >= 0.16',
