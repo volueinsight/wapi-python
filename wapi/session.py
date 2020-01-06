@@ -77,7 +77,10 @@ class Session(object):
         if hasattr(config_file, 'read'):
             config.read_file(config_file)
         else:
-            config.read(config_file)
+            files_read = config.read(config_file)
+            if not files_read:
+                raise ConfigException('Configuration file with name {} '
+                                      'was not found.'.format(config_file))
         urlbase = config.get('common', 'urlbase')
         if urlbase is not None:
             self.urlbase = urlbase
