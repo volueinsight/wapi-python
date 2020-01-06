@@ -8,6 +8,7 @@ import datetime
 import dateutil.parser
 import pytz
 import pandas as pd
+import numpy as np
 from past.types import basestring
 try:
     from urllib.parse import quote_plus
@@ -37,8 +38,11 @@ _TS_FREQ_TABLE = {
     'MIN5': '5T',
     'MIN': 'T',
 }
-# Mapping from Pandas to TS is built from map above
-_PANDAS_FREQ_TABLE = {}
+# Mapping from Pandas to TS is built from map above, with some additions
+_PANDAS_FREQ_TABLE = {
+    'AS-JAN': 'Y',
+    'QS-JAN': 'Q',
+}
 for k, v in _TS_FREQ_TABLE.items():
     _PANDAS_FREQ_TABLE[v] = k
 
@@ -129,6 +133,10 @@ class TS(object):
 
     @staticmethod
     def from_pandas(pd_series):
+        # Clean up some of the more common Pandas/Wapi problems
+        pd_series = pd_series.astype(np.float64)
+        pd_series.replace({np.nan: None}, inplace=True)
+
         name = pd_series.name
         frequency = TS._rev_map_freq(pd_series.index.freqstr)
 
