@@ -45,7 +45,9 @@ INSTANCE curve examples
 * Get multiple instance curves and save them as csv
   (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Instance_curve_examples/ins_get_multiple_curves.py>`_ ,
   :download:`[download] <../examples/Instance_curve_examples/ins_get_multiple_curves.py>`)
-
+* Simple example on how to get a relative forecast
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Instance_curve_examples/ins_get_relative.py>`_ ,
+  :download:`[download] <../examples/Instance_curve_examples/ins_get_relative.py>`)
 
 
 TAGGED_INSTANCE curve examples
@@ -89,6 +91,15 @@ General examples
   (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/general_examples/gen_aggregation_pandas.py>`_ ,
   :download:`[download] <../examples/general_examples/gen_aggregation_pandas.py>`)
 
+Intraday price forecast examples
+--------------------------------
+
+* Simple example on how to get the intraday price forecast and on how th get the latest intraday price forecast.
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/development/examples/intraday_examples/intraday_price_forecast.py>`_ ,
+  :download:`[download] <../examples/intraday_examples/intraday_price_forecast.py>`)
+* Example on how to get the absolute forecast for the intraday price. The absolute forecast shows the price development over time for a 
+  specific contract. (`[view on github] <https://github.com/wattsight/wapi-python/blob/development/examples/intraday_examples/absolute_intraday_price_forecast.py>`_ ,
+  :download:`[download] <../examples/intraday_examples/absolute_intraday_price_forecast.py>`) 
 
 Reproduce figures from wattsight.com
 -------------------------------------
