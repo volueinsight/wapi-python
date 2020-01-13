@@ -5,3 +5,7 @@ NB! This changes the sseclient library used by wapi-python.
     from a previous version you _must_ manually uninstall
     the 'sseclient' package.  From this version onwards we
     use 'sseclient-py'.
+
+Add examples for absolute/relative forecasts.
+
+Make Pandas->Wapi TS conversion more robust.
