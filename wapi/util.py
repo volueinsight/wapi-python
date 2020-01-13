@@ -41,7 +41,10 @@ _TS_FREQ_TABLE = {
 # Mapping from Pandas to TS is built from map above, with some additions
 _PANDAS_FREQ_TABLE = {
     'AS-JAN': 'Y',
+    'YS': 'Y',
+    '2QS-JAN': 'S',
     'QS-JAN': 'Q',
+    'min': 'MIN',
 }
 for k, v in _TS_FREQ_TABLE.items():
     _PANDAS_FREQ_TABLE[v] = k
