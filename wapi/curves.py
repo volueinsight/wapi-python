@@ -29,6 +29,9 @@ class BaseCurve:
             name = str(self.id)
         return "{}({})".format(curve_type, name)
 
+    def __repr__(self):
+        return str(self)
+
     def _add_from_to(self, args, first, last, prefix=''):
         if first is not None:
             args.append(util.make_arg('{}from'.format(prefix), first))
