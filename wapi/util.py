@@ -92,7 +92,7 @@ class TS(object):
         return 'TS: {}{}'.format(self.fullname, size)
 
     def __repr__(self):
-        return f'TS({self.id}, {self.name}, {self.frequency})'
+        return f'TS({self.id}, {self.name})'
 
     @property
     def fullname(self):
