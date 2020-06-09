@@ -91,6 +91,9 @@ class TS(object):
             size = ' size: {}'.format(len(self.points))
         return 'TS: {}{}'.format(self.fullname, size)
 
+    def __repr__(self):
+        return f'TS({self.id}, {self.name}, {self.frequency})'
+
     @property
     def fullname(self):
         attrs = []
