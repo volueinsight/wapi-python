@@ -30,7 +30,7 @@ class BaseCurve:
         return "{}({})".format(curve_type, name)
 
     def __repr__(self):
-        return str(self)
+        return '{}({})'.format(type(self).__name__, self.name)
 
     def _add_from_to(self, args, first, last, prefix=''):
         if first is not None:
