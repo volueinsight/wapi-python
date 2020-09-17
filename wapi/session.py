@@ -43,6 +43,8 @@ class Session(object):
     Parameters
     ----------
 
+    urlbase: url
+        Location of Wattsight service
     config_file: path
         path to the config.ini file which contains your authentication
         information.
@@ -50,6 +52,10 @@ class Session(object):
         Your client ID
     client_secret:
         Your client secret.
+    auth_urlbase: url
+        Location of Wattsight authentication service
+    timeout: number
+        Timeout for REST calls, in seconds
 
     Returns
     -------
@@ -57,9 +63,11 @@ class Session(object):
 
     """
 
-    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
+    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None,
+                 timeout=300):
         self.urlbase = 'https://api.wattsight.com'
         self.auth = None
+        self.timeout = timeout
         self._session = requests.Session()
         if config_file is not None:
             self.read_config_file(config_file)
@@ -90,6 +98,9 @@ class Session(object):
             client_secret = config.get(auth_type, 'secret')
             auth_urlbase = config.get(auth_type, 'auth_urlbase')
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
+        timeout = config.get('common', 'timeout')
+        if timeout is not None:
+            self.timeout = timeout
 
     def configure(self, client_id, client_secret, auth_urlbase=None):
         """Programmatically set authentication parameters"""
@@ -438,12 +449,19 @@ class Session(object):
         if self.auth is not None:
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(databytes))
-        res = self._session.request(method=req_type, url=longurl, data=databytes,
-                                    headers=headers, auth=authval, stream=stream)
-        if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
+        timeout = None
+        try:
+            res = self._session.request(method=req_type, url=longurl, data=databytes,
+                                        headers=headers, auth=authval, stream=stream, timeout=self.timeout)
+        except requests.exceptions.Timeout as e:
+            timeout = e
+            res = None
+        if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
             return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
+        if timeout is not None:
+            raise timeout
         return res
 
     def handle_single_curve_response(self, response):
