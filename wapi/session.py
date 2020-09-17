@@ -98,7 +98,7 @@ class Session(object):
             client_secret = config.get(auth_type, 'secret')
             auth_urlbase = config.get(auth_type, 'auth_urlbase')
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
-        timeout = config.get('common', 'timeout')
+        timeout = config.get('common', 'timeout', fallback=None)
         if timeout is not None:
             self.timeout = timeout
 
