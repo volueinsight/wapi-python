@@ -45,10 +45,11 @@ def test_configure_by_file():
     lifetime = s.auth.valid_until - time.time()
     assert lifetime > 900
     assert lifetime < 1010
+    assert s.timeout == 10.0
 
 
 def test_configure_by_param():
-    s = wapi.Session(urlbase='rtsp://test.host')
+    s = wapi.Session(urlbase='rtsp://test.host', timeout=5)
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -69,6 +70,7 @@ def test_configure_by_param():
     lifetime = s.auth.valid_until - time.time()
     assert lifetime > 900
     assert lifetime < 1010
+    assert s.timeout == 5
 
 
 def test_reconfigure_session():
@@ -88,6 +90,7 @@ def test_reconfigure_session():
     with pytest.raises(wapi.session.ConfigException) as exinfo:
         s.configure('clientid', 'clientsecret')
     assert 'already done' in str(exinfo.value)
+    assert s.timeout == wapi.session.TIMEOUT
 
 #
 # Fixtures to set up the session for the rest of the tests
