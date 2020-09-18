@@ -16,10 +16,12 @@ authprefix = 'rtsp://auth.host/oauth2'
 #
 def test_build_sessions():
     s = wapi.Session()
-    assert s.urlbase == 'https://api.wattsight.com'
+    assert s.urlbase == wapi.session.API_URLBASE
     assert s.auth is None
-    s = wapi.Session(urlbase ='test_data')
+    assert s.timeout == wapi.session.TIMEOUT
+    s = wapi.Session(urlbase ='test_data', timeout=5)
     assert s.urlbase == 'test_data'
+    assert s.timeout == 5
 
 
 def test_configure_by_file():
@@ -75,7 +77,7 @@ def test_configure_by_param():
 
 def test_reconfigure_session():
     config_file = os.path.join(os.path.dirname(__file__), 'testconfig_oauth.ini')
-    s = wapi.Session(urlbase='test_data', timeout=5)
+    s = wapi.Session(urlbase='test_data')
     #
     mock = requests_mock.Adapter()
     # urllib does things based on protocol, so (ab)use one which is reasonably
@@ -90,7 +92,6 @@ def test_reconfigure_session():
     with pytest.raises(wapi.session.ConfigException) as exinfo:
         s.configure('clientid', 'clientsecret')
     assert 'already done' in str(exinfo.value)
-    assert s.timeout == 5
 
 #
 # Fixtures to set up the session for the rest of the tests

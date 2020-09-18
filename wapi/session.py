@@ -20,6 +20,8 @@ from .util import CurveException
 RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 TIMEOUT = 300      # Default timeout for web calls, in seconds.
+API_URLBASE = 'https://api.wattsight.com'
+AUTH_URLBASE = 'https://auth.wattsight.com'
 
 
 class ConfigException(Exception):
@@ -66,7 +68,7 @@ class Session(object):
 
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None,
                  auth_urlbase=None, timeout=None):
-        self.urlbase = 'https://api.wattsight.com'
+        self.urlbase = API_URLBASE
         self.auth = None
         self.timeout = TIMEOUT
         self._session = requests.Session()
@@ -83,7 +85,7 @@ class Session(object):
         """Set up according to configuration file with hosts and access details"""
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
-        config = configparser.RawConfigParser({"common": {"urlbase": self.urlbase}})
+        config = configparser.RawConfigParser()
         # Support being given a file-like object or a file path:
         if hasattr(config_file, 'read'):
             config.read_file(config_file)
@@ -92,14 +94,14 @@ class Session(object):
             if not files_read:
                 raise ConfigException('Configuration file with name {} '
                                       'was not found.'.format(config_file))
-        urlbase = config.get('common', 'urlbase')
+        urlbase = config.get('common', 'urlbase', fallback=None)
         if urlbase is not None:
             self.urlbase = urlbase
         auth_type = config.get('common', 'auth_type')
         if auth_type == 'OAuth':
             client_id = config.get(auth_type, 'id')
             client_secret = config.get(auth_type, 'secret')
-            auth_urlbase = config.get(auth_type, 'auth_urlbase')
+            auth_urlbase = config.get(auth_type, 'auth_urlbase', fallback=AUTH_URLBASE)
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
         timeout = config.get('common', 'timeout', fallback=None)
         if timeout is not None:
@@ -110,7 +112,7 @@ class Session(object):
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
         if auth_urlbase is None:
-            auth_urlbase = 'https://auth.wattsight.com/'
+            auth_urlbase = AUTH_URLBASE
         self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
 
     def get_curve(self, id=None, name=None):
