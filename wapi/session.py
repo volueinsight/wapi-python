@@ -19,6 +19,7 @@ from .util import CurveException
 
 RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
+TIMEOUT = 300      # Default timeout for web calls, in seconds.
 
 
 class ConfigException(Exception):
@@ -54,7 +55,7 @@ class Session(object):
         Your client secret.
     auth_urlbase: url
         Location of Wattsight authentication service
-    timeout: number
+    timeout: float
         Timeout for REST calls, in seconds
 
     Returns
@@ -63,11 +64,11 @@ class Session(object):
 
     """
 
-    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None,
-                 timeout=300):
+    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None,
+                 auth_urlbase=None, timeout=None):
         self.urlbase = 'https://api.wattsight.com'
         self.auth = None
-        self.timeout = timeout
+        self.timeout = TIMEOUT
         self._session = requests.Session()
         if config_file is not None:
             self.read_config_file(config_file)
@@ -75,6 +76,8 @@ class Session(object):
             self.configure(client_id, client_secret, auth_urlbase)
         if urlbase is not None:
             self.urlbase = urlbase
+        if timeout is not None:
+            self.timeout = timeout
 
     def read_config_file(self, config_file):
         """Set up according to configuration file with hosts and access details"""
@@ -100,7 +103,7 @@ class Session(object):
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
         timeout = config.get('common', 'timeout', fallback=None)
         if timeout is not None:
-            self.timeout = timeout
+            self.timeout = float(timeout)
 
     def configure(self, client_id, client_secret, auth_urlbase=None):
         """Programmatically set authentication parameters"""
