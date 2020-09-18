@@ -34,7 +34,10 @@ You can also directly use your client ID and secret as input to
 the :class:`~wapi.session.Session` class ::
 
     import wapi
-    session = wapi.Session(client_id='client id', client_secret='client secret')
+    session = wapi.Session(client_id='client id', client_secret='client secret', timeout=300)
+
+The timeout parameter is optional and defaults to 300 seconds.
+This can also be set in the config file as seen in :download:`sample config file <../sampleconfig.ini>`
 
 Using a proxy
 -------------
