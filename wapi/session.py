@@ -19,6 +19,9 @@ from .util import CurveException
 
 RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
+TIMEOUT = 300      # Default timeout for web calls, in seconds.
+API_URLBASE = 'https://api.wattsight.com'
+AUTH_URLBASE = 'https://auth.wattsight.com'
 
 
 class ConfigException(Exception):
@@ -43,6 +46,8 @@ class Session(object):
     Parameters
     ----------
 
+    urlbase: url
+        Location of Wattsight service
     config_file: path
         path to the config.ini file which contains your authentication
         information.
@@ -50,6 +55,10 @@ class Session(object):
         Your client ID
     client_secret:
         Your client secret.
+    auth_urlbase: url
+        Location of Wattsight authentication service
+    timeout: float
+        Timeout for REST calls, in seconds
 
     Returns
     -------
@@ -57,9 +66,11 @@ class Session(object):
 
     """
 
-    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None, auth_urlbase=None):
-        self.urlbase = 'https://api.wattsight.com'
+    def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None,
+                 auth_urlbase=None, timeout=None):
+        self.urlbase = API_URLBASE
         self.auth = None
+        self.timeout = TIMEOUT
         self._session = requests.Session()
         if config_file is not None:
             self.read_config_file(config_file)
@@ -67,12 +78,14 @@ class Session(object):
             self.configure(client_id, client_secret, auth_urlbase)
         if urlbase is not None:
             self.urlbase = urlbase
+        if timeout is not None:
+            self.timeout = timeout
 
     def read_config_file(self, config_file):
         """Set up according to configuration file with hosts and access details"""
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
-        config = configparser.RawConfigParser({"common": {"urlbase": self.urlbase}})
+        config = configparser.RawConfigParser()
         # Support being given a file-like object or a file path:
         if hasattr(config_file, 'read'):
             config.read_file(config_file)
@@ -81,22 +94,25 @@ class Session(object):
             if not files_read:
                 raise ConfigException('Configuration file with name {} '
                                       'was not found.'.format(config_file))
-        urlbase = config.get('common', 'urlbase')
+        urlbase = config.get('common', 'urlbase', fallback=None)
         if urlbase is not None:
             self.urlbase = urlbase
         auth_type = config.get('common', 'auth_type')
         if auth_type == 'OAuth':
             client_id = config.get(auth_type, 'id')
             client_secret = config.get(auth_type, 'secret')
-            auth_urlbase = config.get(auth_type, 'auth_urlbase')
+            auth_urlbase = config.get(auth_type, 'auth_urlbase', fallback=AUTH_URLBASE)
             self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
+        timeout = config.get('common', 'timeout', fallback=None)
+        if timeout is not None:
+            self.timeout = float(timeout)
 
     def configure(self, client_id, client_secret, auth_urlbase=None):
         """Programmatically set authentication parameters"""
         if self.auth is not None:
             raise ConfigException('Session configuration is already done')
         if auth_urlbase is None:
-            auth_urlbase = 'https://auth.wattsight.com/'
+            auth_urlbase = AUTH_URLBASE
         self.auth = auth.OAuth(self, client_id, client_secret, auth_urlbase)
 
     def get_curve(self, id=None, name=None):
@@ -438,12 +454,19 @@ class Session(object):
         if self.auth is not None:
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(databytes))
-        res = self._session.request(method=req_type, url=longurl, data=databytes,
-                                    headers=headers, auth=authval, stream=stream)
-        if ((500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
+        timeout = None
+        try:
+            res = self._session.request(method=req_type, url=longurl, data=databytes,
+                                        headers=headers, auth=authval, stream=stream, timeout=self.timeout)
+        except requests.exceptions.Timeout as e:
+            timeout = e
+            res = None
+        if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
             return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
+        if timeout is not None:
+            raise timeout
         return res
 
     def handle_single_curve_response(self, response):

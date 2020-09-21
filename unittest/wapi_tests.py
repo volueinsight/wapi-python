@@ -16,10 +16,12 @@ authprefix = 'rtsp://auth.host/oauth2'
 #
 def test_build_sessions():
     s = wapi.Session()
-    assert s.urlbase == 'https://api.wattsight.com'
+    assert s.urlbase == wapi.session.API_URLBASE
     assert s.auth is None
-    s = wapi.Session(urlbase ='test_data')
+    assert s.timeout == wapi.session.TIMEOUT
+    s = wapi.Session(urlbase ='test_data', timeout=5)
     assert s.urlbase == 'test_data'
+    assert s.timeout == 5
 
 
 def test_configure_by_file():
@@ -45,6 +47,7 @@ def test_configure_by_file():
     lifetime = s.auth.valid_until - time.time()
     assert lifetime > 900
     assert lifetime < 1010
+    assert s.timeout == 10.0
 
 
 def test_configure_by_param():
@@ -69,6 +72,7 @@ def test_configure_by_param():
     lifetime = s.auth.valid_until - time.time()
     assert lifetime > 900
     assert lifetime < 1010
+    assert s.timeout == wapi.session.TIMEOUT
 
 
 def test_reconfigure_session():
