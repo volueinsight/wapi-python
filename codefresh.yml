@@ -1,9 +1,7 @@
 version: "1.0"
 stages:
   - "clone"
-  - "build"
   - "test"
-  - "push"
   - "release"
 steps:
   main_clone:
@@ -12,20 +10,6 @@ steps:
     description: "Cloning ${{CF_REPO_NAME}}..."
     repo: "wattsight/${{CF_REPO_NAME}}"
     revision: "${{CF_BRANCH}}"
-  build:
-    title: "Building Docker Image"
-    stage: "build"
-    type: "build"
-    working_directory: "${{main_clone}}"
-    image_name: "wattsight/${{CF_REPO_NAME}}"
-    tag: "${{CF_SHORT_REVISION}}"
-    disable_push: true
-    dockerfile: "Dockerfile"
-    progress: plain
-    when:
-      branch:
-        ignore:
-          - master
   testing:
     type: parallel
     stage: "test"
@@ -46,47 +30,6 @@ steps:
           - pip install -r requirements.txt
           - pip install -r test-requirements.txt
           - python -m pytest
-  set_version:
-    title: "Read VERSION"
-    stage: "push"
-    image: bash:3.2
-    working_directory: "${{main_clone}}"
-    commands:
-      - "[[ -f './VERSION' ]] && cf_export VERSION=$(cat VERSION) || cf_export VERSION=${{CF_SHORT_REVISION}}"
-    when:
-      branch:
-        only:
-          - development
-          - master
-  push_dev:
-    title: "Pushing snapshot image to GCR"
-    stage: "push"
-    type: "push"
-    image_name: "wattsight/${{CF_REPO_NAME}}"
-    registry: "gcr"
-    candidate: "${{build}}"
-    tags:
-      - "${{CF_SHORT_REVISION}}"
-      - "${{VERSION}}-snapshot"
-      - latest-snapshot
-    when:
-      branch:
-        only:
-          - development
-  push_prod:
-    title: "Pushing production image to GCR"
-    stage: "push"
-    type: "push"
-    image_name: "wattsight/${{CF_REPO_NAME}}"
-    registry: "gcr"
-    candidate: "eu.gcr.io/wattsight/${{CF_REPO_NAME}}:${{CF_SHORT_REVISION}}"
-    tags:
-      - "${{VERSION}}"
-      - latest
-    when:
-      branch:
-        only:
-          - master
   get_git_token:
     title: Reading Github token
     stage: "release"
