@@ -7,9 +7,10 @@ set -e
 #
 
 REPO='wapi-python'
+SRCDIR='wapi'
 VERSION=$(<VERSION)
 RELEASE="v$VERSION"
-PYVERSION=$(grep ^VERSION wapi/__init__.py | awk '{print $5}' | tr -d "'")
+PYVERSION=$(grep ^VERSION $SRCDIR/__init__.py | awk '{print $5}' | tr -d "'")
 MODE="$1"
 
 if [ "$MODE" != "test" -a "$MODE" != "release" ]; then
@@ -18,14 +19,14 @@ if [ "$MODE" != "test" -a "$MODE" != "release" ]; then
 fi
 
 if [ "$VERSION" != "$PYVERSION" ]; then
-  echo "Version differs in VERSION and wapi/__init__.py ($VERSION != $PYVERSION)"
+  echo "Version differs in VERSION and $SRCDIR/__init__.py ($VERSION != $PYVERSION)"
   exit 1
 fi
 
-if curl -f -H "Authorization: token $GITHUB_TRAVIS_TOKEN" \
+if curl -f -H "Authorization: token $GITHUB_TOKEN" \
         https://api.github.com/repos/wattsight/$REPO/releases/tags/$RELEASE >/dev/null 2>&1
 then
-  echo "Release $RELEASE already exists, update VERSION (and wapi-python/__init__.py)"
+  echo "Release $RELEASE already exists, update VERSION (and $SRCDIR/__init__.py)"
   exit 1
 fi
 
@@ -51,7 +52,7 @@ JSON_DATA="{
   \"name\": \"$RELEASE\",
   \"body\": \"$BODY_STRING\"
 }"
-curl -d "$JSON_DATA" -H "Authorization: token $GITHUB_TRAVIS_TOKEN" \
+curl -d "$JSON_DATA" -H "Authorization: token $GITHUB_TOKEN" \
         https://api.github.com/repos/wattsight/$REPO/releases
 
 
