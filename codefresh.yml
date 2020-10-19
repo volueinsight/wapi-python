@@ -1,0 +1,67 @@
+version: "1.0"
+stages:
+  - "clone"
+  - "test"
+  - "release"
+steps:
+  main_clone:
+    type: "git-clone"
+    stage: "clone"
+    description: "Cloning ${{CF_REPO_NAME}}..."
+    repo: "wattsight/${{CF_REPO_NAME}}"
+    revision: "${{CF_BRANCH}}"
+  testing:
+    type: parallel
+    stage: "test"
+    steps:
+      test_27:
+        title: "Test with Py2.7"
+        image: python:2.7-slim
+        working_directory: "${{main_clone}}"
+        commands:
+          - pip install -r requirements.txt
+          - pip install -r test-requirements.txt
+          - python -m pytest
+      test_38:
+        title: "Test with Py3.8"
+        image: python:3.8-slim
+        working_directory: "${{main_clone}}"
+        commands:
+          - pip install -r requirements.txt
+          - pip install -r test-requirements.txt
+          - python -m pytest
+  get_git_token:
+    title: Reading Github token
+    stage: "release"
+    image: codefresh/cli
+    commands:
+      - cf_export GITHUB_TOKEN=$(codefresh get context github --decrypt -o yaml | yq -y .spec.data.auth.password)
+    when:
+      condition:
+        any:
+          masterBranch: '"${{CF_BRANCH}}" == "master"'
+          masterPR: '"${{CF_PULL_REQUEST_TARGET}}" == "master"'
+  release_check:
+    title: "Check for release capability"
+    stage: "release"
+    image: python:3.8
+    working_directory: "${{main_clone}}"
+    commands:
+      - bash ./releases/release_package.sh test
+    when:
+      condition:
+        all:
+          masterPR: '"${{CF_PULL_REQUEST_TARGET}}" == "master"'
+  release:
+    title: "Release package"
+    stage: "release"
+    image: python:3.8
+    working_directory: "${{main_clone}}"
+    commands:
+      - bash ./releases/release_package.sh release
+    when:
+      branch:
+        only:
+          - master
+
+# No CD triggering steps needed for library images
