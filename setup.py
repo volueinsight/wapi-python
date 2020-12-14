@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-import os
+import os, sys
 from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -8,16 +8,20 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'VERSION')) as fv:
     version = fv.read()
 
+install_requires = [
+    'requests >= 2.18',
+    'sseclient-py >= 1.7',
+    'pytz',
+    'pandas >= 0.21',
+    'future >= 0.16',
+]
+if sys.version_info < (3,):
+    install_requires.append('configparser >= 3.5')
+
 setup(
     name='wapi-python',
     packages=['wapi'],
-    install_requires=[
-        'requests >= 2.18',
-        'sseclient-py >= 1.7',
-        'pytz',
-        'pandas >= 0.21',
-        'future >= 0.16',
-    ],
+    install_requires=install_requires,
     tests_require=[
         'pytest',
         'pytest-cov >= 2.5',

@@ -1,8 +1,4 @@
 try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-try:
     from urllib.parse import urljoin
 except ImportError:
     from urlparse import urljoin
@@ -12,6 +8,7 @@ import json
 import time
 import warnings
 from past.types import basestring
+import configparser
 
 from . import auth, curves, events, util
 from .util import CurveException
