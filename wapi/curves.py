@@ -625,11 +625,11 @@ class InstanceCurve(BaseCurve):
 
         data_offset: duration, mandatory
             The duration added to the issue_date to find the start of the data
-            fragment.  Format is an ISO-8601 duration string.
+            fragment.  Format is an ISO-8601 duration string up to "days".
 
         data_max_length: duration, optional
             The longest duration selected from a single instance, mostly used
-            to detect missing instances.  ISO-8601 duration string.
+            to detect missing instances.  ISO-8601 duration string up to "days".
 
         issue_date_from: time-stamp, optional
             Limits the timerange used to select instances.
@@ -779,7 +779,7 @@ class InstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args = [util.make_arg('data_date', '{}'.format(data_date))]
+        args = [util.make_arg('data_date', data_date)]
         if issue_frequency is not None:
             args.append(util.make_arg('issue_frequency', issue_frequency))
         self._add_from_to(args, issue_date_from, issue_date_to, prefix='issue_date_')
@@ -1219,11 +1219,11 @@ class TaggedInstanceCurve(BaseCurve):
 
         data_offset: duration, mandatory
             The duration added to the issue_date to find the start of the data
-            fragment.  Format is an ISO-8601 duration string.
+            fragment.  Format is an ISO-8601 duration string up to "days".
 
         data_max_length: duration, optional
             The longest duration selected from a single instance, mostly used
-            to detect missing instances.  ISO-8601 duration string.
+            to detect missing instances.  ISO-8601 duration string up to "days".
 
         tag: str, optional
             tag to get the data for. If omitted, the default tag is used.
@@ -1381,7 +1381,7 @@ class TaggedInstanceCurve(BaseCurve):
         -------
         :class:`wapi.util.TS` object
         """
-        args = [util.make_arg('data_date', '{}'.format(data_date))]
+        args = [util.make_arg('data_date', data_date)]
         if issue_frequency is not None:
             args.append(util.make_arg('issue_frequency', issue_frequency))
         if tag is not None:
