@@ -50,6 +50,14 @@ def test_configure_by_file():
     assert s.timeout == 10.0
 
 
+def test_minimal_config_file():
+    config_file = os.path.join(os.path.dirname(__file__), 'testconfig_minimal.ini')
+    s = wapi.Session(config_file=config_file)
+    #
+    assert s.urlbase == 'https://api.wattsight.com'
+    assert s.auth is None
+
+
 def test_configure_by_param():
     s = wapi.Session(urlbase='rtsp://test.host')
     #
