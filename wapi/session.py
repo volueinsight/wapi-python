@@ -56,6 +56,9 @@ class Session(object):
         Location of Wattsight authentication service
     timeout: float
         Timeout for REST calls, in seconds
+    session: requests.Session
+        Optional custom session that is used, for example with
+        preconfigured proxies
 
     Returns
     -------
@@ -64,11 +67,14 @@ class Session(object):
     """
 
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None,
-                 auth_urlbase=None, timeout=None):
+                 auth_urlbase=None, timeout=None, session=None):
         self.urlbase = API_URLBASE
         self.auth = None
         self.timeout = TIMEOUT
-        self._session = requests.Session()
+        if session is not None:
+            self._session = session
+        else:
+            self._session = requests.Session()
         if config_file is not None:
             self.read_config_file(config_file)
         elif client_id is not None and client_secret is not None:
