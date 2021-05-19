@@ -27,7 +27,10 @@ TIME_SERIES curve examples
 TAGGED curve examples
 ----------------------
 
-* No example yet
+* Reading one tag from a tagged curve
+  (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/Tagged_curve_examples/tag_simple_read.py>`_ ,
+  :download:`[download] <../examples/Tagged_curve_examples/tag_simple_read.py>`)
+
 
 
 INSTANCE curve examples
