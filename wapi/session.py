@@ -441,7 +441,7 @@ class Session(object):
 
         databytes = None
         if data is not None:
-            headers['content_type'] = 'application/json'
+            headers['Content-Type'] = 'application/json'
             if isinstance(data, basestring):
                 databytes = data.encode()
             else:
