@@ -9,10 +9,11 @@ import wapi
 import pandas as pd
 import os
 
-## INPUTS
 ################################################
 # Insert the path to your config file here!
 my_config_file = 'path/to/your/config.ini'
+################################################
+
 
 # curve names to read (in this case temperature and PV production actuals)
 curve_names = ['tt {region} con °c cet {freq} s',
