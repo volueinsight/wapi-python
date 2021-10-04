@@ -19,7 +19,7 @@ my_config_file = 'path/to/your/config.ini'
 curve_names = ['tt {region} con °c cet {freq} s',
                'pro {region} spv mwh/h cet {freq} a']
 
-#define frequency for every curve as in curve name
+# define frequency for every curve as in curve name
 freqs_curve = ['min15'] * len(curve_names)
 
 # desired freq of output, define for every curve
