@@ -337,8 +337,8 @@ and :meth:`~wapi.util.TS.median` .
 
 
 
-.. _api web interface: https://api.wattsight.com/
-.. _documentation: https://api.wattsight.com/#documentation
+.. _api web interface: https://api.volueinsight.com/
+.. _documentation: https://api.volueinsight.com/#documentation
 .. _pandas.Series: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html
 .. _pandas.DataFrame: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
 .. _pandas documentation: https://pandas.pydata.org/pandas-docs/stable/index.html
