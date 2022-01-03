@@ -9,16 +9,17 @@ import wapi
 import pandas as pd
 import os
 
-## INPUTS
 ################################################
 # Insert the path to your config file here!
 my_config_file = 'path/to/your/config.ini'
+################################################
+
 
 # curve names to read (in this case temperature and PV production actuals)
 curve_names = ['tt {region} con °c cet {freq} s',
                'pro {region} spv mwh/h cet {freq} a']
 
-#define frequency for every curve as in curve name
+# define frequency for every curve as in curve name
 freqs_curve = ['min15'] * len(curve_names)
 
 # desired freq of output, define for every curve
