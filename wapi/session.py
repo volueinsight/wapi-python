@@ -77,6 +77,12 @@ class Session(object):
             self.urlbase = urlbase
         if timeout is not None:
             self.timeout = timeout
+            
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._session.close()
 
     def read_config_file(self, config_file):
         """Set up according to configuration file with hosts and access details"""
