@@ -3,7 +3,7 @@
 
 .. _index_wsgrb:
 
-Volue Insight API python library documentation
+Volue Insight API Python library documentation
 ==========================================
 
 :Maintainer: <support@volueinsight.com>
