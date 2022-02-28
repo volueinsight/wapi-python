@@ -300,6 +300,7 @@ _tzmap = {
     'TRT': 'Turkey',
     'MSK': 'Europe/Moscow',
     'ART': 'America/Argentina/Buenos_Aires',
+    'JST': 'Japan',
 }
 
 
