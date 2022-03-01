@@ -29,15 +29,18 @@ curve = session.get_curve(name=curve_name)
 data = pd.DataFrame()
 
 ## No Filter
-# read curve data from start_date to end_date to ts object
-ts15min = curve.get_data(data_from=start_date, data_to=end_date)
+# read curve data from start_date to end_date to ts object and
+# aggregate to hourly frequency
+tsnofilter = curve.get_data(data_from=start_date, data_to=end_date, 
+                            frequency='H', function='AVERAGE')
 # convert to pandas.Series object
-data['no filter'] = ts15min.to_pandas()
+data['no filter'] = tsnofilter.to_pandas()
 
 ## Filter Peak Values
 # read curve data from start_date to end_date to ts object and
 # aggregate to hourly frequency
-tspeak = curve.get_data(data_from=start_date, data_to=end_date, filter='PEAK')
+tspeak = curve.get_data(data_from=start_date, data_to=end_date, 
+                            filter='PEAK', frequency='H', function='AVERAGE')
 # convert to pandas.Series object
 data['peak'] = tspeak.to_pandas()
 
@@ -45,7 +48,7 @@ data['peak'] = tspeak.to_pandas()
 # read curve data from start_date to end_date to ts object and
 # aggregate to hourly frequency
 tsoffpeak = curve.get_data(data_from=start_date, data_to=end_date,
-                           filter='OFFPEAK')
+                           filter='OFFPEAK', frequency='H', function='AVERAGE')
 # convert to pandas.Series object
 data['offpeak'] = tsoffpeak.to_pandas()
 
