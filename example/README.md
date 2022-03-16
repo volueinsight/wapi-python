@@ -44,7 +44,6 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	['pro dk1 wnd intraday ec00da mwh/h cet min15 f',
 	 'pro dk1 wnd intraday lastec mwh/h cet min15 f',
 	 'pro dk1 wnd intraday tso mwh/h cet min15 f',
-	 'pro dk1 wnd intraday mwh/h cet min15 a',
 	 'pro dk1 wnd ec00 mwh/h cet min15 f',
 	 'pro dk1 wnd ec12 mwh/h cet min15 f',
 	 'pro dk1 wnd gfs00 mwh/h cet min15 f',
