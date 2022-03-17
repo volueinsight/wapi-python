@@ -6,7 +6,7 @@
 Volue Insight API Python library documentation
 ==========================================
 
-:Maintainer: <support@volueinsight.com>
+:Maintainer: <support.insight@volue.com>
 :Organization: `Volue Insight`_
 :Version: |version|
 :Date: |today|
