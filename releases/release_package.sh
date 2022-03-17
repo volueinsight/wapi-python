@@ -63,4 +63,7 @@ curl -d "$JSON_DATA" -H "Authorization: token $GITHUB_TOKEN" \
 echo "Release to PYPI."
 rm -rf dist
 python setup.py sdist bdist_wheel
+echo "PYPI release: setup.py completed"
 twine upload dist/wapi-python-$VERSION.tar.gz dist/wapi_python-$VERSION-*.whl
+
+echo "Released successfully"
