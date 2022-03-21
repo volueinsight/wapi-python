@@ -23,7 +23,7 @@ Complete working code can be found in the attached Jupyter Notebook file.
 
 1. Establish a session using client credentials.
 
-	This requires having an OAuth client, which can be created at https://auth.wattsight.com/account/oauth-clients.
+	This requires having an OAuth client, which can be created at https://auth.volueinsight.com/account/oauth-clients.
 
 	```python
 	>>> session = wapi.Session(client_id='client id', client_secret='client secret')
