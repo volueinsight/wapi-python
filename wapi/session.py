@@ -1,3 +1,4 @@
+
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -430,6 +431,19 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
+    def _update_auth_headers(self, headers, databytes, retries=RETRY_COUNT):
+        try:
+            x = self.auth.validate_auth()
+            print(f'Hei {x}')
+            headers.update(self.auth.get_headers(databytes))
+            return headers
+        except requests.exceptions.ConnectionError:
+            if retries <= 0:
+                raise auth.AuthFailedException('Failed to get authentication token, lost connection with auth-servers.')
+            if RETRY_DELAY > 0:
+                time.sleep(RETRY_DELAY)
+            return self._update_auth_headers(headers, databytes, retries-1)
+
     def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
                      stream=False, retries=RETRY_COUNT):
         """Run a call to the backend, dealing with authentication etc."""
@@ -449,8 +463,7 @@ class Session(object):
         if data is None and rawdata is not None:
             databytes = rawdata
         if self.auth is not None:
-            self.auth.validate_auth()
-            headers.update(self.auth.get_headers(databytes))
+            headers = self._update_auth_headers(headers, databytes)
         timeout = None
         try:
             res = self._session.request(method=req_type, url=longurl, data=databytes,
@@ -459,6 +472,7 @@ class Session(object):
             timeout = e
             res = None
         if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
+            # TODO check out: https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/#setting-default-timeouts
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
             return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
