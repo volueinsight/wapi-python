@@ -1,4 +1,3 @@
-
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -65,11 +64,12 @@ class Session(object):
     """
 
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None,
-                 auth_urlbase=None, timeout=None):
+                 auth_urlbase=None, timeout=None, retry_update_auth=False):
         self.urlbase = API_URLBASE
         self.auth = None
         self.timeout = TIMEOUT
         self._session = requests.Session()
+        self.retry_update_auth = retry_update_auth
         if config_file is not None:
             self.read_config_file(config_file)
         elif client_id is not None and client_secret is not None:
@@ -433,8 +433,7 @@ class Session(object):
 
     def _update_auth_headers(self, headers, databytes, retries=RETRY_COUNT):
         try:
-            x = self.auth.validate_auth()
-            print(f'Hei {x}')
+            self.auth.validate_auth()
             headers.update(self.auth.get_headers(databytes))
             return headers
         except requests.exceptions.ConnectionError:
@@ -463,7 +462,11 @@ class Session(object):
         if data is None and rawdata is not None:
             databytes = rawdata
         if self.auth is not None:
-            headers = self._update_auth_headers(headers, databytes)
+            if self.retry_update_auth:
+                headers = self._update_auth_headers(headers, databytes)
+            else:
+                self.auth.validate_auth()
+                headers.update(self.auth.get_headers(databytes))
         timeout = None
         try:
             res = self._session.request(method=req_type, url=longurl, data=databytes,
@@ -472,7 +475,6 @@ class Session(object):
             timeout = e
             res = None
         if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
-            # TODO check out: https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/#setting-default-timeouts
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
             return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
