@@ -14,7 +14,7 @@ from . import auth, curves, events, util
 from .util import CurveException
 
 
-RETRY_COUNT = 4    # Number of times to retry
+RETRY_COUNT = 1    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 TIMEOUT = 300      # Default timeout for web calls, in seconds.
 API_URLBASE = 'https://api.wattsight.com'
@@ -436,7 +436,7 @@ class Session(object):
             self.auth.validate_auth()
             headers.update(self.auth.get_headers(databytes))
             return headers
-        except requests.exceptions.ConnectionError:
+        except Exception:
             if retries <= 0:
                 raise auth.AuthFailedException('Failed to get authentication token, lost connection with auth-servers.')
             if RETRY_DELAY > 0:
