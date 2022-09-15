@@ -14,7 +14,7 @@ from . import auth, curves, events, util
 from .util import CurveException
 
 
-RETRY_COUNT = 1    # Number of times to retry
+RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 TIMEOUT = 300      # Default timeout for web calls, in seconds.
 API_URLBASE = 'https://api.wattsight.com'
@@ -462,6 +462,7 @@ class Session(object):
         if data is None and rawdata is not None:
             databytes = rawdata
         if self.auth is not None:
+            # Beta-feature: Only update auth with retry if explicitly requested
             if self.retry_update_auth:
                 headers = self._update_auth_headers(headers, databytes)
             else:
