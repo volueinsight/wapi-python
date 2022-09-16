@@ -431,17 +431,16 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
-    def _update_auth_headers(self, headers, databytes, retries=RETRY_COUNT):
+    def _get_auth_header_with_retry(self, databytes, retries=RETRY_COUNT):
         try:
             self.auth.validate_auth()
-            headers.update(self.auth.get_headers(databytes))
-            return headers
-        except Exception:
+            return self.auth.get_headers(databytes)
+        except Exception as e:
             if retries <= 0:
-                raise auth.AuthFailedException('Failed to get authentication token, lost connection with auth-servers.')
+                raise e
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
-            return self._update_auth_headers(headers, databytes, retries-1)
+            return self._get_auth_header_with_retry(databytes, retries - 1)
 
     def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
                      stream=False, retries=RETRY_COUNT):
@@ -464,7 +463,8 @@ class Session(object):
         if self.auth is not None:
             # Beta-feature: Only update auth with retry if explicitly requested
             if self.retry_update_auth:
-                headers = self._update_auth_headers(headers, databytes)
+                auth_header = self._get_auth_header_with_retry(databytes)
+                headers.update(auth_header)
             else:
                 self.auth.validate_auth()
                 headers.update(self.auth.get_headers(databytes))
