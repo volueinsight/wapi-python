@@ -64,11 +64,12 @@ class Session(object):
     """
 
     def __init__(self, urlbase=None, config_file=None, client_id=None, client_secret=None,
-                 auth_urlbase=None, timeout=None):
+                 auth_urlbase=None, timeout=None, retry_update_auth=False):
         self.urlbase = API_URLBASE
         self.auth = None
         self.timeout = TIMEOUT
         self._session = requests.Session()
+        self.retry_update_auth = retry_update_auth
         if config_file is not None:
             self.read_config_file(config_file)
         elif client_id is not None and client_secret is not None:
@@ -430,6 +431,17 @@ class Session(object):
             return c
         raise CurveException('Unknown curve type ({})'.format(metadata['curve_type']))
 
+    def _get_auth_header_with_retry(self, databytes, retries=RETRY_COUNT):
+        try:
+            self.auth.validate_auth()
+            return self.auth.get_headers(databytes)
+        except Exception as e:
+            if retries <= 0:
+                raise e
+            if RETRY_DELAY > 0:
+                time.sleep(RETRY_DELAY)
+            return self._get_auth_header_with_retry(databytes, retries - 1)
+
     def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
                      stream=False, retries=RETRY_COUNT):
         """Run a call to the backend, dealing with authentication etc."""
@@ -449,8 +461,13 @@ class Session(object):
         if data is None and rawdata is not None:
             databytes = rawdata
         if self.auth is not None:
-            self.auth.validate_auth()
-            headers.update(self.auth.get_headers(databytes))
+            # Beta-feature: Only update auth with retry if explicitly requested
+            if self.retry_update_auth:
+                auth_header = self._get_auth_header_with_retry(databytes)
+                headers.update(auth_header)
+            else:
+                self.auth.validate_auth()
+                headers.update(self.auth.get_headers(databytes))
         timeout = None
         try:
             res = self._session.request(method=req_type, url=longurl, data=databytes,
