@@ -24,7 +24,7 @@ if [ "$VERSION" != "$PYVERSION" ]; then
 fi
 
 if curl -f -H "Authorization: token $GITHUB_TOKEN" \
-        https://api.github.com/repos/wattsight/$REPO/releases/tags/$RELEASE >/dev/null 2>&1
+        https://api.github.com/repos/volueinsight/$REPO/releases/tags/$RELEASE >/dev/null 2>&1
 then
   echo "Release $RELEASE already exists, update VERSION (and $SRCDIR/__init__.py)"
   exit 1
@@ -53,7 +53,7 @@ JSON_DATA="{
   \"body\": \"$BODY_STRING\"
 }"
 curl -d "$JSON_DATA" -H "Authorization: token $GITHUB_TOKEN" \
-        https://api.github.com/repos/wattsight/$REPO/releases
+        https://api.github.com/repos/volueinsight/$REPO/releases
 
 
 #
