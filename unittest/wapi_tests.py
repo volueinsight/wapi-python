@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -174,6 +175,26 @@ def test_ts_data(ts_curve):
     d = c.get_data(data_from=1, data_to=2)
     assert isinstance(d, wapi.util.TS)
     assert d.frequency == 'H'
+
+
+@pytest.mark.parametrize('range_begin, range_end, tz', [
+    ('2022-09-07T00:00:00+02:00', '2022-09-10T22:00:00+02:00', None),
+    ('2022-09-06T22:00:00Z', '2022-09-10T20:00:00Z', 'CET')
+
+])
+def test_ts_data_range(ts_curve, range_begin, range_end, tz):
+    c, s, m = ts_curve
+    result = {
+        'begin': range_begin,
+        'end': range_end
+    }
+    m.register_uri('GET', f'{prefix}/series/5/range', text=json.dumps(result))
+    range = c.get_data_range(output_time_zone=tz)
+    assert isinstance(range, wapi.util.Range)
+    assert isinstance(range.begin, datetime.datetime)
+    assert isinstance(range.end, datetime.datetime)
+    assert '2022-09-07T00:00:00+02:00' == range.begin.isoformat()
+    assert '2022-09-10T22:00:00+02:00' == range.end.isoformat()
 
 
 @pytest.fixture

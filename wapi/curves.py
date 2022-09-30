@@ -1,7 +1,10 @@
+from typing import Optional
+
 from past.types import basestring
 import warnings
 
 from . import util
+from .util import Range
 
 
 class BaseCurve:
@@ -70,7 +73,7 @@ class TimeSeriesCurve(BaseCurve):
 
         A Time Series curves holds a single time series.
         This is used for actual values, backcasts, normals, etc. This function
-        fetches data between two given timestamps. It also possible to process
+        fetches data between two given timestamps. It is also possible to process
         the curve directly in the API using filter and aggregation functions.
         This can be used with great effect to reduce the amount of data
         retrieved if the full set of details is not needed.
@@ -147,6 +150,65 @@ class TimeSeriesCurve(BaseCurve):
             return result
         return util.TS(input_dict=result, curve_type=util.TIME_SERIES)
 
+    def get_data_range(self, data_from=None, data_to=None, output_time_zone=None) -> Optional[Range]:
+        """ Get the data range of this Time Series curve
+
+        A timeseries curve holds data which spawns a certain range.
+        The earliest point in time with data is called "begin",
+        the latest one is called "end".
+
+        This function fetches the data range for a given interval and
+        returns a :class:`wapi.util.Range` object. This range specifies what
+        data is available at the time of the query. If an end of the interval is
+        not specified, data points are not cut off at this end of the interval.
+        The returned range is always completely included in the interval.
+
+        Parameters
+        ----------
+
+        data_from: time-stamp, optional
+            start date (and time) of the interval for which the data range
+            is calculated. If not given, the range starts
+            with the first data point stored. If only the date (without time) is
+            given, the time is assumed to be 00:00. The timestamp can be
+            provided in any of the following types (also valid without time):
+
+            * datestring in format '%Y-%M-%DT%h:%m:%sZ',
+              eg '2017-01-01' or '2018-12-16T13:45:00Z'
+            * pandas.Timestamp object
+            * datetime.datetime object
+
+        data_to: time-stamp, optional
+            end date (and time) of the interval for which the data range
+            is calculated. If not given, the range ends
+            with the latest data point stored. The timestamp can be
+            provided in the same types as ``data_from``.
+            End dates are always excluded in the result!
+            If not given, the end date of the returned timeseries will be
+            the last date with data available.
+
+        output_time_zone: str, optional
+            timezone to which begin and end of the range will be converted to.
+
+        Returns
+        -------
+        :class:`wapi.util.Range` object on success
+        """
+        data_from = util.make_arg('from', data_from) if data_from else None
+        data_to = util.make_arg('to', data_to) if data_to else None
+
+        args = [argument for argument in [data_from, data_to] if argument]
+        astr = "&".join(args)
+
+        url = f'/api/series/{self.id}/range?{astr}'
+        print('url:', url)
+        result = self._load_data(url, 'Failed to load range')
+        print('result:', result)
+        if result is None:
+            return result
+
+        return Range.from_dict(result, tz_name=output_time_zone)
+
 
 class TaggedCurve(BaseCurve):
     def get_tags(self):
@@ -170,7 +232,7 @@ class TaggedCurve(BaseCurve):
 
         This function fetches data for one or multiple given tags and returns
         a list of :class:`wapi.util.TS` objects.
-        It also possible to process the curve directly in the API using filter
+        It is also possible to process the curve directly in the API using filter
         and aggregation functions. This can be used with great effect to reduce
         the amount of data retrieved if the full set of details is not needed.
         All time series are returned in a :class:`wapi.util.TS` object.

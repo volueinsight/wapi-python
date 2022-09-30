@@ -4,7 +4,10 @@
 #
 
 import calendar
+from dataclasses import dataclass
 import datetime
+from typing import Optional, Dict
+
 import dateutil.parser
 import pytz
 import pandas as pd
@@ -52,6 +55,44 @@ for k, v in _TS_FREQ_TABLE.items():
 
 class CurveException(Exception):
     pass
+
+
+@dataclass
+class Range:
+    """
+    A class to hold the range of data.
+    """
+    begin: Optional[datetime.datetime] = None
+    end: Optional[datetime.datetime] = None
+
+    @classmethod
+    def from_dict(cls, range_dict: Dict[str, str], tz_name: Optional[str] = None):
+        if not range_dict:
+            return Range(None, None)
+
+        if not tz_name:
+            tz_name = 'CET'
+        tz = parse_tz(tz_name)
+
+        begin = end = None
+        if b := range_dict['begin']:
+            begin = parsetime(b, tz)
+
+        if e := range_dict['end']:
+            end = parsetime(e, tz)
+
+        return cls(begin, end)
+
+    def is_finite(self):
+        return self.begin and self.end
+
+    def to_pandas(self) -> pd.Interval:
+        if not self.is_finite():
+            raise ValueError('Range must be finite to convert it to pd.Interval.')
+
+        left = pd.Timestamp(self.begin)
+        right = pd.Timestamp(self.end)
+        return pd.Interval(left, right, closed='left')
 
 
 class TS(object):
