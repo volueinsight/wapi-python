@@ -48,7 +48,9 @@ def test_to_pandas(ts1):
 
 def test_from_pandas(ts1):
     pd_series = ts1.to_pandas()
+    print("pd_series", pd_series)
     re_ts = TS.from_pandas(pd_series)
+    print("re_ts", re_ts)
 
     assert re_ts.name == ts1.name
     assert re_ts.frequency == ts1.frequency

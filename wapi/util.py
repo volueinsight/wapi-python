@@ -133,6 +133,9 @@ class TS(object):
             index.append(dt)
             values.append(row[1])
         res = pd.Series(name=name, index=index, data=values)
+        tmp = res.asfreq(self._map_freq(self.frequency))
+        print(self.frequency)
+        print(self._map_freq(self.frequency))
         return res.asfreq(self._map_freq(self.frequency))
 
     @staticmethod
