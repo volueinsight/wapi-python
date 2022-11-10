@@ -27,6 +27,19 @@ def ts3():
     return TS(id=3, name='This is a third Name', frequency='M',
               time_zone='CET', curve_type=TimeSeriesCurve, points=points)
 
+@pytest.fixture
+def ts4():
+    points = [
+        [2153343600000, 10],
+        [2153426400000, 20],
+        [2153512800000, 30]
+    ]
+    return TS(id=4, name='Test 2038 issue', frequency='D',
+              time_zone='CET', curve_type=TimeSeriesCurve, points=points)
+
+def test_to_pandas_2038(ts4):
+    pd_series = ts4.to_pandas()
+    assert len(pd_series.index) == len(ts4.points)
 
 def test_to_pandas(ts1):
     pd_series = ts1.to_pandas()
