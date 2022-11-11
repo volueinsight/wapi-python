@@ -442,14 +442,8 @@ class Session(object):
                 time.sleep(RETRY_DELAY)
             return self._get_auth_header_with_retry(databytes, retries - 1)
 
-    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
-                     stream=False, retries=RETRY_COUNT):
-        """Run a call to the backend, dealing with authentication etc."""
+    def _validate_auth(self, data, rawdata):
         headers = {}
-
-        if not urlbase:
-            urlbase = self.urlbase
-        longurl = urljoin(urlbase, url)
 
         databytes = None
         if data is not None:
@@ -468,6 +462,23 @@ class Session(object):
             else:
                 self.auth.validate_auth()
                 headers.update(self.auth.get_headers(databytes))
+        
+        return headers
+    
+    def send_data_request(self, req_type, urlbase, url, data=None, rawdata=None, headers=None, authval=None,
+                     stream=False, retries=RETRY_COUNT):
+        if not urlbase:
+            urlbase = self.urlbase
+        longurl = urljoin(urlbase, url)
+
+        databytes = None
+        if data is not None:
+            if isinstance(data, basestring):
+                databytes = data.encode()
+            else:
+                databytes = json.dumps(data).encode()
+        if data is None and rawdata is not None:
+            databytes = rawdata
         timeout = None
         try:
             res = self._session.request(method=req_type, url=longurl, data=databytes,
@@ -478,10 +489,58 @@ class Session(object):
         if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
-            return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
+            return self.send_data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
         if timeout is not None:
             raise timeout
         return res
+
+
+
+    def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
+                     stream=False, retries=RETRY_COUNT):
+        """Run a call to the backend, dealing with authentication etc."""
+        headers = self._validate_auth(data, rawdata)
+        res = self.send_data_request(req_type, urlbase, url, data, rawdata, headers, authval, stream, retries)
+        return res
+
+        # # # # # 
+        # headers = {}
+
+        # if not urlbase:
+        #     urlbase = self.urlbase
+        # longurl = urljoin(urlbase, url)
+
+        # databytes = None
+        # if data is not None:
+        #     headers['content-type'] = 'application/json'
+        #     if isinstance(data, basestring):
+        #         databytes = data.encode()
+        #     else:
+        #         databytes = json.dumps(data).encode()
+        # if data is None and rawdata is not None:
+        #     databytes = rawdata
+        # if self.auth is not None:
+        #     # Beta-feature: Only update auth with retry if explicitly requested
+        #     if self.retry_update_auth:
+        #         auth_header = self._get_auth_header_with_retry(databytes)
+        #         headers.update(auth_header)
+        #     else:
+        #         self.auth.validate_auth()
+        #         headers.update(self.auth.get_headers(databytes))
+        # timeout = None
+        # try:
+        #     res = self._session.request(method=req_type, url=longurl, data=databytes,
+        #                                 headers=headers, auth=authval, stream=stream, timeout=self.timeout)
+        # except requests.exceptions.Timeout as e:
+        #     timeout = e
+        #     res = None
+        # if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
+        #     if RETRY_DELAY > 0:
+        #         time.sleep(RETRY_DELAY)
+        #     return self.data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
+        # if timeout is not None:
+        #     raise timeout
+        # return res
 
     def handle_single_curve_response(self, response):
         if not response.ok:
