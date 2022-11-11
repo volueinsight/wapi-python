@@ -4,12 +4,13 @@ import pytest
 import requests
 
 import wapi
+import json
 
 
 class MockResponse:
-    def __init__(self, status_code):
+    def __init__(self, status_code, content="Mock content"):
         self.status_code = status_code
-        self.content = "Mock content"
+        self.content = content
 
 
 @patch('wapi.session.auth')
@@ -32,6 +33,33 @@ def test_data_request__get_auth__ok(requests_mock, auth_mock):
     response = session.data_request('GET', None, '/curves')
 
     assert response == mock_response
+
+@patch.object(wapi.session.requests.Session, "request")
+def test_data_request__token_expire__ok(fake_request):
+    def my_side_effect(**kwargs):
+        if kwargs["method"] == "POST":
+            return MockResponse(200, content=json.dumps({"access_token": "a", "token_type": "b", "expires_in": 10}).encode())
+        elif kwargs["method"] == "GET":
+            return MockResponse(200, "curves")
+
+    fake_request.side_effect = my_side_effect
+    wapi.session.RETRY_DELAY = 0.00001
+
+    # verify auth getting token at beginning
+    session = wapi.session.Session(urlbase='https://volueinsight.com',
+                                   auth_urlbase='https://auth.vs.com',
+                                   client_id='client1',
+                                   client_secret='secret1')
+
+    assert session.auth.get_headers(None) == {'Authorization': 'b a'}
+
+    # verify auth refreshing token
+    session.auth.valid_until = 0 # simulating token expiring
+    response = session.data_request('GET', None, '/curves')
+
+    assert response.status_code == 200
+    assert response.content == "curves"
+    assert session.auth.get_headers(None) == {'Authorization': 'b a'}
 
 
 @patch('wapi.session.auth')
