@@ -35,14 +35,14 @@ def test_data_request__get_auth__ok(requests_mock, auth_mock):
     assert response == mock_response
 
 @patch.object(wapi.session.requests.Session, "request")
-def test_data_request__token_expire__ok(fake_request):
-    def my_side_effect(**kwargs):
+def test_data_request__token_expire__ok(mock_request):
+    def mock_request_effect(**kwargs):
         if kwargs["method"] == "POST":
             return MockResponse(200, content=json.dumps({"access_token": "a", "token_type": "b", "expires_in": 10}).encode())
         elif kwargs["method"] == "GET":
             return MockResponse(200, "curves")
 
-    fake_request.side_effect = my_side_effect
+    mock_request.side_effect = mock_request_effect
     wapi.session.RETRY_DELAY = 0.00001
 
     # verify auth getting token at beginning
