@@ -494,7 +494,6 @@ class Session(object):
             raise timeout
         return res
 
-
     def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
                      stream=False, retries=RETRY_COUNT):
         """Run a call to the backend, dealing with authentication etc."""
