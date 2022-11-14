@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 import pytest
 import requests
@@ -18,19 +18,14 @@ def make_wapi_session():
                                 client_id='client1',
                                 client_secret='secret1')
 
-
-
-
-@patch('wapi.session.auth')
+# ignore auth
+@patch('wapi.session.auth', MagicMock())
 @patch('wapi.session.requests')
-def test_data_request__get_auth__ok(requests_mock, auth_mock):
+def test_data_request__get__ok(requests_mock):
     mock_response = MockResponse(200)
     req_session_mock = Mock()
     req_session_mock.request.return_value = mock_response
     requests_mock.Session.return_value = req_session_mock
-    oauth_mock = Mock()
-    auth_mock.OAuth.return_value = oauth_mock
-    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     session = make_wapi_session()
     response = session.data_request('GET', None, '/curves')
@@ -60,17 +55,18 @@ def test_data_request__token_expire__ok(mock_request):
     assert session.auth.get_headers(None) == {'Authorization': 'b a'}
 
 
-@pytest.mark.parametrize("urlbase,url,longurl_expected", [(None, "/token", "https://volueinsight.com/token"), ("http://urlbase", "/token", "http://urlbase/token")])
-@patch('wapi.session.auth')
+@pytest.mark.parametrize("urlbase,url,longurl_expected", 
+    [
+        (None, "/token", "https://volueinsight.com/token"), 
+        ("http://urlbase", "/token", "http://urlbase/token")
+    ])
+@patch('wapi.session.auth', MagicMock())
 @patch('wapi.session.requests')
-def test_send_data_request__long_url__correct(requests_mock, auth_mock, urlbase, url, longurl_expected):
+def test_send_data_request__long_url__correct(requests_mock, urlbase, url, longurl_expected):
     mock_response = MockResponse(200)
     req_session_mock = Mock()
     req_session_mock.request.return_value = mock_response
     requests_mock.Session.return_value = req_session_mock
-    oauth_mock = Mock()
-    auth_mock.OAuth.return_value = oauth_mock
-    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     session = make_wapi_session()    
     session.data_request('GET', urlbase=urlbase, url=url)
@@ -78,17 +74,19 @@ def test_send_data_request__long_url__correct(requests_mock, auth_mock, urlbase,
     call_args = req_session_mock.request.call_args
     assert call_args[1]["url"] == longurl_expected
 
-@pytest.mark.parametrize("data,rawdata,databytes_expected", [(None, "rawdata", "rawdata"), (40, None, b"40"), ("basestring", "rawdata", b"basestring")])
-@patch('wapi.session.auth')
+@pytest.mark.parametrize("data,rawdata,databytes_expected", 
+    [
+        (None, "rawdata", "rawdata"), 
+        (40, None, b"40"), 
+        ("basestring", "rawdata", b"basestring")
+    ])
+@patch('wapi.session.auth', MagicMock())
 @patch('wapi.session.requests')
-def test_send_data_request__databytes__correct(requests_mock, auth_mock, data, rawdata, databytes_expected):
+def test_send_data_request__databytes__correct(requests_mock, data, rawdata, databytes_expected):
     mock_response = MockResponse(200)
     req_session_mock = Mock()
     req_session_mock.request.return_value = mock_response
     requests_mock.Session.return_value = req_session_mock
-    oauth_mock = Mock()
-    auth_mock.OAuth.return_value = oauth_mock
-    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     session =  make_wapi_session()   
     session.data_request('GET', None, None, data=data, rawdata=rawdata)
@@ -97,16 +95,13 @@ def test_send_data_request__databytes__correct(requests_mock, auth_mock, data, r
     assert call_args[1]["data"] == databytes_expected
 
 @pytest.mark.parametrize("status_code", [408, 500, 599])
-@patch('wapi.session.auth')
+@patch('wapi.session.auth', MagicMock())
 @patch('wapi.session.requests')
-def test_send_data_request__retries__correct(requests_mock, auth_mock, status_code):
+def test_send_data_request__retries__correct(requests_mock, status_code):
     mock_response_fail = MockResponse(status_code)
     req_session_mock = Mock()
     req_session_mock.request.return_value = mock_response_fail
     requests_mock.Session.return_value = req_session_mock
-    oauth_mock = Mock()
-    auth_mock.OAuth.return_value = oauth_mock
-    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     retries_count = 3
     wapi.session.RETRY_DELAY = 0.00001
