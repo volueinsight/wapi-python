@@ -43,7 +43,6 @@ def test_data_request__token_expire__ok(mock_request):
             return MockResponse(200, "curves")
 
     mock_request.side_effect = mock_request_effect
-    wapi.session.RETRY_DELAY = 0.00001
 
     # verify auth getting token at beginning
     session = wapi.session.Session(urlbase='https://volueinsight.com',
@@ -61,6 +60,77 @@ def test_data_request__token_expire__ok(mock_request):
     assert response.content == "curves"
     assert session.auth.get_headers(None) == {'Authorization': 'b a'}
 
+
+@pytest.mark.parametrize("urlbase,url,longurl_expected", [(None, "/token", "https://volueinsight.com/token"), ("http://urlbase", "/token", "http://urlbase/token")])
+@patch('wapi.session.auth')
+@patch('wapi.session.requests')
+def test_send_data_request__long_url__correct(requests_mock, auth_mock, urlbase, url, longurl_expected):
+    mock_response = MockResponse(200)
+    req_session_mock = Mock()
+    req_session_mock.request.return_value = mock_response
+    requests_mock.Session.return_value = req_session_mock
+    oauth_mock = Mock()
+    auth_mock.OAuth.return_value = oauth_mock
+    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
+
+    session = wapi.session.Session(urlbase='https://volueinsight.com',
+                                   auth_urlbase='https://auth.vs.com',
+                                   client_id='client1',
+                                   client_secret='secret1')
+
+    _ = session.data_request('GET', urlbase=urlbase, url=url)
+
+    call_args = req_session_mock.request.call_args
+    assert call_args[1]["url"] == longurl_expected
+
+@pytest.mark.parametrize("data,rawdata,databytes_expected", [(None, "rawdata", "rawdata"), (40, None, b"40"), ("basestring", "rawdata", b"basestring")])
+@patch('wapi.session.auth')
+@patch('wapi.session.requests')
+def test_send_data_request__databytes__correct(requests_mock, auth_mock, data, rawdata, databytes_expected):
+    mock_response = MockResponse(200)
+    req_session_mock = Mock()
+    req_session_mock.request.return_value = mock_response
+    requests_mock.Session.return_value = req_session_mock
+    oauth_mock = Mock()
+    auth_mock.OAuth.return_value = oauth_mock
+    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
+
+    session = wapi.session.Session(urlbase='https://volueinsight.com',
+                                   auth_urlbase='https://auth.vs.com',
+                                   client_id='client1',
+                                   client_secret='secret1')
+
+    _ = session.data_request('GET', None, None, data=data, rawdata=rawdata)
+
+    call_args = req_session_mock.request.call_args
+    assert call_args[1]["data"] == databytes_expected
+
+@pytest.mark.parametrize("status_code", [408, 500, 599])
+@patch('wapi.session.auth')
+@patch('wapi.session.requests')
+def test_send_data_request__retries__correct(requests_mock, auth_mock, status_code):
+    mock_response_fail = MockResponse(status_code)
+    req_session_mock = Mock()
+    req_session_mock.request.return_value = mock_response_fail
+    requests_mock.Session.return_value = req_session_mock
+    oauth_mock = Mock()
+    auth_mock.OAuth.return_value = oauth_mock
+    oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
+
+    retries_count = 3
+    # TODO: fixture session
+    wapi.session.RETRY_DELAY = 0.00001
+    session = wapi.session.Session(urlbase='https://volueinsight.com',
+                                   auth_urlbase='https://auth.vs.com',
+                                   client_id='client1',
+                                   client_secret='secret1')
+
+    session.send_data_request("GET", "http://urlbase", "/url", "data", None, "headers", "authval", False, retries_count)
+
+    call_args = req_session_mock.request.call_args
+    assert call_args[1] == {"method": "GET", "url": "http://urlbase/url", "data": b"data", "headers": "headers", 
+                            "auth": "authval", "stream": False, "timeout": 300}
+    assert req_session_mock.request.call_count == retries_count + 1
 
 @patch('wapi.session.auth')
 @patch('wapi.session.requests')

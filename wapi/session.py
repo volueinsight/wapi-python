@@ -489,11 +489,10 @@ class Session(object):
         if (timeout is not None or (500 <= res.status_code < 600) or res.status_code == 408) and retries > 0:
             if RETRY_DELAY > 0:
                 time.sleep(RETRY_DELAY)
-            return self.send_data_request(req_type, urlbase, url, data, rawdata, authval, stream, retries-1)
+            return self.send_data_request(req_type, urlbase, url, data, rawdata, headers, authval, stream, retries-1)
         if timeout is not None:
             raise timeout
         return res
-
 
 
     def data_request(self, req_type, urlbase, url, data=None, rawdata=None, authval=None,
