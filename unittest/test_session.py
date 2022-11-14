@@ -12,6 +12,14 @@ class MockResponse:
         self.status_code = status_code
         self.content = content
 
+def make_wapi_session():
+    return wapi.session.Session(urlbase='https://volueinsight.com',
+                                auth_urlbase='https://auth.vs.com',
+                                client_id='client1',
+                                client_secret='secret1')
+
+
+
 
 @patch('wapi.session.auth')
 @patch('wapi.session.requests')
@@ -24,12 +32,7 @@ def test_data_request__get_auth__ok(requests_mock, auth_mock):
     auth_mock.OAuth.return_value = oauth_mock
     oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
-    wapi.session.RETRY_DELAY = 0.00001
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1')
-
+    session = make_wapi_session()
     response = session.data_request('GET', None, '/curves')
 
     assert response == mock_response
@@ -45,11 +48,7 @@ def test_data_request__token_expire__ok(mock_request):
     mock_request.side_effect = mock_request_effect
 
     # verify auth getting token at beginning
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1')
-
+    session = make_wapi_session()    
     assert session.auth.get_headers(None) == {'Authorization': 'b a'}
 
     # verify auth refreshing token
@@ -73,12 +72,8 @@ def test_send_data_request__long_url__correct(requests_mock, auth_mock, urlbase,
     auth_mock.OAuth.return_value = oauth_mock
     oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1')
-
-    _ = session.data_request('GET', urlbase=urlbase, url=url)
+    session = make_wapi_session()    
+    session.data_request('GET', urlbase=urlbase, url=url)
 
     call_args = req_session_mock.request.call_args
     assert call_args[1]["url"] == longurl_expected
@@ -95,12 +90,8 @@ def test_send_data_request__databytes__correct(requests_mock, auth_mock, data, r
     auth_mock.OAuth.return_value = oauth_mock
     oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1')
-
-    _ = session.data_request('GET', None, None, data=data, rawdata=rawdata)
+    session =  make_wapi_session()   
+    session.data_request('GET', None, None, data=data, rawdata=rawdata)
 
     call_args = req_session_mock.request.call_args
     assert call_args[1]["data"] == databytes_expected
@@ -118,13 +109,8 @@ def test_send_data_request__retries__correct(requests_mock, auth_mock, status_co
     oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     retries_count = 3
-    # TODO: fixture session
     wapi.session.RETRY_DELAY = 0.00001
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1')
-
+    session =  make_wapi_session()   
     session.send_data_request("GET", "http://urlbase", "/url", "data", None, "headers", "authval", False, retries_count)
 
     call_args = req_session_mock.request.call_args
@@ -153,11 +139,8 @@ def test_data_request__get_auth__first_failed_then_ok(requests_mock, auth_mock):
     oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     wapi.session.RETRY_DELAY = 0.00001
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1',
-                                   retry_update_auth=True)
+    session = make_wapi_session()
+    session.retry_update_auth = True
 
     response = session.data_request('GET', None, '/curves')
 
@@ -189,11 +172,8 @@ def test_data_request__fail_too_many_times(requests_mock, auth_mock):
     oauth_mock.get_headers.return_value = {'Authorization': 'X Y'}
 
     wapi.session.RETRY_DELAY = 0.00001
-    session = wapi.session.Session(urlbase='https://volueinsight.com',
-                                   auth_urlbase='https://auth.vs.com',
-                                   client_id='client1',
-                                   client_secret='secret1',
-                                   retry_update_auth=True)
+    session = make_wapi_session()
+    session.retry_update_auth = True
 
     with pytest.raises(requests.exceptions.ConnectionError):
         session.data_request('GET', None, '/curves')
