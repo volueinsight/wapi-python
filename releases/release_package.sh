@@ -71,6 +71,7 @@ echo "Release to $PYPI_INDEX."
 rm -rf dist
 python setup.py sdist bdist_wheel
 echo "PYPI release: setup.py completed"
-twine upload dist/wapi-python-$VERSION.tar.gz dist/wapi_python-$VERSION-*.whl
+if
+twine upload --repository $PYPI_INDEX dist/wapi-python-$VERSION.tar.gz dist/wapi_python-$VERSION-*.whl
 
 echo "Released successfully"
