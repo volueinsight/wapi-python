@@ -13,8 +13,8 @@ try:
     from urllib.parse import quote_plus
 except ImportError:
     from urllib import quote_plus
-from backports.zoneinfo import ZoneInfo
-from backports.zoneinfo._common import ZoneInfoNotFoundError
+from zoneinfo import ZoneInfo
+from zoneinfo._common import ZoneInfoNotFoundError
 
 
 # Curve types
@@ -133,9 +133,6 @@ class TS(object):
             index.append(dt)
             values.append(row[1])
         res = pd.Series(name=name, index=index, data=values)
-        tmp = res.asfreq(self._map_freq(self.frequency))
-        print(self.frequency)
-        print(self._map_freq(self.frequency))
         return res.asfreq(self._map_freq(self.frequency))
 
     @staticmethod
@@ -149,7 +146,7 @@ class TS(object):
 
         points = []
         for i in pd_series.index:
-            t = i.tz_localize("UTC")
+            t = i.astimezone("UTC")
             timestamp = int(calendar.timegm(t.timetuple()) * 1000)
             points.append([timestamp, pd_series[i]])
 
