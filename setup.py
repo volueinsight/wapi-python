@@ -14,11 +14,10 @@ install_requires = [
     'pandas >= 0.21',
     'future >= 0.16',
 ]
-if sys.version_info < (3,):
-    install_requires.append('configparser >= 3.5')
 
 setup(
     name='wapi-python',
+    python_requires='>=3.9',
     packages=['wapi'],
     install_requires=install_requires,
     tests_require=[
