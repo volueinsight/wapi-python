@@ -25,14 +25,13 @@ if [ "$PYPI_INDEX" != "testpypi" -a "$PYPI_INDEX" != "pypi" ]; then
   exit 1
 fi
 
-if [ "$VERSION" != "$PYVERSION" ]; then
+if [ "$VERSION" != "$PYVERSION" -a "$PYPI_INDEX" == "pypi" ]; then
   echo "Version differs in VERSION and $SRCDIR/__init__.py ($VERSION != $PYVERSION)"
   exit 1
 fi
 
-if curl -f -H "Authorization: token $GITHUB_TOKEN" \
-        https://api.github.com/repos/volueinsight/$REPO/releases/tags/$RELEASE >/dev/null 2>&1
-then
+if [ "$PYPI_INDEX" == "pypi" -a curl -f -H "Authorization: token $GITHUB_TOKEN" \
+        https://api.github.com/repos/volueinsight/$REPO/releases/tags/$RELEASE >/dev/null 2>&1 ]; then
   echo "Release $RELEASE already exists, update VERSION (and $SRCDIR/__init__.py)"
   exit 1
 fi
