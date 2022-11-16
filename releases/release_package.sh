@@ -13,6 +13,7 @@ RELEASE="v$VERSION"
 PYVERSION=$(grep ^VERSION $SRCDIR/__init__.py | awk '{print $5}' | tr -d "'")
 MODE="$1"
 PYPI_INDEX="$2"
+echo "PYPI_INDEX="$PYPI_INDEX
 
 if [ "$MODE" != "test" -a "$MODE" != "release" ]; then
   echo "Mode argument must be either 'test' or 'release'"
