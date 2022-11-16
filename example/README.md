@@ -8,7 +8,6 @@ A number of use cases is presented in order to introduce different data structur
 [Jupyter (iPython) Notebooks](http://jupyter.org/)   
 [Pandas Data Analysis library](http://pandas.pydata.org/)   
 [Plotly Charting library](https://plot.ly/)   
-[World Timezone Definitions for Python](http://pytz.sourceforge.net/)   
 
 ## Installation of Wattsight API python library
 
@@ -58,10 +57,11 @@ Complete working code can be found in the attached Jupyter Notebook file.
 3. For the first example, filter on intraday curves and retrieve data for the selected curves.
 
 	```python
+	>>> from zoneinfo import ZoneInfo
 	>>> intraday_curves = [c for c in curves if 'INTRADAY' in c.categories]
 	>>> data = {}
 	>>> label = {}
-	>>> issue_date = pytz.timezone('CET').localize(datetime(2018, 4, 12))
+	>>> issue_date = datetime(2018, 4, 12).replace(tzinfo=ZoneInfo("CET"))
 	>>> date_from = issue_date + timedelta(minutes=15)
 	>>> date_to = date_from + timedelta(hours=24)
 	>>> for c in intraday_curves:
@@ -136,9 +136,10 @@ Complete working code can be found in the attached Jupyter Notebook file.
 7.  Retrive data for the selcted curves.
 
 	```python
+	>>> from zoneinfo import ZoneInfo
 	>>> data = {}
 	>>> label = {}
-	>>> issue_date = pytz.timezone('CET').localize(datetime(2018, 4, 12))
+	>>> issue_date = datetime(2018, 4, 12).replace(tzinfo=ZoneInfo("CET"))
 	>>> date_to = date_from + timedelta(days=14)
 	>>> for c in curves_at00:
 	>>>     ts = None

@@ -6,7 +6,7 @@ in a safe but efficient way.  Typically used for getting long normals.
 import wapi
 from datetime import timedelta
 from dateutil.parser import parse
-import pytz
+from zoneinfo import ZoneInfo
 import time
 
 ############################################
@@ -21,7 +21,7 @@ session = wapi.Session(config_file=my_config_file)
 # for some regions.  These are long series, we cannot
 # read the whole range at once.
 
-CET = pytz.timezone('CET')
+CET = ZoneInfo("CET")
 
 # Just grab some possible start/end dates if we cannot
 # find them from the curve metadata.
