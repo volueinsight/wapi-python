@@ -6,7 +6,6 @@
 import calendar
 import datetime
 import dateutil.parser
-import pytz
 import pandas as pd
 import numpy as np
 from past.types import basestring
@@ -14,6 +13,8 @@ try:
     from urllib.parse import quote_plus
 except ImportError:
     from urllib import quote_plus
+from zoneinfo import ZoneInfo
+from zoneinfo._common import ZoneInfoNotFoundError
 
 
 # Curve types
@@ -77,7 +78,7 @@ class TS(object):
         if self.time_zone is not None:
             self.tz = parse_tz(self.time_zone)
         else:
-            self.tz = pytz.timezone('CET')
+            self.tz = ZoneInfo('CET')
 
         if self.curve_type is None:
             self.curve_type = detect_curve_type(self.issue_date, self.tag)
@@ -145,7 +146,7 @@ class TS(object):
 
         points = []
         for i in pd_series.index:
-            t = i.astimezone(pytz.utc)
+            t = i.astimezone("UTC")
             timestamp = int(calendar.timegm(t.timetuple()) * 1000)
             points.append([timestamp, pd_series[i]])
 
@@ -269,12 +270,12 @@ def parsetime(datestr, tz=None):
         if d.tzinfo is not None:
             d = d.astimezone(tz)
         else:
-            d = tz.localize(d)
+            d = d.replace(tzinfo=tz)
 
     else:
         # If datestr does not have tzinfo and no tz given, assume CET
         if d.tzinfo is None:
-            d = pytz.timezone('CET').localize(d)
+            d = d.replace(tzinfo=ZoneInfo("CET"))
     return d
 
 
@@ -308,9 +309,9 @@ def parse_tz(time_zone):
     try:
         if time_zone in _tzmap:
             time_zone = _tzmap[time_zone]
-        return pytz.timezone(time_zone)
-    except pytz.exceptions.UnknownTimeZoneError:
-        return pytz.timezone('CET')
+        return ZoneInfo(time_zone)
+    except ZoneInfoNotFoundError:
+        return ZoneInfo('CET')
 
 
 def detect_curve_type(issue_date, tag):

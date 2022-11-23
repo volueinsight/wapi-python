@@ -7,7 +7,7 @@ Typically used to download the history of forecasts.
 import wapi
 from datetime import datetime, timedelta
 from dateutil.parser import parse
-import pytz
+from zoneinfo import ZoneInfo
 import time
 
 ############################################
@@ -23,7 +23,7 @@ session = wapi.Session(config_file=my_config_file)
 # the consumption model.
 # We download all ensembles (tags).
 
-CET = pytz.timezone('CET')
+CET = ZoneInfo('CET')
 
 # Just grab some possible start/end issue dates if we cannot
 # find them from the curve metadata.

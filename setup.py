@@ -11,15 +11,13 @@ with open(os.path.join(here, 'VERSION')) as fv:
 install_requires = [
     'requests >= 2.18',
     'sseclient-py >= 1.7',
-    'pytz',
     'pandas >= 0.21',
     'future >= 0.16',
 ]
-if sys.version_info < (3,):
-    install_requires.append('configparser >= 3.5')
 
 setup(
     name='wapi-python',
+    python_requires='>=3.9',
     packages=['wapi'],
     install_requires=install_requires,
     tests_require=[
