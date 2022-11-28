@@ -49,7 +49,7 @@ class OAuth:
         url = urljoin(self.auth_urlbase, '/oauth2/token')
         auth = (self.client_id, self.client_secret)
         data = {'grant_type': 'client_credentials'}
-        response = self.session.data_request('POST', self.auth_urlbase, url, rawdata=data, authval=auth)
+        response = self.session.send_data_request('POST', self.auth_urlbase, url, rawdata=data, authval=auth)
         if response.status_code != 200:
             raise AuthFailedException('Authentication failed: {}'.format(response.content))
         # Parse token
