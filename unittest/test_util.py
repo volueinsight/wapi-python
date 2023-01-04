@@ -1,7 +1,7 @@
 import pytest
 
 from wapi.curves import TimeSeriesCurve
-from wapi.util import TS
+from wapi.util import TS, TIME_SERIES
 
 
 @pytest.fixture
@@ -9,7 +9,7 @@ def ts1():
     points = [[0, 80], [2678400000, 90],
               [5097600000, 70], [7776000000, 120]]
     return TS(id=1, name='This is a Name', frequency='M', time_zone='CET',
-              curve_type=TimeSeriesCurve, points=points)
+              curve_type=TIME_SERIES, points=points)
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def ts2():
     points = [[0, 120], [2678400000, 210],
               [5097600000, 330], [7776000000, 380]]
     return TS(id=2, name='This is another Name', frequency='M',
-              time_zone='CET', curve_type=TimeSeriesCurve, points=points)
+              time_zone='CET', curve_type=TIME_SERIES, points=points)
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def ts3():
     points = [[0, 220], [2678400000, 120],
               [5097600000, 140], [7776000000, 580]]
     return TS(id=3, name='This is a third Name', frequency='M',
-              time_zone='CET', curve_type=TimeSeriesCurve, points=points)
+              time_zone='CET', curve_type=TIME_SERIES, points=points)
 
 @pytest.fixture
 def ts4():
@@ -35,7 +35,7 @@ def ts4():
         [2153512800000, 30]
     ]
     return TS(id=4, name='Test 2038 issue', frequency='D',
-              time_zone='CET', curve_type=TimeSeriesCurve, points=points)
+              time_zone='CET', curve_type=TIME_SERIES, points=points)
 
 def test_to_pandas_2038(ts4):
     pd_series = ts4.to_pandas()
@@ -101,3 +101,12 @@ def test_median_ts(ts1, ts2, ts3):
 
     for dp1, dp2 in zip(points, summed.points):
         assert dp1 == dp2
+
+def test_fullname(ts1):
+    assert ts1.fullname == "This is a Name"
+
+    ts1.name = None
+    assert ts1.fullname == "1 TIME_SERIES CET M"
+
+    
+

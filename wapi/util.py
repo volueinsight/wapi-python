@@ -100,7 +100,7 @@ class TS(object):
         else:
             if self.id:
                 attrs.append(str(self.id))
-            attrs.extend([self.curve_type, self.tz.zone, self.frequency])
+            attrs.extend([self.curve_type, str(self.tz), self.frequency])
         if self.tag:
             attrs.append(self.tag)
         if self.issue_date:
