@@ -18,6 +18,21 @@ A number of use cases is presented in order to introduce different data structur
 	pip install -U wapi-python
 	```
 
+
+## Installation of Pytz library
+
+	```command
+	pip install pytz
+	```
+
+## Importing the libraries
+```command
+import datetime
+import pytz
+```
+
+
+
 ## Implementation
 Complete working code can be found in the attached Jupyter Notebook file.
 
@@ -30,7 +45,6 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	```
 
 2. Search curves by meta data.
-	hgcxdthygfde
 	For this use case define meta criteria for DK1 area wind power production.
 
 	```python
