@@ -18,9 +18,9 @@ sys.path.append(os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'wapi-python'
-copyright = '2018, Wattsight'
-author = 'Wattsight'
+project = 'Volue Insight API'
+copyright = '2021, Volue'
+author = 'Volue Insight'
 
 # The short X.Y version
 version = ''
@@ -102,6 +102,11 @@ html_static_path = ['_static']
 # html_sidebars = {}
 html_show_sourcelink = True
 
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = "img/v-logo.png"
+
+
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
@@ -163,4 +168,4 @@ texinfo_documents = [
 
 #Custom css to the documentation
 def setup(app):
-    app.add_stylesheet('css/custom.css')
+    app.add_css_file('css/custom.css')

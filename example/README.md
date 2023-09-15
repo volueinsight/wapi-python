@@ -23,7 +23,7 @@ Complete working code can be found in the attached Jupyter Notebook file.
 
 1. Establish a session using client credentials.
 
-	This requires having an OAuth client, which can be created at https://auth.wattsight.com/account/oauth-clients.
+	This requires having an OAuth client, which can be created at https://auth.volueinsight.com/account/oauth-clients.
 
 	```python
 	>>> session = wapi.Session(client_id='client id', client_secret='client secret')
@@ -44,7 +44,6 @@ Complete working code can be found in the attached Jupyter Notebook file.
 	['pro dk1 wnd intraday ec00da mwh/h cet min15 f',
 	 'pro dk1 wnd intraday lastec mwh/h cet min15 f',
 	 'pro dk1 wnd intraday tso mwh/h cet min15 f',
-	 'pro dk1 wnd intraday mwh/h cet min15 a',
 	 'pro dk1 wnd ec00 mwh/h cet min15 f',
 	 'pro dk1 wnd ec12 mwh/h cet min15 f',
 	 'pro dk1 wnd gfs00 mwh/h cet min15 f',

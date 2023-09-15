@@ -2,8 +2,10 @@
 # Authentication support
 #
 
+import imp
 import json
 import time
+import threading
 
 try:
     from urllib.parse import urljoin
@@ -29,18 +31,14 @@ class OAuth:
         self.token_type = None
         self.valid_until = None
         self.session = session
-        self.revalidating = False
         self._authenticate()
 
     def validate_auth(self):
         """Check valid_until and fetch new token if needed"""
-        # Prevent loop
-        if self.revalidating:
-            return
-        if self.valid_until is None or time.time() > self.valid_until:
-            self.revalidating = True
-            self._authenticate()
-            self.revalidating = False
+        # To avoid sending duplicated authentication requests in other threads
+        with threading.Lock():
+            if (not self.valid_until) or time.time() > self.valid_until:
+                self._authenticate()
 
     def _authenticate(self):
         # Wipe out any old values before (re-)login
@@ -51,7 +49,7 @@ class OAuth:
         url = urljoin(self.auth_urlbase, '/oauth2/token')
         auth = (self.client_id, self.client_secret)
         data = {'grant_type': 'client_credentials'}
-        response = self.session.data_request('POST', self.auth_urlbase, url, rawdata=data, authval=auth)
+        response = self.session.send_data_request('POST', self.auth_urlbase, url, rawdata=data, authval=auth)
         if response.status_code != 200:
             raise AuthFailedException('Authentication failed: {}'.format(response.content))
         # Parse token

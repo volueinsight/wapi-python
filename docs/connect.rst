@@ -1,6 +1,6 @@
 .. _connect:
 
-Connect to the Wattsight API
+Connect to the Volue Insight API
 ============================
 
 In order to work with WAPI, first create a session.
@@ -9,7 +9,7 @@ your client_id and client_secret to the ``wapi.Session`` class
 (:class:`wapi.session.Session`).
 
 You can get the required id and secret by creating an OAuth client
-at https://auth.wattsight.com/account/oauth-clients (as explained
+at https://auth.volueinsight.com/account/oauth-clients (as explained
 `here`_ )
 
 Using a config file
@@ -47,4 +47,4 @@ The library responds to the standard proxy evironment variables
 
 
 .. _sample config file: https://github.com/wattsight/wapi-python/tree/master/sampleconfig.ini
-.. _here: https://api.wattsight.com/#documentation
+.. _here: https://api.volueinsight.com/#documentation

@@ -101,7 +101,7 @@ Intraday price forecast examples
   specific contract. (`[view on github] <https://github.com/wattsight/wapi-python/blob/development/examples/intraday_examples/absolute_intraday_price_forecast.py>`_ ,
   :download:`[download] <../examples/intraday_examples/absolute_intraday_price_forecast.py>`) 
 
-Reproduce figures from wattsight.com
+Reproduce figures from volueinsight.com
 -------------------------------------
 
 * Reproduce one of the 4 following Fundamental figures for any region
@@ -113,28 +113,28 @@ Reproduce figures from wattsight.com
      :width: 40%
      :align: center
 
-     Consumption https://app.wattsight.com/#tab/power/115/2
+     Consumption https://app.volueinsight.com/#tab/power/115/2
 
 
   .. figure:: img/pro_de_spv.png
      :width: 40%
      :align: center
 
-     Photovoltaic https://app.wattsight.com/#tab/power/135/2
+     Photovoltaic https://app.volueinsight.com/#tab/power/135/2
 
 
   .. figure:: img/pro_de_wnd.png
      :width: 40%
      :align: center
 
-     Wind https://app.wattsight.com/#tab/power/126/2
+     Wind https://app.volueinsight.com/#tab/power/126/2
 
 
   .. figure:: img/rdl_de.png
      :width: 40%
      :align: center
 
-     Residual Load https://app.wattsight.com/#tab/power/109/2
+     Residual Load https://app.volueinsight.com/#tab/power/109/2
 
 * Reproduce temperature figures for any region
   (`[view on github] <https://github.com/wattsight/wapi-python/blob/master/examples/reproduce_wattsight_plots/ws_temperature_hourly.py>`_ ,
@@ -144,4 +144,4 @@ Reproduce figures from wattsight.com
      :width: 40%
      :align: center
 
-     Temperature https://app.wattsight.com/#tab/power/245/2
+     Temperature https://app.volueinsight.com/#tab/power/245/2

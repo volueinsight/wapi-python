@@ -1,0 +1,2 @@
+Fix the bug introduced in 0.7.8 that causes maximum recursion error when Session refreshes the token after it expires.
+Update release script to allow publish test versions to testpypi index.
