@@ -1,0 +1,25 @@
+version: 2
+mergeable:
+  - when: pull_request.*, pull_request_review.*
+    name: PR Checker
+    validate:
+      # we check title format because on squash-merge it becomes the merge-commit message
+      - do: title
+        must_include:
+          regex: "^.{0,62}$"
+          message: |
+            Title should be at most 62 characters long
+      - do: title
+        must_include:
+          regex: '^(feat|fix|refactor|revert|ci|build|docs|chore)(\([\w\d-]+\))?!?: (\S.+[^.?!])$'
+          regex_flag: "none" # by default pattern is case-insensitive
+          message: |
+            Title should follow conventional commit format `type(scope): summary`
+            - type is one of feat, fix, refactor, revert, ci, build, docs, chore
+            - scope is optional, it can be a ClickUp ticket reference or anything else, e.g. feat(CU861naajbt) or build(deps)
+            - summary should start with lower case and shouldn't end with punctuation
+      - do: description
+        no_empty:
+          enabled: true
+          message: |
+            Description should not be empty. Please provide details with **what** was changed, **why** it was changed, and **how** it was changed.
