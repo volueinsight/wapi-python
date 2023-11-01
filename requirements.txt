@@ -4,3 +4,4 @@ pytz
 pandas >= 0.21
 future >= 0.16
 configparser >= 3.5; python_version < "3"
+matplotlib

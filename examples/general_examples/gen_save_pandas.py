@@ -7,7 +7,6 @@ https://pandas.pydata.org/pandas-docs/stable/io.html
 
 import wapi
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 
 ############################################

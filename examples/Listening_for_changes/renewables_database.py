@@ -12,7 +12,6 @@ curves and this script actually does something
 
 import wapi
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
 import os
 

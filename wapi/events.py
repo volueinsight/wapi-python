@@ -60,7 +60,7 @@ class EventListener:
                         if sse_event.retry is not None:
                             try:
                                 self.retry = int(sse_event.retry)
-                            except:
+                            except Exception:
                                 pass
                         if self.do_shutdown:
                             break
@@ -107,7 +107,7 @@ class DefaultEvent(object):
         self._raw_event = sse_event
         try:
             self.json_data = json.loads(sse_event.data)
-        except:
+        except Exception:
             self.json_data = None
 
 

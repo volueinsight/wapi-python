@@ -1,5 +1,5 @@
 """
-This simple example compares yesterdays Photovoltaic Forecast based on the EC00
+This simple example compares yesterday's Photovoltaic Forecast based on the EC00
 weather forecast and the GFS00 weather forecasts with the Actual PV production.
 The comparison can be performed for any region
 """
