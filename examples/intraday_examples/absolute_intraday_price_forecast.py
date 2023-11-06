@@ -6,7 +6,6 @@ https://wattsight-wapi-python.readthedocs-hosted.com/en/latest/
 """
 
 import wapi
-import pandas as pd
 import matplotlib.pyplot as plt
 
 ############################################

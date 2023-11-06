@@ -2,7 +2,6 @@
 # Authentication support
 #
 
-import imp
 import json
 import time
 import threading
