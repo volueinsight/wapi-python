@@ -1,0 +1,56 @@
+name: Publish package
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: false
+        default: ""
+
+jobs:
+  publish-package:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.11
+
+      - run: pip install -U twine wheel
+
+      - name: Read version
+        id: read-version
+        run: |
+
+          # override VERSION file with input from dispatch action
+          if [ ${{ github.event_name }} == "workflow_dispatch" ]; then
+            version_input=${{ github.event.inputs.version }}
+            echo $version_input > wapi_python/VERSION
+          fi
+
+          version=$(<wapi_python/VERSION)
+          echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+          echo "version is $version"
+
+      - name: Build dist
+        id: build-dist
+        run: |
+          
+          VERSION=${{ steps.read-version.outputs.VERSION }}
+          rm -rf dist
+          python setup.py sdist bdist_wheel
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/

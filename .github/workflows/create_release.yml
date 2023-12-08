@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - master
+
+name: Create Release
+
+jobs:
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Read version
+        id: read-version
+        run: |
+          version=$(<wapi_python/VERSION)
+          echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+          echo "version is $version"
+      - name: Create Release
+        run: gh release create ${{ steps.read-version.outputs.VERSION }} --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
