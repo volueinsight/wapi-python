@@ -17,7 +17,7 @@ jobs:
       - name: Read version
         id: read-version
         run: |
-          version=$(<wapi_python/VERSION)
+          version=$(<wapi/VERSION)
           echo "VERSION=$version" >> "$GITHUB_OUTPUT"
           echo "version is $version"
       - name: Create Release
