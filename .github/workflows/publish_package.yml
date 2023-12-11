@@ -3,7 +3,7 @@ name: Publish package
 on:
   push:
     branches:
-      - master
+      - gha-release
 
   workflow_dispatch:
     inputs:

@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - gha-release
 
 name: Create Release
 
