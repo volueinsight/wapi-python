@@ -38,7 +38,7 @@ jobs:
             echo $version_input > wapi/VERSION
           fi
 
-          version=$(<wapi_python/VERSION)
+          version=$(<wapi/VERSION)
           echo "VERSION=$version" >> "$GITHUB_OUTPUT"
           echo "version is $version"
 
