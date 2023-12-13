@@ -6,7 +6,7 @@ from setuptools import setup
 here = os.path.abspath(os.path.dirname(__file__))
 # Get current version from the VERSION file
 with open(os.path.join(here, 'wapi/VERSION')) as fv:
-    version = fv.read()
+    version = fv.read().strip()
 
 install_requires = [
     'requests >= 2.18',
