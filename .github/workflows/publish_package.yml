@@ -3,7 +3,7 @@ name: Publish package
 on:
   push:
     branches:
-      - fix-version
+      - fix-ver
 
   workflow_dispatch:
     inputs:
