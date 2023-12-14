@@ -32,5 +32,6 @@ setup(
     long_description='This library is meant as a simple toolkit for working with data from https://api.volueinsight.com/ (or equivalent services).  Note that access is based on some sort of login credentials, this library is not all that useful unless you have a valid Volue Insight account.',
     author='Volue Insight',
     author_email='support.insight@volue.com',
-    url='https://www.volueinsight.com'
+    url='https://www.volueinsight.com',
+    package_data={'wapi': ['VERSION']},
 )
