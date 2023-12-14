@@ -33,5 +33,5 @@ setup(
     author='Volue Insight',
     author_email='support.insight@volue.com',
     url='https://www.volueinsight.com',
-    package_data={'wapi_ext': ['VERSION']},
+    package_data={'wapi': ['VERSION']},
 )
