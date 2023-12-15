@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# Note 15.12.23: This docker file is no more in use s
+# Note 15.12.23: This bash script is no more in use
 # Releases are done via Github Actions
 
 set -e
