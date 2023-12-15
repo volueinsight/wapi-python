@@ -9,6 +9,12 @@ that useful unless you have a valid Wattsight account.
 The library is tested against both Python 2.7 and Python 3.6,
 we recommend using Python 3.
 
+We have released the successor of `wapi-python` in the form of [`volue-insight-timeseries`](https://github.com/volueinsight/volue-insight-timeseries/) (a.k.a `vit`)
+
+`vit` supports higher versions of Python and brings in some fresh new features.
+We advise our users to migrate to `vit`, since no new development is planned for `wapi-python` and it will be decomissioned soon.
+
+
 
 ## Documentation
 

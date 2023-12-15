@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# Note 15.12.23: This docker file is no more in use s
+# Releases are done via Github Actions
+
 set -e
 
 #
