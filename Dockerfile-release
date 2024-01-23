@@ -1,3 +1,6 @@
+# Note 15.12.23: This docker file is no more in use
+# Releases are done via Github Actions
+
 FROM python:3.8
 
 RUN pip install -U twine
