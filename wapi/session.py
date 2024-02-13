@@ -30,7 +30,7 @@ class MetadataException(Exception):
 
 
 class Session(object):
-    """ Establish a connection to Wattsight API
+    """ Establish a connection to Volue Insight API
 
     Creates an object that holds the state which is needed when talking to the
     Wattsight data center. To establish a session, you have to provide
