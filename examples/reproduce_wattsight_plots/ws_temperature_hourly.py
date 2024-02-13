@@ -1,6 +1,6 @@
 """
 This example shows how to reproduce temperature forecast plot for any region:
-https://app.wattsight.com/#tab/power/245/2
+https://app.volueinsight.com/#tab/power/245/2
 """
 
 import wapi
@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 my_config_file = 'path/to/your/config.ini'
 
 # Choose one of the available regions by using its abbreviation
-# as shown on the top of the wattsight page
-# https://app.wattsight.com/#tab/power/245/2
+# as shown on the top of the volueinsight page
+# https://app.volueinsight.com/#tab/power/245/2
 region = 'de'
 
 # Set the aggregation function ['AVERAGE','SUM'] and output frequency of the
@@ -55,12 +55,12 @@ end = today + pd.Timedelta(days=10)
 # create the first part of the curve name dependent on the category and region
 curve_part1 = 'tt '+region+' con'
 
-# specifiy timezone based on region
+# specify timezone based on region
 if region == 'tr':
     # Turkey has timezone TRT
     tz = 'trt'
 else:
-    # All other regions ahve timezone CET
+    # All other regions have timezone CET
     tz = 'cet'
 
 ## get normal data
