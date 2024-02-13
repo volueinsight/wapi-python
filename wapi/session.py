@@ -18,7 +18,7 @@ RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 TIMEOUT = 300      # Default timeout for web calls, in seconds.
 API_URLBASE = 'https://api.wattsight.com'
-AUTH_URLBASE = 'https://auth.wattsight.com'
+AUTH_URLBASE = 'https://auth.volueinsight.com'
 
 
 class ConfigException(Exception):

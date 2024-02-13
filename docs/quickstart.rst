@@ -62,6 +62,6 @@ Quickstart
         'TIME_SERIES'
 
 
-.. _authentication credentials: https://auth.wattsight.com/account/oauth-clients
+.. _authentication credentials: https://auth.volueinsight.com/account/oauth-clients
 .. _pandas.Series: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html
 .. _pandas.DataFrame: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html
