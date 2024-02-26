@@ -17,8 +17,8 @@ from .util import CurveException
 RETRY_COUNT = 4    # Number of times to retry
 RETRY_DELAY = 0.5  # Delay between retried calls, in seconds.
 TIMEOUT = 300      # Default timeout for web calls, in seconds.
-API_URLBASE = 'https://api.wattsight.com'
-AUTH_URLBASE = 'https://auth.wattsight.com'
+API_URLBASE = 'https://api.volueinsight.com'
+AUTH_URLBASE = 'https://auth.volueinsight.com'
 
 
 class ConfigException(Exception):
@@ -30,21 +30,21 @@ class MetadataException(Exception):
 
 
 class Session(object):
-    """ Establish a connection to Wattsight API
+    """ Establish a connection to Volue Insight API
 
     Creates an object that holds the state which is needed when talking to the
-    Wattsight data center. To establish a session, you have to provide
+    Volue Insight data center. To establish a session, you have to provide
     suthentication information either directly by using a ```client_id` and
     ``client_secret`` or using a ``config_file`` .
 
-    See https://api.wattsight.com/#documentation for information how to get
+    See https://volueinsight.com/docs/authentication.html for information how to get
     your authentication data.
 
     Parameters
     ----------
 
     urlbase: url
-        Location of Wattsight service
+        Location of Volue Insight service
     config_file: path
         path to the config.ini file which contains your authentication
         information.
@@ -53,7 +53,7 @@ class Session(object):
     client_secret:
         Your client secret.
     auth_urlbase: url
-        Location of Wattsight authentication service
+        Location of Volue Insight authentication service
     timeout: float
         Timeout for REST calls, in seconds
 

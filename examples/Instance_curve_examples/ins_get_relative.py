@@ -2,7 +2,7 @@
 This example fetches a relative forecast from an INSTANCE curve that contains our forecast for wind
 production based on the ec00 weather forecast. A relative forecast is a conjunction of fragments of 
 selected instances. Have a look at the documentation for further information:
-https://wattsight.com/docs/api/api-absolute-relative-forecast.html?highlight=relative
+https://volueinsight.com/docs/api/api-absolute-relative-forecast.html?highlight=relative
 """
 
 import wapi
