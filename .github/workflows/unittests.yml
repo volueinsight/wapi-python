@@ -1,0 +1,39 @@
+name: unittests
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+  push:
+    branches:
+      - development
+      - master
+
+jobs:
+  unittests:
+    timeout-minutes: 10
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [ '3.5', '3.6', '3.7', '3.8', '3.9' ]
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.12.1
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies ${{ matrix.python-version }}
+        run: |
+          REQS="-r requirements.txt -r test-requirements.txt"
+          pip install --upgrade --upgrade-strategy eager ${REQS}
+      - name: Print Python Version
+        run: python --version
+      - name: Run tests
+        run: |
+          python -m pytest -vv

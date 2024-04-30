@@ -6,8 +6,7 @@ https://api.wattsight.com/ (or equivalent services).  Note that access
 is based on some sort of login credentials, this library is not all
 that useful unless you have a valid Wattsight account.
 
-The library is tested against both Python 2.7 and Python 3.6,
-we recommend using Python 3.
+The library is tested against both Python version >=3.5 and <=3.9
 
 
 ## Documentation
