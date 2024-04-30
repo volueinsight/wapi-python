@@ -20,10 +20,10 @@ jobs:
     strategy:
         matrix:
           os:
-              - name: ubuntu-20.04
-                python-version: [ "3.6"]
-              - name: ubuntu-latest
-                python-version: [ "3.7", "3.8", "3.9" ]
+            - name: ubuntu-20.04
+              python-version: [ "3.6" ]
+            - name: ubuntu-latest
+              python-version: [ "3.7", "3.8", "3.9" ]
 
     steps:
       - name: Cancel Previous Runs
@@ -41,7 +41,8 @@ jobs:
         run: |
           REQS="-r requirements.txt -r test-requirements.txt"
           pip install --upgrade --upgrade-strategy eager ${REQS}
-
+      - name: Print Python Version
+        run: python --version
       - name: Run tests
         run: |
           python -m pytest -vv
