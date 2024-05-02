@@ -32,8 +32,7 @@ jobs:
         run: |
           REQS="-r requirements.txt -r test-requirements.txt"
           pip install --upgrade --upgrade-strategy eager ${REQS}
-      - name: Print Python Version
-        run: python --version
+      
       - name: Run tests
         run: |
           python -m pytest -vv
