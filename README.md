@@ -6,7 +6,7 @@ https://api.volueinsight.com/ (or equivalent services).  Note that access
 is based on some sort of login credentials, this library is not all
 that useful unless you have a valid Wattsight account.
 
-The library is tested against both Python version >=3.5 and <=3.9
+The library is tested against Python versions >=3.6 and <=3.9
 
 
 ## Documentation

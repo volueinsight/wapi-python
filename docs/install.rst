@@ -4,8 +4,7 @@ Installation
 ============
 
 To use the Volue Insight API python library you need to have `Python`_ installed.
-The library is tested against both Python 2.7 and
-Python 3.6, we recommend using Python 3.
+The library is tested against Python versions >=3.6 and <=3.9
 
 You can simply install/update the latest version of Volue Insight API python
 library with pip.
