@@ -107,6 +107,55 @@ class TS(object):
             attrs.append(str(self.issue_date))
         return ' '.join(attrs)
 
+    def to_polars(self, lazyframe: bool = True, with_index: bool = True) -> pl.DataFrame | pl.LazyFrame:
+        """
+        Convert the TS object into a Polars DataFrame or LazyFrame.
+    
+        Parameters
+        ----------
+        ts_obj : TS object
+            The time series object to convert.
+        lazyframe : bool, optional
+            If True, returns a Polars LazyFrame; otherwise returns a Polars DataFrame.
+            Default is True.
+        with_index : bool, optional
+            If True, includes a time-based 'index' column in the result; otherwise
+            only includes the data column. Default is True.
+    
+        Returns
+        -------
+        pl.DataFrame or pl.LazyFrame
+            The converted time series data.
+        """
+        # If no points exist, create an empty DataFrame
+        if not self.points:
+            if with_index:
+                columns = {
+                    "index": pl.Series([], dtype=pl.Datetime("ms")),
+                    ts_obj.name or "value": pl.Series([], dtype=pl.Float64)
+                }
+            else:
+                columns = {self.name or "value": pl.Series([], dtype=pl.Float64)}
+            empty_df = pl.DataFrame(columns)
+            return empty_df.lazy() if lazyframe else empty_df
+    
+        # Extract raw timestamps (milliseconds) and values from points
+        timestamps = [p[0] for p in self.points]  # p[0] is epoch ms
+        values = [p[1] for p in self.points]
+    
+        # Prepare the dictionary of columns
+        columns = {}
+        if with_index:
+            # Create the 'index' column as a Polars series with Datetime type
+            columns["index"] = pl.Series(timestamps, dtype=pl.Datetime("ms"))
+        # Use ts_obj.name if available; otherwise, default to "value"
+        data_col_name = self.name if self.name else "value"
+        columns[data_col_name] = values
+    
+        df = pl.DataFrame(columns)
+        return df.lazy() if lazyframe else df
+
+    
     def to_pandas(self, name=None):
         """ Converting :class:`wapi.util.TS` object to a pandas.Series object
 
