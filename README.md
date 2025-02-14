@@ -1,6 +1,12 @@
 # wapi-python
 Wattsight API python library
 
+This repo has been archived and will not receive any new updates, bugfixes, security updates or similar. Instead, please use https://github.com/volueinsight/volue-insight-timeseries which is our recommended python package for interacting with our timeseries API. 
+
+We informed about our new python package in a post to our customers on October 7th 2024 (https://volueinsight.com/en/blog/volue-insight-api-switch-to-the-new-volue-insight-timeseries-package/ - requires login). We have explained both in the blog post and in the new repo, why you should switch to the new package.
+
+Wapi-python packages on PyPi will stay there - so you can continue installing it with pip, we do not plan to remove those versions. However, we cannot guarantee that it will be compatible with the API forever. If we do breaking changes in the API, we will give advice on how to transition in the new repo only, not here. 
+
 This library is meant as a simple toolkit for working with data from
 https://api.volueinsight.com/ (or equivalent services).  Note that access
 is based on some sort of login credentials, this library is not all
